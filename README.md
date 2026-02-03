@@ -6,7 +6,7 @@ This project is a [POC](https://en.wikipedia.org/wiki/Proof_of_concept) for a "n
 
 - select the technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
 - validate an architecture based on [DDD](https://en.wikipedia.org/wiki/Domain-driven_design);
-- validate a multi-language DSL, i.e. in french, english, ...
+- validate a multi-language [DSL](https://en.wikipedia.org/wiki/Domain-specific_language), i.e. in french, english, ...
 - use [AI](https://en.wikipedia.org/wiki/Artificial_intelligence), e.g. [Google Gemini](https://gemini.google.com),
   to do reverse engineering of legacy code and coding the `New Generation` application.
 
@@ -65,6 +65,7 @@ The main parts:
 
 - Node.js (LTS version recommended)
 - NPM
+- GIT
 
 ### Installation
 
@@ -115,7 +116,7 @@ This project is licensed under the [GPLv3 License](./LICENSE).
 
 - R. Hartig drew the [mascot](src/main/resources/cfg/tortue-v4.png).
 
-## Logo Links
+## 🔗 Logo Links
 
 - [Logo Foundation](https://el.media.mit.edu/logo-foundation/)
 
