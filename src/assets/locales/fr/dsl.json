@@ -1,0 +1,41 @@
+{
+  "commands": {
+    "GT_FORWARD": ["av", "avance"],
+    "GT_BACKWARD": ["re", "recule"],
+    "GT_RIGHT": ["td", "tournedroite", "droite"],
+    "GT_LEFT": ["tg", "tournegauche", "gauche"],
+    "GT_VG": "vg",
+    "GT_RZ": "rz",
+    "GT_CT": "ct",
+    "GT_MT": "mt",
+    "GT_PEN_UP": "lc",
+    "GT_PEN_DOWN": "bc",
+    "GT_PEN_COLOR": "crayon",
+    "GT_FILL": "remplis",
+    "GT_WRITE": ["ecris", "écris"],
+    "GT_REP": ["rep", "repete", "répète"],
+    "GT_IF": "si",
+    "GT_WHILE": "tant_que",
+    "GT_FOR_EACH": "pour_chaque"
+  },
+  "keywords": {
+    "GT_THEN": "alors",
+    "GT_ELSE": "sinon",
+    "GT_FROM": "de",
+    "GT_TO": "à",
+    "GT_IN_LIST": "dans"
+  },
+  "colors": {
+    "GT_RED": "rouge",
+    "GT_GREEN": "vert",
+    "GT_BLUE": "bleu",
+    "GT_YELLOW": "jaune",
+    "GT_BLACK": "noir",
+    "GT_WHITE": "blanc",
+    "GT_ORANGE": "orange",
+    "GT_PINK": "rose",
+    "GT_GREY": "grey",
+    "GT_CYAN": "cyan",
+    "GT_MAGENTA": "magenta"
+  }
+}

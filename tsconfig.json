@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "module": "preserve",
+    "target": "ES2022",
+    "types": ["vite/client", "vitest/globals"],
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "dom", "dom.iterable"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "experimentalDecorators": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "@domain/*": ["domain/*"],
+      "@app/*": ["application/*"],
+      "@lang/*": ["assets/locales/*"],
+      "@ui/*": ["presentation/*"],
+      "@infrastructure/*": ["infrastructure/*"],
+      "@generated/*": ["infrastructure/antlr/generated/*"]
+    }
+  },
+  "exclude": ["./scripts"],
+  "include": ["src/**/*"]
+}

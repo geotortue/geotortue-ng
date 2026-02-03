@@ -1,0 +1,31 @@
+# ADR 004 - Typography
+
+To be apllied only on any text that could be presented to a user.
+
+TBD: List the technical choices made and describe the constraints taken into account.
+
+Provide a script able to catch the main mistakes.
+
+## Automated English Typography Formatting
+
+TBD
+
+## Automated French Typography Formatting
+
+TBD Give a detailed description of what is expected
+
+\## 1. Status
+Status: **Accepted**
+Date: 2025-12-16
+
+\## 2. Context
+The application targets French users. French typography requires specific rules (non-breaking spaces before punctuation, typographic quotes `« »`) that are often missed in standard input.
+
+\## 3. Decision
+We will implement a central utility `formatFrenchTypography` applied via pipes or directives to automatically correct spacing and punctuation in the UI.
+
+\## 4. Consequences
+\### Good
+* Consistent professional appearance complying with Imprimerie Nationale rules.
+\### Bad
+* Runtime string processing overhead (minimal).

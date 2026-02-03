@@ -1,0 +1,37 @@
+{
+  "app": {
+    "title": "GeoTortue NG",
+    "subtitle": "Geometry Learning Environment",
+    "loading": "Loading Domain..."
+  },
+  "menu": {
+    "file": "File",
+    "edit": "Edit",
+    "run": "Run"
+  },
+  "toolbar": {
+    "run": "Run",
+    "clear": "Clear",
+    "language": "Languages",
+    "selector": {
+      "ui": "Labels",
+      "dsl": "Commands"
+    },
+    "open_project": "Open Project",
+    "save_project": "Save Project"
+  },
+  "languages": {
+    "fr": "French",
+    "en": "English"
+  },
+  "entities": {
+    "turtle": "Turtle",
+    "pen": "Pen"
+  },
+  "errors": {
+    "turtle_not_found": "Turtle not found: {{id}}",
+    "invalid_command": "Unknown command: {{cmd}}",
+    "missing_argument": "Missing argument for command {{cmd}}",
+    "script_error": "Error while executing script"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "app": {
+    "title": "GéoTortue NG",
+    "subtitle": "Environnement d’apprentissage de la géométrie",
+    "loading": "Chargement du domaine..."
+  },
+  "menu": {
+    "file": "Fichier",
+    "edit": "Édition",
+    "run": "Exécuter"
+  },
+  "toolbar": {
+    "run": "Exécuter",
+    "clear": "Effacer",
+    "language": "Langues",
+    "selector": {
+      "ui": "Libellés",
+      "dsl": "Commandes"
+    },
+    "open_project": "Ouvrir Projet",
+    "save_project": "Sauvegarder Projet"
+  },
+  "languages": {
+    "fr": "Français",
+    "en": "Anglais"
+  },
+  "entities": {
+    "turtle": "Tortue",
+    "pen": "Crayon"
+  },
+  "errors": {
+    "turtle_not_found": "Tortue introuvable : {{id}}",
+    "invalid_command": "Commande inconnue : {{cmd}}",
+    "missing_argument": "Argument manquant pour la commande {{cmd}}",
+    "script_error": "Erreur lors de l'exécution du script"
+  }
+}
