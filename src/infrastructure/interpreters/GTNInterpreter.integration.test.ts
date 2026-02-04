@@ -20,9 +20,9 @@ describe('GTNInterpreter Integration', () => {
     const container = GTNContainer.getInstance();
 
     // Reset/Clear container to ensure clean state
-    container.clear(); // Uncomment if you have a clear method
+    container.clear();
 
-    // 1-1. Logger (Required by Visitor) ---
+    // 1-1. Logger (Required by GTNExecutionVisitor) ---
     // [NEW] Added this block to fix your specific error
     const mockLogger = {
       info: vi.fn(),
@@ -32,7 +32,7 @@ describe('GTNInterpreter Integration', () => {
     };
     container.registerInstance(GTN_TYPES.Logger, mockLogger);
 
-    // 1-2. Mock the MathEvaluator (Required by Visitor)
+    // 1-2. Mock the MathEvaluator (Required by GTNExecutionVisitor)
     const mockMathEvaluator = {
       evaluate: vi.fn((expr: string) => {
         // Simple mock: if expr is "100", return 100.
@@ -93,8 +93,8 @@ describe('GTNInterpreter Integration', () => {
       getTurtle: vi.fn().mockReturnValue(mockTurtle),
       addTurtle: vi.fn(),
       clear: vi.fn(),
-      reset: vi.fn(),
-      clearAllLines: vi.fn()
+      reset: vi.fn(), // Required by visitProgram
+      clearAllLines: vi.fn() // Required by visitClearGraphics
     } as unknown as IGTNTurtleRepository;
 
     // 4. Instantiate Interpreter
