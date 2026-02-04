@@ -13,7 +13,7 @@ We would like to highlight the following points:
 2. Be responsible
    - You are responsible for submissions of your Pull Request.
 3. Give credit
-   - If a submission or contribution is based on the work of a third party (e.g., research article, open-sweet project, public code), please quote or attach any information about the original sources. Everyone has to be credited with the work they have done.
+   - If a submission or contribution is based on the work of a third party (e.g. research article, open-sweet project, public code), please quote or attach any information about the original sources. Everyone has to be credited with the work they have done.
 
 ## License
 
@@ -24,9 +24,53 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 - enhance the look & feel
 - enhance the grammar
 - more features from legacy GéoTortue: Procedure, Sandbox, Geometries, Video, ...
+- tool to retrieve hard coded text and deal with them in i18n
+- typography enhancers
+- gather licenses of the technical stack components
 - collaboration features and tools (e.g. with TogetherJS)
 - API with the real world (Audio, ...)
 - QA: more tests, versionning, SonarQube, ...
+
+## Business Reference Files
+
+- src/infrastructure/antlr/grammar/GeoTortueLexer.g4
+- src/infrastructure/antlr/grammar/GeoTortueParser.g4
+- src/infrastructure/i18n.ts, for the default language, see DEFAULT_LANGUAGE
+- src/domain/types/language.ts, for the supported languages, see SUPPORTED_LANGUAGES
+- src/assets/locales/{{lang}}/ui.json
+- src/assets/locales/{{lang}}/dsl.json, especially section 'colors' for the CSS Colors
+- src/domain/value-objects/GTNColor.ts, for the known CSS colors, see NAMED_CSS_COLOR
+- others?
+
+## Development Technologies
+
+### Technical Stack
+
+- **UI Framework**: [Lit](https://lit.dev/)
+- **Icons & fonts**: material-icons, fortawesome
+- **DI**: internal component, see class `GTNContainer` and function `configureDependencyInjection`
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **3D Engine**: [WebGL](https://developer.mozilla.org/fr/docs/Web/API/WebGL_API) ([three.js](https://threejs.org/))
+- **Turtle Move Parser**: [ANTLR4](https://www.antlr.org/) ([antlr4ng](https://github.com/mike-lischke/antlr4ng))
+- **Math Parser**: [Math.js](https://mathjs.org/)
+- **Editor**: [CodeMirror](https://codemirror.net/)
+- **I18n**: [i18next](https://www.i18next.com/)
+
+This project ATM doesn't use any css frameworks such as scss or sass. And especially not Tailwind! :wink:
+
+> TODO About css, see some semantic approach?
+> See [ADR - CSS Semantic](doc/adr/adr-css-semantic.md)
+
+### Tools
+
+- [VSC](https://code.visualstudio.com/) as [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment)
+- [GIT](https://git-scm.com/) as [VCS](https://en.wikipedia.org/wiki/Version_control)
+- [Vite](https://vite.dev/) as build tool
+- [Vitest](https://vitest.dev/) for testing
+- prettier & eslint for QA
+- "@ysk8hori/typescript-graph" for dependency diagram
+- "rollup-plugin-visualizer" & "vite-bundle-visualizer" for bundle size management
+- mainly [Google Gemini Pro](https://gemini.google.com/) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
 
 ## Development Workflow
 

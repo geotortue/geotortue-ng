@@ -38,9 +38,9 @@ It allows users to draw geometric figures using a turtle moving on the screen. T
 
 These last two features have not been implemented yet.
 
-### Technology Stack
+### Technical Stack
 
-The main parts:
+The main components:
 
 - **UI Framework**: [Lit](https://lit.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -48,10 +48,13 @@ The main parts:
 - **Turtle Move Parser**: [ANTLR4](https://www.antlr.org/) ([antlr4ng](https://github.com/mike-lischke/antlr4ng))
 - **Math Parser**: [Math.js](https://mathjs.org/)
 - **Editor**: [CodeMirror](https://codemirror.net/)
+- **I18n**: [i18next](https://www.i18next.com/)
 
-> [DI](https://en.wikipedia.org/wiki/Dependency_injection) is done without using any dedicated framework.
+[DI](https://en.wikipedia.org/wiki/Dependency_injection) is done without using any dedicated framework.
 
 ### Tools
+
+The main tools:
 
 - [VSC](https://code.visualstudio.com/) as [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment)
 - [GIT](https://git-scm.com/) as [VCS](https://en.wikipedia.org/wiki/Version_control)
