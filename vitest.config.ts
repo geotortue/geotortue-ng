@@ -15,7 +15,7 @@ export default defineConfig({
     }
   },
   test: {
-    // Enable describe, it, expect globally (optional, but standard)
+    // Enable describe, it, expect globally
     globals: true,
 
     // Simulates a browser environment for Lit components
@@ -31,9 +31,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
-        'src/infrastructure/antlr/generated/**', // Exclude generated ANTLR code
+        'src/infrastructure/antlr/generated/**',
         'node_modules/**',
-        'dist/**'
+        'dist/**',
+        '**/*.d.ts',
+        '**/index.ts'
       ]
     }
   }

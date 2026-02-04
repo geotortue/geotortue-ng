@@ -4,6 +4,8 @@ import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 import * as GTNParser from '@infrastructure/antlr/generated/GeoTortueParser';
 import { GeoTortueParserVisitor } from '@infrastructure/antlr/generated/GeoTortueParserVisitor';
 
+import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
+import { MathEvaluatorMode, type IGTNMathEvaluator } from '@domain/interfaces/IGTNMathEvaluator';
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import {
   GTNQuaternion,
@@ -15,9 +17,7 @@ import {
 } from '@domain/value-objects';
 import { toDegree } from '@domain/types'; // Assuming we created this in previous steps
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
-import { MathEvaluatorMode, type IGTNMathEvaluator } from '@domain/interfaces/IGTNMathEvaluator';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
-import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 
 /**
@@ -296,7 +296,6 @@ export class GTNExecutionVisitor
     if (!isCssColor(cssColor)) {
       return; // here a string which is not a known GéoTortue color will be ignored.
     }
-
     // Apply
     this.turtleRepo.getAll().forEach((t) => t.setPenColor(toCssColor(cssColor)));
   };
