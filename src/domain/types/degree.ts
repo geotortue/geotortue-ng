@@ -11,11 +11,11 @@ export type Degree = Branded<number, typeof __degree>;
 /**
  * Checks if value is a valid number (not NaN, finite).
  */
-export function isDegree(value: number): value is Degree {
+export function isDegree(value: unknown): value is Degree {
   return typeof value === 'number' && !isNaN(value) && isFinite(value);
 }
 
-export function assertIsDegree(value: number): asserts value is Degree {
+export function assertIsDegree(value: unknown): asserts value is Degree {
   if (!isDegree(value)) {
     throw new Error(`Value '${value}' is not a valid Degree number`);
   }

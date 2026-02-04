@@ -5,15 +5,20 @@ import * as GTNParser from '@infrastructure/antlr/generated/GeoTortueParser';
 import { GeoTortueParserVisitor } from '@infrastructure/antlr/generated/GeoTortueParserVisitor';
 
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
-import { GTNQuaternion, GTNVector3 } from '@domain/value-objects';
+import {
+  GTNQuaternion,
+  GTNVector3,
+  isCssColor,
+  isCssHexColor,
+  toCssColor,
+  type GTNColor
+} from '@domain/value-objects';
 import { toDegree } from '@domain/types'; // Assuming we created this in previous steps
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { MathEvaluatorMode, type IGTNMathEvaluator } from '@domain/interfaces/IGTNMathEvaluator';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
-
-const CSS_COLOR_HEX_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
 /**
  * The runtime interpreter for GeoTortue.
@@ -210,8 +215,14 @@ export class GTNExecutionVisitor
     this.turtleRepo.getAll().forEach((t) => t.penDown());
   };
 
-  /**
-   * Le soucis ici est de distinguer entre les variables et les litéraux de couleur
+  /*
+   * Only known named css colors and hex colors are allowed.
+   * FUTURE deal with number as hexadecimal number.
+   * See [GéoTortue - crayon](http://geotortue.free.fr/index.php?page=aide_index#crayon)
+   *
+   * Note. RGB and
+   *
+   * Un autre soucis ici est de distinguer entre les variables et les litéraux de couleur
    * En effet le DSL de GéoTortue ne fait pas précéder du préfixe ':' le nom d'une variable
    * lorsqu'il lui y est fait référence.
    * Il faut donc filtrer les noms de couleur afin de les différencier de noms de variable.
@@ -221,9 +232,8 @@ export class GTNExecutionVisitor
    * Il ne serait requis que pour lever une ambiquité. On aurait alors trois cas de figure :
    * - mot entre guillemets : toujours un nom de couleur
    * - mot précéder d'un ":" et sans guillemets: toujours une variable
-   * - mot sans guillemets ni préfix : si c'est un nom de couleur alors traité comme telle.
-   * @param ctx
-   * @returns
+   * - mot sans guillemets ni préfix : si c'est un nom de couleur alors le traiter comme tel.
+   *   sinon le traiter comme nom de variable
    */
   visitSetColor = (ctx: GTNParser.SetColorContext): void => {
     const exprCtx = ctx.expr();
@@ -236,7 +246,7 @@ export class GTNExecutionVisitor
     // ---------------------------------------------------------
     // STRATEGY 1: Direct String Literal (Fast Path)
     // ---------------------------------------------------------
-    // If the user typed: crayon "rouge" (expr starts with GT_STRING)
+    // If the user typed: `crayon "rouge"` (expr starts with GT_STRING)
     // We skip the math evaluator entirely to avoid parsing issues with quotes.
     if (exprCtx.start?.type === GeoTortueLexer.GT_STRING) {
       rawColor = exprCtx.getText();
@@ -260,7 +270,7 @@ export class GTNExecutionVisitor
         // ---------------------------------------------------------
         // If evaluation failed because 'ROUGE' is undefined,
         // AND the text looks like a valid identifier, treat it as a string literal.
-        // This allows: crayon rouge (without quotes) to work.
+        // This allows: `crayon rouge` (without quotes around 'rouge') to work.
         const text = exprCtx.getText();
         const msg = e.message || '';
         // Check if error is "Undefined symbol" and text is a simple word
@@ -283,18 +293,24 @@ export class GTNExecutionVisitor
     }
     // Resolve to CSS (handles localized names, stripping quotes, etc.)
     const cssColor = this.resolveCssColor(rawColor);
+    if (!isCssColor(cssColor)) {
+      return; // here a string which is not a known GéoTortue color will be ignored.
+    }
+
     // Apply
-    this.turtleRepo.getAll().forEach((t) => t.setPenColor(cssColor));
+    this.turtleRepo.getAll().forEach((t) => t.setPenColor(toCssColor(cssColor)));
   };
 
   /**
    * Helper to resolve localized names to CSS values
+   *
+   * Only known named css colors are allowed.
    */
   private resolveCssColor(input: string): string {
     // Strip quotes if they exist (e.g. "'rouge'" -> "rouge")
     const cleanInput = input.replace(/['"]/g, '').toLowerCase();
 
-    if (CSS_COLOR_HEX_PATTERN.test(cleanInput)) {
+    if (isCssHexColor(cleanInput)) {
       return cleanInput;
     }
 
@@ -668,4 +684,7 @@ export class GTNExecutionVisitor
   public visitUndo = (ctx: GTNParser.UndoContext): any => this.warn('UNDO');
 
   public visitAskFor = (ctx: GTNParser.AskForContext): any => {};
+}
+function toColor(cssColor: string): GTNColor {
+  throw new Error('Function not implemented.');
 }

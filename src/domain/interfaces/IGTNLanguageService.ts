@@ -1,4 +1,5 @@
 import type { DslLanguage, UiLanguage } from '@domain/types';
+import type { NamedCssColor } from '@domain/value-objects';
 
 export interface IGTNLanguageService {
   initialize(): Promise<void>;
@@ -45,7 +46,7 @@ export interface IGTNLanguageService {
    * Translates a localized color name (e.g. "rouge" in french) to a CSS-valid name ("red").
    * Returns undefined if unknown.
    */
-  getCssColor(localizedName: string): string | undefined;
+  getCssColor(localizedName: string): NamedCssColor | undefined;
 
   /**
    * Translates a full script from one DSL language to another.

@@ -1,7 +1,12 @@
 import { CharStream, Token, Vocabulary } from 'antlr4ng';
 
-import type { DslLanguage } from '@domain/types';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+
+import type { DslLanguage } from '@domain/types';
+import { NAMED_CSS_COLOR, toNamedCssColor, type NamedCssColor } from '@domain/value-objects';
+import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
+import { GTNContainer } from '@infrastructure/di/GTNContainer';
+import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 
 const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
 
@@ -29,12 +34,18 @@ type LangCache = {
   colorForward: Map<string, string>;
 
   // "GT_RED" ---> "red" as CSS named color
-  colorForwardCss: Map<string, string>;
+  colorForwardCss: Map<string, NamedCssColor>;
 };
 
 export class GTNReverseDictionaryService {
   private readonly cache: Map<string, LangCache> = new Map();
   private readonly loaders: Map<string, Promise<LangCache>> = new Map();
+  private readonly logger: IGTNLogger;
+
+  constructor() {
+    const container = GTNContainer.getInstance();
+    this.logger = container.resolve<IGTNLogger>(GTN_TYPES.Logger);
+  }
 
   /**
    * Translates a localized color name (e.g. "rouge" in french) to a CSS-valid name ("red").
@@ -44,7 +55,7 @@ export class GTNReverseDictionaryService {
    * @param lang
    * @returns
    */
-  public getCssColor(localizedColorName: string, lang: DslLanguage): string | undefined {
+  public getCssColor(localizedColorName: string, lang: DslLanguage): NamedCssColor | undefined {
     const cache = this.cache.get(lang);
     if (!cache) {
       return undefined;
@@ -67,7 +78,7 @@ export class GTNReverseDictionaryService {
    * Returns undefined if the dictionary is not yet loaded or the word is unknown.
    */
   public getInternalKey(word: string, lang: DslLanguage): string | undefined {
-    // 1. Check if the dictionary for this language is currently in memory
+    // Check if the dictionary for this language is currently in memory
     const cache = this.cache.get(lang);
     if (!cache) {
       // NOTE: Highlighters are synchronous, so we cannot await here.
@@ -77,7 +88,7 @@ export class GTNReverseDictionaryService {
 
     const search = word.toLowerCase();
 
-    // 2. Look up in the reverse maps
+    // Look up in all the reverse maps
     // Order matters if there are overlaps, but usually keys are distinct.
     return (
       cache.commandReverse.get(search) ||
@@ -126,6 +137,7 @@ export class GTNReverseDictionaryService {
         continue;
       }
       const translatedText = this.doTranslate(token, vocabulary, sourceDict, targetDict);
+      // Only verify against text to avoid unnecessary string ops if identical
       if (translatedText === token.text) {
         continue;
       }
@@ -133,7 +145,7 @@ export class GTNReverseDictionaryService {
       replacements.push({ start: token.start, stop: token.stop, newText: translatedText! });
     }
 
-    // 4. Apply replacements in reverse order, i.e. from end to start
+    // Apply replacements in reverse order, i.e. from end to start
     const translatedCode = replacements.toReversed().reduce((acc, rep) => {
       const before = acc.substring(0, rep.start);
       const after = acc.substring(rep.stop + 1);
@@ -154,30 +166,48 @@ export class GTNReverseDictionaryService {
       return token.text;
     }
 
-    const originalText = token.text;
     const tokenType = token.type;
     const symbolicName = vocabulary.getSymbolicName(tokenType); // e.g., "GT_FORWARD" or null
 
-    // A. If token type matches a known Command/Keyword key directly (e.g. token is GT_FORWARD)
+    // ---------------------------------------------------------
+    // STRATEGY A: Direct Token Type Match
+    // ---------------------------------------------------------
+    // If the Lexer explicitly recognized the token (e.g. it was a hardcoded keyword in grammar),
+    // we map the Token Type directly to the Target Language word.
     if (symbolicName && targetDict.commandForward.has(symbolicName)) {
       return targetDict.commandForward.get(symbolicName)!;
-    } else if (symbolicName && targetDict.keywordForward.has(symbolicName)) {
+    }
+    if (symbolicName && targetDict.keywordForward.has(symbolicName)) {
       return targetDict.keywordForward.get(symbolicName)!;
     }
-    // B. Special handling for Colors or Identifiers that might be colors
-    // Colors might be tokenized as specific tokens (GT_RED) or generic identifiers depending on grammar.
-    // We check the text against the source color reverse map.
-    else if (sourceDict.colorReverse.has(originalText.toLowerCase())) {
-      const key = sourceDict.colorReverse.get(originalText.toLowerCase())!;
-      if (targetDict.colorForward.has(key)) {
-        return targetDict.colorForward.get(key)!;
-      }
-    }
-    // C. Fallback: Check if the text matches a command in reverse map (for cases where Lexer might yield generic ID)
-    else if (sourceDict.commandReverse.has(originalText.toLowerCase())) {
-      const key = sourceDict.commandReverse.get(originalText.toLowerCase())!;
+
+    // ---------------------------------------------------------
+    // STRATEGY B: Reverse Text Lookup (Fallback)
+    // ---------------------------------------------------------
+    // If the Lexer treated the word as a generic 'GT_WORD' or 'GT_ID',
+    // we look up the text in the SOURCE dictionary to find its canonical ID,
+    // then map that ID to the TARGET language.
+
+    const originalText = token.text;
+    const lowerText = originalText.toLowerCase();
+    // 1. Check Commands (e.g. "avance")
+    if (sourceDict.commandReverse.has(lowerText)) {
+      const key = sourceDict.commandReverse.get(lowerText)!;
       return targetDict.commandForward.get(key) || originalText;
     }
+
+    // 2. Check Keywords (e.g. "repete") -> THIS WAS MISSING
+    if (sourceDict.keywordReverse.has(lowerText)) {
+      const key = sourceDict.keywordReverse.get(lowerText)!;
+      return targetDict.keywordForward.get(key) || originalText;
+    }
+
+    // 3. Check Colors (e.g. "rouge")
+    if (sourceDict.colorReverse.has(lowerText)) {
+      const key = sourceDict.colorReverse.get(lowerText)!;
+      return targetDict.colorForward.get(key) || originalText;
+    }
+    // C. No translation found, return the original
     return originalText;
   }
 
@@ -209,13 +239,13 @@ export class GTNReverseDictionaryService {
         commandForward,
         keywordForward,
         colorForward,
-        colorForwardCss: createColorMap(json.colors)
+        colorForwardCss: createColorMap()
       };
 
       this.cache.set(lang, cache);
       return cache;
     } catch (e) {
-      console.error(`[ReverseDictionary] Error loading ${lang}`, e);
+      this.logger.error(`[ReverseDictionary] Error loading ${lang}`, e);
       // Return empty structures to prevent crash
       return {
         commandReverse: new Map(),
@@ -230,25 +260,27 @@ export class GTNReverseDictionaryService {
   }
 }
 
-/* The keywords used in the section 'colors' of the i18n json files must be
+/* Provide a map between canonical color keyword and css color known of GéoTortue.
+ *
+ * The keywords used in the section 'colors' of the i18n json files must be
  * of the form <grammar prefix, here 'GT_'><CSS color>
  *
- * @param source
+ * @param source map between canonical keyword of a color and its css name
  * @returns
  */
-function createColorMap(source: Record<string, string | string[]>) {
-  const forward = new Map();
-  for (const key of Object.keys(source)) {
+function createColorMap() {
+  const forward = new Map<string, NamedCssColor>();
+  for (const color of NAMED_CSS_COLOR) {
     // Forward: Canonical Keyword ---> CSS color name
-    const cssColor = key.slice(GEOTORTUE_GRAMMAR_PREFIX.length).toLowerCase();
-    forward.set(key, cssColor);
+    const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
+    forward.set(key, toNamedCssColor(color));
   }
   return forward;
 }
 
 function createMapping(source: Record<string, string | string[]>) {
-  const forward = new Map();
-  const reverse = new Map();
+  const forward = new Map<string, string>();
+  const reverse = new Map<string, string>();
   for (const [key, value] of Object.entries(source)) {
     // Forward: Canonical Keyword ---> Localized Word (first one if array)
     const primary = Array.isArray(value) ? value[0] : value;

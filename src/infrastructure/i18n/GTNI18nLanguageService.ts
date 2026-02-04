@@ -13,6 +13,7 @@ import type { GTNReverseDictionaryService } from './GTNReverseDictionaryService'
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+import type { NamedCssColor } from '@domain/value-objects';
 
 type DslResourceBundle = Record<string, string | string[]>;
 
@@ -194,7 +195,7 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return keywords;
   }
 
-  public getCssColor(localizedColorName: string): string | undefined {
+  public getCssColor(localizedColorName: string): NamedCssColor | undefined {
     return this.reverseDictionary.getCssColor(localizedColorName, this.dslLanguage);
   }
 

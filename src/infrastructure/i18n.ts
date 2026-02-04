@@ -5,8 +5,6 @@ import { isSupportedLanguage, SUPPORTED_LANGUAGES } from '@domain/types/language
 
 // FUTURE: put the next three constants in a configuration file:
 export const DEFAULT_LANGUAGE = 'fr';
-// export const SUPPORTED_LANGUAGES = [DEFAULT_LANGUAGE, 'en'] as const;
-// export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const DSL_NS = 'dsl';
 export const UI_NS = 'ui';
