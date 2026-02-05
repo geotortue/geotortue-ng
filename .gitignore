@@ -146,4 +146,5 @@ src/infrastructure/antlr/generated/
 .archives
 bundle-stats.html
 typescript-graph.*
-
+DEPENDENCIES-LICENSES*
+licences

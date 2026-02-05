@@ -1,0 +1,127 @@
+# ADR 010: Manage Dependency License Compatibility with GPLv3
+
+## 1. Status
+
+Status: **Accepted**
+
+Date: 2025-12-31
+
+## 2. Context
+
+The project is released under the **GNU General Public License v3.0 (GPLv3)**. To legally distribute the application (or a bundled version of it), all linked dependencies and libraries must use licenses compatible with GPLv3.
+
+The Node.js ecosystem (npm) contains packages with a wide variety of licenses. While the majority are permissive (MIT, ISC), some packages use licenses that are strictly incompatible with GPLv3, such as:
+
+- **Proprietary/Commercial licenses**
+- **"GPLv2 only"** (incompatible with GPLv3 unless "or later" is specified)
+- **JSON License** (includes the "Good, not Evil" clause, considered non-free)
+- **Creative Commons Non-Commercial variants** (CC-BY-NC)
+
+Including a single dependency with an incompatible license creates a legal violation that prevents us from distributing the software. Currently, we rely on manual verification when adding libraries, which is error-prone and does not account for transitive dependencies updating their licenses.
+
+## 3. Decision
+
+We will strictly enforce a **License Whitelist Policy**. Only dependencies using licenses explicitly compatible with GPLv3 will be allowed in the production build.
+
+### 3.1. Allowed Licenses (Whitelist)
+
+We explicitly permit dependencies using the following licenses:
+
+- **Permissive:** MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, Unlicense, CC0-1.0.
+- **Compatible Weak Copyleft:** MPL-2.0 (Mozilla Public License 2.0), LGPL-3.0, LGPL-2.1 (if "or later").
+- **Compatible Strong Copyleft:** GPL-3.0, AGPL-3.0.
+
+### 3.2. Automated Enforcement
+
+We will integrate a license auditing tool (e.g., `license-checker`, `fossa-cli`, or a custom script wrapping `npm list`) into the Continuous Integration (CI) pipeline.
+
+- The build **must fail** if a production dependency (`dependencies`, not `devDependencies`) is detected with a license outside the whitelist.
+- Development-only dependencies (test runners, linters, build tools) are exempt from this restriction as they are not distributed with the compiled binary/bundle.
+
+To enforce the policy strictly in CI with minimal friction, license-checker-rseidelsohn is the most pragmatic choice. It requires no external account setup, runs offline, and costs nothing.
+
+We will use license-checker-rseidelsohn in our CI pipeline. A dedicated script audit:licenses will run during the build phase, whitelisting only GPLv3-compatible licenses (MIT, Apache-2.0, etc.).
+
+### 3.3. Manual Overrides
+
+Exceptions (e.g. a library with a custom but permissive license text) must be documented and manually whitelisted in a dedicated configuration file with a justification.
+
+## 4. Consequences
+
+### Good
+
+- **Legal Compliance:** Ensures the project remains compliant with its own GPLv3 license terms, allowing for safe redistribution.
+- **Risk Mitigation:** Prevents accidental "poisoning" of the codebase by transitive dependencies introducing restrictive or proprietary licenses.
+- **Automation:** Removing the manual burden of checking licenses allows developers to focus on code while the CI acts as a gatekeeper.
+
+### Bad
+
+- **Library Restriction:** We may be unable to use certain popular libraries if their license is incompatible (e.g., a library using the "JSON License"). This might require finding alternatives or reimplementing functionality.
+- **Maintenance Overhead:** The automated tool configuration needs maintenance. Sometimes valid licenses are not auto-detected correctly (e.g., "MIT/X11"), requiring manual investigation and whitelisting.
+- **Dual-License Complexity:** Libraries with dual licensing might trigger false positives if the scanner picks the "wrong" license, requiring manual configuration.
+
+## 5. Considered Alternatives
+
+### 5.1. Managing Dependency Licenses
+
+- **Manual Review via Pull Requests:**
+
+  - *Why rejected?* It is impossible for a reviewer to manually check the license of every transitive dependency added by `npm install`. It is not scalable and highly prone to human error.
+
+- **"Don't Ask, Don't Tell" (Ignoring the issue):**
+
+  - *Why rejected?* This poses a significant legal risk. If we distribute code containing incompatible licenses, we violate copyright law and could be forced to take down the repository or cease distribution.
+
+- **Dual Licensing the Project:**
+
+  - *Why rejected?* Changing the project's root license to something more permissive (like MIT) to accommodate more dependencies would fundamentally change the philosophy of the project (copyleft vs. permissive). We are committed to GPLv3.
+
+### 5.2. license-checker-rseidelsohn
+
+#### 5.2.1. The Standard CLI Choice: license-checker-rseidelsohn
+
+This is the actively maintained fork of the classic license-checker. The original library was abandoned years ago; in 2026, this fork is the industry standard for local and CI script usage.
+
+- Best for: Simple, fast integration into package.json scripts or husky pre-commit hooks.
+- Why: It is lightweight, supports SPDX license IDs, and handles the "exclude development dependencies" requirement easily.
+
+#### 5.2.2. The "Set and Forget" Cloud Choice: FOSSA
+
+If your project is Open Source (public repo), FOSSA offers a very generous free tier. It connects directly to your GitHub/GitLab repo.
+
+- Best for: Visualizing the dependency tree and handling complex edge cases (like dual-licensed projects) without writing complex regex scripts.
+- Why: It runs automatically on every PR. It has a significantly better database for detecting licenses in files that lack a package.json license field (a common issue with older transitive dependencies).
+
+#### 5.2.3. The Security + Legal Choice: Snyk
+
+If you are already using Snyk for vulnerability scanning (which you likely should be), their license compliance tool is excellent.
+
+- Best for: Teams who want one tool for both Security (CVEs) and Legal (Licenses).
+- Why: It reduces tool fatigue. Instead of npm audit + license-checker, you just use snyk test.
+
+### 6. References
+
+#### About "OFL-1.1"
+
+The SIL Open Font License 1.1 (OFL-1.1) is generally considered compatible with the GPLv3, but it is not "GPL-compatible" in the sense that you can re-license the font under the GPL.
+
+Here is the precise breakdown:
+
+1. The "Bundling" Compatibility
+
+You can distribute an OFL-1.1 font alongside or embedded within a GPLv3 software project.
+
+    How it works: The software code remains GPLv3, and the font remains OFL-1.1.
+
+    Why it works: The GPLv3 has a specific exception clause (Section 10) that allows "aggregates" or specific forms of linking with non-GPL assets, provided those assets (like fonts) don't impose further restrictions on the code itself. Since fonts are considered "data" or distinct components by most definitions in this context, they coexist legally.
+
+2. The "Re-licensing" Incompatibility
+
+You cannot take an OFL-1.1 font, modify it, and release your modified version under the GPLv3.
+
+- Constraint: The OFL-1.1 requires that modified versions of the font remain under the OFL (a copyleft-like provision for fonts).
+- Conflict: The GPLv3 would attempt to apply GPL terms to the whole work, but the OFL forbids changing the license to anything else.
+
+Summary for your Whitelist
+
+As just using a font (e.g. via a library like @fontsource/roboto or font-awesome), it is safe to include OFL-1.1 in your whitelist.
