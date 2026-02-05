@@ -19,7 +19,7 @@ Then "GéoTortue NG", with "NG" for "Nouvelle Génération", i.e. _GeoTurtle - N
 The GéoTortue software stands out on two points:
 
 - it was designed for all, whether in class (from elementary school to high school), home, with friends, ...
-- it extends the scope of application to geometry in space and to non-Euclidean geometries.
+- it extends the scope of application to geometry in space and to non-Euclidean geometries (spherical geometry, the Poincaré disk and half-plane model).
 
 It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tl` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
 
