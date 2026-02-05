@@ -2,6 +2,7 @@
   "production": true,
   "summary": false,
   "out": "DEPENDENCIES-LICENSES",
+  "htmlOut": "",
   "files": "",
   "plainVertical": false,
   "allowedLicenses": [
