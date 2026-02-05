@@ -1,14 +1,19 @@
 import { GTNTurtleState } from '@domain/components/GTNTurtleState';
 import type { GTNGeometryService } from '@domain/services/GTNGeometryService';
 import { type GTNTurtleId, toDegree, type Degree } from '@domain/types';
-import type { GTNColor, GTNLineSegment, GTNPenState } from '@domain/value-objects';
+import {
+  GTNPenPosition,
+  type GTNColor,
+  type GTNLineSegment,
+  type GTNPenState
+} from '@domain/value-objects';
 
 const defaultPenState: GTNPenState = {
-  isDown: true,
+  position: GTNPenPosition.DOWN,
   color: 0x000000, // Black
   width: 1,
   opacity: 1.0
-};
+} as const;
 
 /**
  * ATM, each turtle embeds its own trails/
@@ -29,7 +34,7 @@ export class GTNTurtle {
   ) {
     // Initial State: center, facing Up/Y+
     this.state = new GTNTurtleState();
-    this.penState = defaultPenState;
+    this.penState = { ...defaultPenState };
   }
 
   public forward(distance: number): void {
@@ -43,7 +48,7 @@ export class GTNTurtle {
     );
 
     // If pen is down, record the line
-    if (this.penState.isDown) {
+    if (this.penState.position === GTNPenPosition.DOWN) {
       this.lines.push({
         start: startPos,
         end: newPos,
@@ -69,11 +74,11 @@ export class GTNTurtle {
   }
 
   public penUp(): void {
-    this.penState.isDown = false;
+    this.penState.position = GTNPenPosition.UP;
   }
 
   public penDown(): void {
-    this.penState.isDown = true;
+    this.penState.position = GTNPenPosition.DOWN;
   }
 
   public setPenColor(color: GTNColor): void {
@@ -94,7 +99,7 @@ export class GTNTurtle {
   public reset() {
     this.isVisible = true;
     this.state = new GTNTurtleState();
-    this.penState = defaultPenState;
+    this.penState = { ...defaultPenState };
   }
 
   /** Soft reset: Just clear the trails.
