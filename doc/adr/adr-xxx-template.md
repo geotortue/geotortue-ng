@@ -37,4 +37,4 @@ Date: [YYYY-MM-DD]
 - **Alternative 1 (e.g., Using API Keys):** [Why was this rejected? e.g., API keys are less secure as they are long-lived and difficult to revoke without coordination.]
 - **Alternative 2 (e.g., Using SAML):** [Why was this rejected? e.g., SAML is overly complex for our primary use case (B2C), which is better suited for OAuth 2.0.]
 
-## 6. References (Optional but Recommended)
+## 6. More reading (Optional but Recommended)

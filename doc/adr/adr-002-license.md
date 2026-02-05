@@ -1,12 +1,12 @@
-# 002. Choice of a license
+# ADR 002. Choice of a license
 
 Date: 2025-12-31
 
-## Status
+## 1. Status
 
 Accepted
 
-## Context
+## 2. Context
 
 GéoTortue-NG is intended to be freely usable and re-usable.
 
@@ -20,29 +20,38 @@ Link to:
 - [Installation de GéoTortue - Licence d'utilisation](http://geotortue.free.fr/index.php?page=telechargement):
   _GéoTortue est un logiciel libre et gratuit, distribué en l'état selon les termes de la licence [GNU GPL](http://www.gnu.org/licenses/gpl.html)._
 
-## Decision
+## 3. Decision
 
 GPL3
 
 Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. See [GPL3 License](https://choosealicense.com/licenses/gpl-3.0/).
 
-## Consequences
+## 4. Consequences
 
 Add reference in package.json, README.md & CONTRIBUTING.md
 
 Add file LICENSE at the root of the repository, with the full text
 
-## Next
+### 1.1 Next
 
 Manage dependencies licenses.
 
-## More reading
+## 5. Considered Alternatives
+
+_For the record. Keep empty._
+
+## 6. More reading
 
 [History of the Open Source effort](http://web.archive.org/web/19981206185148/http://www.opensource.org/history.html), Eric S. Raymond, 1998/12/06
 
-[Choose an open source license], (https://choosealicense.com)
+[Choose an open source license](https://choosealicense.com)
+aims at helping you in choosing an open source license for your project
 
-[OSI - Licenses](https://opensource.org/licenses), especially their [FAQ](https://opensource.org/faq).
+[TLDRLegal.com](https://tldrlegal.com/)
+aims at explaining complicated legal details of software licenses in easy to understand english
+
+[OSI - Licenses](https://opensource.org/licenses)
+especially their [FAQ](https://opensource.org/faq).
 
 [GNU/FSF - How to choose a license for your own work](https://www.gnu.org/licenses/license-recommendations.html)
 
@@ -53,4 +62,4 @@ Seems to be the first of a long series of similar articles.
 
 [Why I Use the MIT License](https://trickingrockstothink.com/blog_posts/2019/08/27/why_mit.html), 2019/08/27, Chris Gerth
 
-[Why the GPL sucks](https://sealedabstract.com/rants/why-the-gpl-sucks/), 25 July 2009 by Drew Crawford
+[Why the GPL sucks](https://sealedabstract.com/rants/why-the-gpl-sucks/), 25 July 2009, Drew Crawford

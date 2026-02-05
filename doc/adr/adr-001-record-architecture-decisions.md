@@ -1,4 +1,4 @@
-# ADR 000. Record architecture decisions
+# ADR 001. Record architecture decisions
 
 ## 1. Status
 
@@ -35,7 +35,7 @@ The content of an ADR can have the following sections:
 
 - Any other relevant section (references, experience report, ...)
 
-A template is available [here](adr-template.md).
+A template is available here: [ADR Template](adr-template.md).
 
 Josef Blake's article can provide some help on when to create an ADR, see link below.
 
@@ -50,7 +50,11 @@ Using markdown syntax:
 - decisions can be read in the terminal,
 - decisions will be formatted nicely and hyperlinked by the browsers of project hosting sites like GitHub and Bitbucket.
 
-## 5. More reading
+## 5. Considered Alternatives
+
+_For the record. Keep empty._
+
+## 6. More reading
 
 [Lightweight Architecture Decision Records](https://www.thoughtworks.com/radar/techniques/lightweight-architecture-decision-records)
 

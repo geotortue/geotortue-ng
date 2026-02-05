@@ -1,4 +1,4 @@
-# ADR 010: Manage Dependency License Compatibility with GPLv3
+# ADR 003: Manage Dependency License Compatibility with GPLv3
 
 ## 1. Status
 
@@ -8,7 +8,7 @@ Date: 2025-12-31
 
 ## 2. Context
 
-The project is released under the **GNU General Public License v3.0 (GPLv3)**. To legally distribute the application (or a bundled version of it), all linked dependencies and libraries must use licenses compatible with GPLv3.
+The project GéoTortue-NG is released under the **GNU General Public License v3.0 (GPLv3)**. To legally distribute the application (or a bundled version of it), all linked dependencies and libraries must use licenses compatible with GPLv3.
 
 The Node.js ecosystem (npm) contains packages with a wide variety of licenses. While the majority are permissive (MIT, ISC), some packages use licenses that are strictly incompatible with GPLv3, such as:
 
@@ -65,16 +65,13 @@ Exceptions (e.g. a library with a custom but permissive license text) must be do
 ### 5.1. Managing Dependency Licenses
 
 - **Manual Review via Pull Requests:**
-
-  - *Why rejected?* It is impossible for a reviewer to manually check the license of every transitive dependency added by `npm install`. It is not scalable and highly prone to human error.
+  - _Why rejected?_ It is impossible for a reviewer to manually check the license of every transitive dependency added by `npm install`. It is not scalable and highly prone to human error.
 
 - **"Don't Ask, Don't Tell" (Ignoring the issue):**
-
-  - *Why rejected?* This poses a significant legal risk. If we distribute code containing incompatible licenses, we violate copyright law and could be forced to take down the repository or cease distribution.
+  - _Why rejected?_ This poses a significant legal risk. If we distribute code containing incompatible licenses, we violate copyright law and could be forced to take down the repository or cease distribution.
 
 - **Dual Licensing the Project:**
-
-  - *Why rejected?* Changing the project's root license to something more permissive (like MIT) to accommodate more dependencies would fundamentally change the philosophy of the project (copyleft vs. permissive). We are committed to GPLv3.
+  - _Why rejected?_ Changing the project's root license to something more permissive (like MIT) to accommodate more dependencies would fundamentally change the philosophy of the project (copyleft vs. permissive). We are committed to GPLv3.
 
 ### 5.2. license-checker-rseidelsohn
 
@@ -99,7 +96,7 @@ If you are already using Snyk for vulnerability scanning (which you likely shoul
 - Best for: Teams who want one tool for both Security (CVEs) and Legal (Licenses).
 - Why: It reduces tool fatigue. Instead of npm audit + license-checker, you just use snyk test.
 
-### 6. References
+### 6. More reading
 
 #### About "OFL-1.1"
 
