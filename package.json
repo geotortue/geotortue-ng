@@ -102,6 +102,7 @@
     "lit": "^3.3.2",
     "material-icons": "^1.13.14",
     "mathjs": "^15.1.0",
+    "modern-normalize": "^3.0.1",
     "three": "^0.182.0"
   }
 }
