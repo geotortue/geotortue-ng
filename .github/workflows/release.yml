@@ -1,0 +1,37 @@
+
+name: Release
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # Needed to push the CHANGELOG updates
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Optional: persist the credentials so semantic-release can push back
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Release
+        env:
+          # GITHUB_TOKEN is sufficient for creating releases and pushing commits
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
