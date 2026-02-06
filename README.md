@@ -2,7 +2,7 @@
 
 ## 💡 Rational
 
-This project is a [POC](https://en.wikipedia.org/wiki/Proof_of_concept) for a "new generation" of **[GéoTortue](http://geotortue.free.fr/)**, i.e. a **modern web rewriting** of the original desktop Java application [**GéoTortue**](http://geotortue.free.fr/). With as main goals:
+This project is a [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product) for a "new generation" of **[GéoTortue](http://geotortue.free.fr/)**, i.e. a **modern web rewriting** of the original desktop Java application [**GéoTortue**](http://geotortue.free.fr/). With as main goals:
 
 - select the technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
 - validate an architecture based on [DDD](https://en.wikipedia.org/wiki/Domain-driven_design);

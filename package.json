@@ -1,7 +1,7 @@
 {
-  "name": "poc-geo-tortue-web-app",
+  "name": "geo-tortue-web-app",
   "version": "0.0.1",
-  "description": "POC - A Simple GéoTortue Web Application with TS, ES module, Antlr4, mathjs, three.js, i18next, CodeMirror, ...",
+  "description": "A GéoTortue Web Application with TS, ES module, Antlr4, mathjs, three.js, i18next, CodeMirror, ...",
   "main": "./dist/index.js",
   "private": true,
   "scripts": {
@@ -23,8 +23,9 @@
     "test:unit": "vitest run -c vitest.unit.config.ts",
     "test:integration": "vitest run integration.test",
     "test:ui": "vitest --ui",
-    "audit:licenses": "tsx scripts/audit-licenses.ts --summary",
     "coverage": "vitest run --coverage",
+    "tree": "npx tree-console -d ./src",
+    "audit:licenses": "tsx scripts/audit-licenses.ts --summary",
     "analyse:code": "tsg -d ./src --exclude test stories node_modules generated",
     "analyse:code:deps": "npm run analyse:code -- --stdout deps",
     "analyse:code:deps:out": "npm run analyse:code:deps | npx tsx ./scripts/keep-only-mermaid.ts",
