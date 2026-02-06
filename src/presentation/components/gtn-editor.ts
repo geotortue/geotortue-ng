@@ -1,4 +1,4 @@
-import { LitElement, html, css, type PropertyValues } from 'lit';
+import { LitElement, html, css, type PropertyValues, unsafeCSS } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { basicSetup } from 'codemirror';
 import { autocompletion, type CompletionContext } from '@codemirror/autocomplete';
@@ -16,25 +16,12 @@ import { UiLanguageController } from '@ui/controllers/UiLanguageController';
 import { createAntlrHighlighter } from '@ui/editor/syntax/createAntlrHighlighter';
 import { geoTortueSyntaxTheme } from '@ui/editor/themes/geoTortueSyntaxTheme';
 
+import styles from './gtn-editor.scss?inline';
+
 @customElement('gtn-editor')
 export class GTNEditor extends LitElement {
   static override readonly styles = css`
-    :host {
-      display: block;
-      height: 100%;
-      overflow: hidden;
-      // text-align: left;
-      font-size: 14px;
-    }
-    #editor-container {
-      height: 100%;
-    }
-    .cm-editor {
-      height: 100%;
-    }
-    .cm-scroller {
-      font-family: 'Inconsolata', monospace;
-    }
+    ${unsafeCSS(styles)}
   `;
 
   @property({ type: String })
@@ -180,7 +167,7 @@ export class GTNEditor extends LitElement {
     this.editor?.destroy();
   }
 
-  render() {
+  protected override render() {
     return html`<div id="editor-container"></div>`;
   }
 }

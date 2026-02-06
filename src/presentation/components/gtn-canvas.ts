@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
@@ -10,6 +10,8 @@ import { GTNRenderer2D } from '@ui/renderers/GTNRenderer2D';
 import { GTNRenderer3D } from '@ui/renderers/GTNRenderer3D';
 import type { IGTNRenderLoop } from '@app/interfaces/IGTNRenderLoop';
 
+import styles from './gtn-canvas.scss?inline';
+
 /**
  * - Coordinate System: HTML Canvas has (0,0) at the Top-Left.
  *   Logo/Turtles expect (0,0) at the Center, with Y pointing Up. We must apply a transform.
@@ -19,17 +21,7 @@ import type { IGTNRenderLoop } from '@app/interfaces/IGTNRenderLoop';
 @customElement('gtn-canvas')
 export class GTNCanvas extends LitElement {
   static override readonly styles = css`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #f0f0f0;
-    }
-    #render-container {
-      width: 100%;
-      height: 100%;
-    }
+    ${unsafeCSS(styles)}
   `;
 
   @query('#render-container')
@@ -152,7 +144,7 @@ export class GTNCanvas extends LitElement {
   //     this.animationId = requestAnimationFrame(() => this.loop());
   //   }
 
-  render() {
+  protected render() {
     return html`<div id="render-container"></div>`;
   }
 }

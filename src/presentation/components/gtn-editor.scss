@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  // text-align: left;
+  font-size: 14px;
+}
+#editor-container {
+  height: 100%;
+}
+.cm-editor {
+  height: 100%;
+}
+.cm-scroller {
+  font-family: 'Inconsolata', monospace;
+}

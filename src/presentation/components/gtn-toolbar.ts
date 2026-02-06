@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
@@ -17,94 +17,14 @@ import { materialIconsStyle } from '../styles/shared-styles';
 import { UiLanguageController } from '../controllers/UiLanguageController';
 import { toDslLanguage, toUiLanguage, type DslLanguage, type UiLanguage } from '@domain/types';
 
+import styles from './gtn-toolbar.scss?inline';
+
 @customElement('gtn-toolbar')
 export class GTNToolbar extends LitElement {
   static override readonly styles = [
     materialIconsStyle,
     css`
-      :host {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 1rem;
-        background-color: #2c3e50;
-        color: white;
-        height: 50px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-      .group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      /* Optional: Hide label on very small screens if needed */
-      .label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #bdc3c7;
-        margin-bottom: 2px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .selector-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .separator {
-        width: 1px;
-        height: 25px;
-        background: #46607a;
-        margin: 0 5px;
-      }
-      button {
-        background: #34495e;
-        border: 1px solid #46607a;
-        color: white;
-        padding: 5px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 0.9rem;
-        transition: background 0.2s;
-      }
-      button:hover {
-        background: #46607a;
-      }
-      button.primary {
-        background: #27ae60;
-        border-color: #2ecc71;
-      }
-      button.primary:hover {
-        background: #2ecc71;
-      }
-      button.danger {
-        background: #c0392b;
-        border-color: #e74c3c;
-      }
-      select {
-        background: #34495e;
-        color: white;
-        border: 1px solid #46607a;
-        padding: 2px 5px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        min-width: 50px;
-      }
-      .title {
-        font-weight: bold;
-        font-family: 'Inconsolata', monospace;
-        font-size: 1.2rem;
-      }
-      .mode-badge {
-        font-weight: 900;
-        color: #f1c40f;
-        min-width: 30px;
-        justify-content: center;
-      }
+      ${unsafeCSS(styles)}
     `
   ];
 
@@ -196,7 +116,7 @@ export class GTNToolbar extends LitElement {
     this.appState.toggleCameraType();
   }
 
-  render() {
+  protected override render() {
     // Helper for brevity
     const t = (k: string) => this.langService.translate(k);
 

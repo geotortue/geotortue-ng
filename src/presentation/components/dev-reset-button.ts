@@ -1,22 +1,12 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement } from 'lit/decorators.js';
+
+import styles from './dev-reset-button.scss?inline';
 
 @customElement('dev-reset-button')
 export class DevResetButton extends LitElement {
-  static readonly styles = css`
-    button {
-      background-color: #ff4444;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: sans-serif;
-      font-weight: bold;
-    }
-    button:hover {
-      background-color: #cc0000;
-    }
+  static override readonly styles = css`
+    ${unsafeCSS(styles)}
   `;
 
   private resetApp() {
@@ -31,7 +21,7 @@ export class DevResetButton extends LitElement {
     window.location.reload();
   }
 
-  render() {
+  protected render() {
     return html` <button @click="${this.resetApp}">Reset Local Data & Reload</button> `;
   }
 }
