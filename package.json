@@ -1,6 +1,6 @@
 {
   "name": "geo-tortue-web-app",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A GéoTortue Web Application with TS, ES module, Antlr4, mathjs, three.js, i18next, CodeMirror, ...",
   "main": "./dist/index.js",
   "private": true,
