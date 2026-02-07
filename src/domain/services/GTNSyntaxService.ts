@@ -1,13 +1,40 @@
+import { CharStream, CommonTokenStream } from 'antlr4ng';
+
 import { GrammarReflector } from '@infrastructure/antlr/GrammarReflector';
 import { GeoTortueParser } from '@infrastructure/antlr/generated/GeoTortueParser';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+import { GTNErrorListener, type GTNError } from '@infrastructure/antlr/GTNErrorListener';
 
-export class GeoTortueSyntaxService {
+export class GTNSyntaxService {
   private readonly reflector: GrammarReflector;
   private cachedStyleMap: Map<number, string> | null = null;
 
   constructor() {
     this.reflector = new GrammarReflector(GeoTortueParser);
+  }
+
+  /**
+   * Validates the code and returns a list of friendly errors.
+   * Returns an empty array if the code is valid.
+   */
+  public validate(code: string): GTNError[] {
+    const chars = CharStream.fromString(code);
+    const lexer = new GeoTortueLexer(chars);
+    const tokens = new CommonTokenStream(lexer);
+    const parser = new GeoTortueParser(tokens);
+
+    // 1. Remove default listeners (stops console.error noise)
+    lexer.removeErrorListeners();
+    parser.removeErrorListeners();
+
+    // 2. Attach our custom friendly listener
+    const errorListener = new GTNErrorListener();
+    parser.addErrorListener(errorListener);
+
+    // 3. Parse (Walks the tree to find errors)
+    parser.program();
+
+    return errorListener.errors;
   }
 
   /**

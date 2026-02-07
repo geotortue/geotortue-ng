@@ -1,20 +1,26 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
 import type { GTNProjectService } from '@app/services/GTNProjectService';
-import { type IGTNInterpreter } from '@domain/interfaces/IGTNInterpreter';
-import { type IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
+import type { IGTNInterpreter } from '@domain/interfaces/IGTNInterpreter';
+import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
+import type { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import { GTNTurtle } from '@domain/entities/GTNTurtle';
 import { GTNGeometryService } from '@domain/services/GTNGeometryService';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { GTNInMemoryTurtleRepository } from '@infrastructure/store/GTNInMemoryTurtleRepository';
+import type { GTNError } from '@infrastructure/antlr/GTNErrorListener';
+import type { UiLanguage } from '@domain/types';
+
+import styles from './gtn-app.scss?inline';
 
 import './components/gtn-toolbar';
 import './components/gtn-editor';
 import './components/gtn-canvas';
 import './components/dev-reset-button';
+import './components/gtn-error-toast';
 
 const isDev = import.meta.env.DEV;
 
@@ -42,72 +48,29 @@ repeat 36 [
 @customElement('gtn-app')
 export class GTNApp extends LitElement {
   static override readonly styles = css`
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      background-color: #ecf0f1;
-    }
-    .header {
-      flex: 0 0 auto;
-      z-index: 10;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
-    }
-    .editor-pane {
-      width: 400px; // flex: 0 0 400px; /* Fixed width for editor */
-      border-right: 1px solid #bdc3c7;
-      // background: white;
-      display: flex;
-      flex-direction: column;
-    }
-    .canvas {
-      flex: 1;
-      position: relative;
-      background: #e0e5ec;
-      /* Ensure the canvas container doesn't overflow improperly */
-      overflow: hidden;
-    }
-
-    /* Responsive adjustment: Stack vertically on small screens */
-    @media (max-width: 800px) {
-      .main {
-        flex-direction: column;
-      }
-      .editor-pane {
-        flex: 1;
-        border-right: none;
-        border-bottom: 1px solid #ccc; // #ccc ??? TODO à changer
-      }
-      /* .viewport-pane { flex: 1; } */
-      .canvas {
-        flex: 1;
-      }
-    }
+    ${unsafeCSS(styles)}
   `;
 
-  @property({ type: String })
-  accessor code: string;
+  @state()
+  private accessor code = '';
+  @state()
+  private accessor errors: GTNError[] = [];
 
   private readonly interpreter: IGTNInterpreter;
   private readonly langService: IGTNLanguageService;
   private readonly turtleRepo: IGTNTurtleRepository;
-  // private readonly renderer: IGTNRenderer;
   private readonly projectService: GTNProjectService;
+  private readonly syntaxService: GTNSyntaxService;
+  private uiUnsubscribe?: () => void;
 
-  constructor() {
+  constructor(/*host: ReactiveControllerHost*/) {
     super();
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);
     this.langService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
     this.turtleRepo = container.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
     this.projectService = container.resolve<GTNProjectService>(GTN_TYPES.ProjectService);
+    this.syntaxService = container.resolve<GTNSyntaxService>(GTN_TYPES.SyntaxService);
 
     // Detect language (handle regional codes like 'fr-FR' -> 'fr')
     // const detectedLang = i18next.language.split('-')[0] || 'fr';
@@ -116,13 +79,42 @@ export class GTNApp extends LitElement {
     this.code = initialCode;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.uiUnsubscribe = this.langService.subscribeUiListeners(
+      this.handleLanguageChange.bind(this)
+    );
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.uiUnsubscribe) {
+      this.uiUnsubscribe();
+    }
+  }
+
+  private handleLanguageChange(lang: UiLanguage) {
+    const errors = this.syntaxService.validate(this.code);
+    this.errors = [...errors];
+  }
+
   private handleCodeChange(event: CustomEvent) {
     // This connects the Editor component to the App state
     this.code = event.detail.code;
+    // Validate on the fly (or could be done on "Run" click)
+    this.errors = this.syntaxService.validate(this.code);
     // Optional: Auto-save to localStorage could go here
   }
 
   private async handleRun() {
+    this.errors = this.syntaxService.validate(this.code);
+    if (this.errors.length > 0) {
+      console.warn('Cannot run code with syntax errors: ', this.errors);
+      // FUTURE keep active the button 'Run'
+      // But display a popup with the errors
+      return;
+    }
+
     try {
       // Optional: Clear before run?
       // Usually Logo keeps drawing on top unless explicit CLEAR command is used.
@@ -194,7 +186,7 @@ export class GTNApp extends LitElement {
     }
   }
 
-  render() {
+  override render() {
     return html`
       <div class="header">
         <gtn-toolbar
@@ -212,6 +204,7 @@ export class GTNApp extends LitElement {
             <!-- previously this.handleRun -->
           </gtn-editor>
         </div>
+        <gtn-error-toast .errors=${this.errors}></gtn-error-toast>
         <div class="canvas">
           <gtn-canvas></gtn-canvas>
         </div>

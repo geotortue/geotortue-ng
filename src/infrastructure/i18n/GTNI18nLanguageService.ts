@@ -25,9 +25,10 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
   // We keep track of the DSL language locally.
   // Initialize with i18next's default or fallback.
   private dslLanguage = toDslLanguage(DEFAULT_LANGUAGE);
-  // Store listeners
+  // Store uiListeners and dslListeners
   // For Global View State (UI Language, App Mode, 3D/2D).
-  private readonly listeners: Set<(lang: UiLanguage) => void> = new Set();
+  private readonly uiListeners: Set<(lang: UiLanguage) => void> = new Set();
+  private readonly dslListeners: Set<(lang: DslLanguage) => void> = new Set();
   // Store initialization promise to prevent race conditions
   private initPromise: Promise<void> | null = null;
 
@@ -86,8 +87,8 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     // 2. Change Runtime Language
     await i18next.changeLanguage(lang);
 
-    // Notify all listeners
-    this.notifyListeners(lang);
+    // Notify all uiListeners
+    this.notifyUiListeners(lang);
   }
 
   /**
@@ -104,19 +105,31 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
 
     this.dslLanguage = lang;
     localStorage.setItem('gtn_dsl_lang', lang); // Save DSL pref
-    // this.notifyListeners(lang);
+    this.notifyDslListeners(lang);
   }
 
-  public subscribe(callback: (lang: UiLanguage) => void): () => void {
-    this.listeners.add(callback);
+  public subscribeUiListeners(callback: (lang: UiLanguage) => void): () => void {
+    this.uiListeners.add(callback);
     // Return an unsubscribe function
     return () => {
-      this.listeners.delete(callback);
+      this.uiListeners.delete(callback);
     };
   }
 
-  private notifyListeners(lang: UiLanguage) {
-    this.listeners.forEach((callback) => callback(lang));
+  private notifyUiListeners(lang: UiLanguage) {
+    this.uiListeners.forEach((callback) => callback(lang));
+  }
+
+  public subscribeDslListeners(callback: (lang: DslLanguage) => void): () => void {
+    this.dslListeners.add(callback);
+    // Return an unsubscribe function
+    return () => {
+      this.dslListeners.delete(callback);
+    };
+  }
+
+  private notifyDslListeners(lang: DslLanguage) {
+    this.dslListeners.forEach((callback) => callback(lang));
   }
 
   public getCanonicalId(word: string): number | undefined {
@@ -201,6 +214,8 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
 
   public translate(key: string, options?: any): string {
     const fullkey = key.includes(':') ? key : `${UI_NS}:${key}`;
+    // ALWAYS call i18next.t directly here.
+    // Do NOT store 't' in a variable in the constructor.
     const result = i18next.t(fullkey, options);
 
     return result as string;

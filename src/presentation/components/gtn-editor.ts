@@ -8,7 +8,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
 
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
-import { GeoTortueSyntaxService } from '@domain/services/GeoTortueSyntaxService';
+import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { UiLanguageController } from '@ui/controllers/UiLanguageController';
@@ -25,7 +25,7 @@ export class GTNEditor extends LitElement {
   `;
 
   @property({ type: String })
-  accessor code: string = ''; // ex value with 'FORWARD 50\nRIGHT 90\nFORWARD 50';
+  accessor code: string; // ex value with 'FORWARD 50\nRIGHT 90\nFORWARD 50';
 
   @query('#editor-container')
   private accessor editorContainer!: HTMLDivElement; // ex container
@@ -39,13 +39,14 @@ export class GTNEditor extends LitElement {
 
   // Compartment to allow dynamic reconfiguration of language features
   private readonly languageCompartment = new Compartment();
-  private readonly syntaxService: GeoTortueSyntaxService;
+  private readonly syntaxService: GTNSyntaxService;
 
   constructor() {
     super();
     const container = GTNContainer.getInstance();
     this.langService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
-    this.syntaxService = container.resolve<GeoTortueSyntaxService>(GTN_TYPES.SyntaxService);
+    this.syntaxService = container.resolve<GTNSyntaxService>(GTN_TYPES.SyntaxService);
+    this.code = '';
   }
 
   protected override firstUpdated(): void {

@@ -1,5 +1,5 @@
 import type { Degree } from '@domain/types';
-import type { IGTNMathProvider } from '../interfaces/IGTNMathProvider';
+import type { IGTNMathProvider } from '@domain/interfaces/IGTNMathProvider';
 import { GTNVector3, GTNQuaternion } from '@domain/value-objects';
 
 /**

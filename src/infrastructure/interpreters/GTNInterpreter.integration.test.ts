@@ -136,7 +136,7 @@ describe('GTNInterpreter Integration', () => {
     expect(mockTurtle.forward).toHaveBeenCalledWith(50);
   });
 
-  /*
+  /* ATM, the only named colors taken in account are those defined here:
    * [GéoTortue - Crayon : choisir la couleur du crayon](http://geotortue.free.fr/index.php?page=aide_index#crayon)
    */
   it('should resolve localized colors (CRAYON "ROUGE" -> red)', async () => {
@@ -159,8 +159,14 @@ describe('GTNInterpreter Integration', () => {
   });
 
   it('should throw syntax errors for invalid code', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     const invalidScript = 'AVANCE 100 ['; // Missing closing bracket
 
     await expect(interpreter.execute(invalidScript)).rejects.toThrow(/Syntax Error/);
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('mismatched input'));
+
+    consoleSpy.mockRestore();
   });
 });

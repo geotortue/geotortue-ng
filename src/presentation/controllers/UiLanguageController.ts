@@ -19,7 +19,7 @@ export class UiLanguageController implements ReactiveController {
 
   hostConnected() {
     // Subscribe when component is added to DOM
-    this.unsubscribe = this.languageService.subscribe(() => {
+    this.unsubscribe = this.languageService.subscribeUiListeners(() => {
       // Force the host component to re-render
       this.host.requestUpdate();
     });

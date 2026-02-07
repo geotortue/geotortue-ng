@@ -1,11 +1,12 @@
 import { CharStream, CommonTokenStream } from 'antlr4ng';
+
+import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+import { GeoTortueParser } from '@infrastructure/antlr/generated/GeoTortueParser';
+
 import type { IGTNInterpreter } from '@domain/interfaces/IGTNInterpreter';
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
-
-import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
-import { GeoTortueParser } from '@infrastructure/antlr/generated/GeoTortueParser';
 import { TokenRefiner } from '@ui/editor/syntax/TokenRefiner';
 
 export class GTNInterpreter implements IGTNInterpreter {

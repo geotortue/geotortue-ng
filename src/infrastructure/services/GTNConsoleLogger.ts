@@ -1,4 +1,4 @@
-import { type IGTNLogger, LogLevel } from '../../application/interfaces/IGTNLogger';
+import { type IGTNLogger, LogLevel } from '@app/interfaces/IGTNLogger';
 
 export class GTNConsoleLogger implements IGTNLogger {
   private currentLevel: LogLevel = LogLevel.INFO;

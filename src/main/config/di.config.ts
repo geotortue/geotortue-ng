@@ -26,7 +26,7 @@ import { GTNApplicationState } from '@app/state/GTNApplicationState';
 import { GTNBrowserRenderLoop } from '@infrastructure/services/GTNBrowserRenderLoop';
 import { GTNConsoleLogger } from '@infrastructure/services/GTNConsoleLogger';
 import { GTNReverseDictionaryService } from '@infrastructure/i18n/GTNReverseDictionaryService';
-import { GeoTortueSyntaxService } from '@domain/services/GeoTortueSyntaxService';
+import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 
 /**
  * This is the single place where everything is wired together.
@@ -65,7 +65,7 @@ export function configureDependencyInjection(): void {
     return new GTNInterpreter(repository, language);
   });
 
-  container.registerSingleton(GTN_TYPES.SyntaxService, () => new GeoTortueSyntaxService());
+  container.registerSingleton(GTN_TYPES.SyntaxService, () => new GTNSyntaxService());
 
   // Mathematic expression inside GéoTortue DSL
   container.registerSingleton(GTN_TYPES.MathEvaluator, () => new GTNMathJsEvaluator());

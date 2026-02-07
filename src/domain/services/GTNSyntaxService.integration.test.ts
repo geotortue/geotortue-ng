@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { GeoTortueSyntaxService } from './GeoTortueSyntaxService';
+import { GTNSyntaxService } from './GTNSyntaxService';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 
-describe('GeoTortueSyntaxService Integration', () => {
-  const service = new GeoTortueSyntaxService();
+describe('GTNSyntaxService Integration', () => {
+  const service = new GTNSyntaxService();
 
   it('should generate a token style map from real grammar', () => {
     const map = service.getTokenStyleMap();

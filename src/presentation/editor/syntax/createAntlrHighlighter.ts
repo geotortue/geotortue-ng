@@ -10,12 +10,12 @@ import {
 
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 
-import type { GeoTortueSyntaxService } from '@domain/services/GeoTortueSyntaxService';
+import type { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { TokenRefiner } from './TokenRefiner';
 
 export function createAntlrHighlighter(
-  syntaxService: GeoTortueSyntaxService,
+  syntaxService: GTNSyntaxService,
   languageService: IGTNLanguageService
 ) {
   // Pre-fetch the map.

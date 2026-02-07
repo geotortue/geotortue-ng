@@ -1,6 +1,6 @@
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import type { IGTNFileSystem } from '@domain/interfaces/IGTNFileSystem';
-import type { GTNProjectData, GTNTurtleDTO } from '../dto/GTNProjectData';
+import type { GTNProjectData, GTNTurtleDTO } from '@app/dto/GTNProjectData';
 import { GTNTurtle } from '@domain/entities/GTNTurtle';
 import { GTNGeometryService } from '@domain/services/GTNGeometryService';
 import { GTNVector3, GTNQuaternion } from '@domain/value-objects';

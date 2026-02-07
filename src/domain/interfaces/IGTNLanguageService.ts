@@ -75,7 +75,13 @@ export interface IGTNLanguageService {
    * Notify listeners when a change occurs on **UI language**.
    * @param callback
    */
-  subscribe(callback: (lang: UiLanguage) => void): () => void;
+  subscribeUiListeners(callback: (lang: UiLanguage) => void): () => void;
+
+  /**
+   * Notify listeners when a change occurs on **DSL language**.
+   * @param callback
+   */
+  subscribeDslListeners(callback: (lang: DslLanguage) => void): () => void;
 
   /**
    * Translates a UI key (e.g. "toolbar.run" -> "Exécuter")

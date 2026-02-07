@@ -33,5 +33,15 @@
     "invalid_command": "Commande inconnue : {{cmd}}",
     "missing_argument": "Argument manquant pour la commande {{cmd}}",
     "script_error": "Erreur lors de l'exécution du script"
+  },
+  "syntax": {
+    "unclosed_block": "Vous avez ouvert un bloc avec '[' mais ne l'avez jamais fermé. Ajoutez un ']' à la fin.",
+    "missing_semicolon_eof": "Il semble que vous ayez oublié un point-virgule (;) à la fin de la ligne précédente.",
+    "unexpected_eof": "Fin de fichier inattendue. Vous avez probablement ouvert un bloc avec '[' mais ne l'avez jamais fermé.",
+    "missing_semicolon": "Il semble que vous ayez oublié un point-virgule (;) avant \"{{tokenText}}\".",
+    "unknown_command": "Je ne comprends pas \"{{tokenText}}\". S'agit-il d'une faute de frappe ? Veuillez vérifier l'orthographe.",
+    "unexpected_token": "Je ne m'attendais pas à trouver \"{{tokenText}}\" ici. Avez-vous ajouté un mot ou un nombre en trop ?",
+    "expected_number": "Je m'attendais à trouver un nombre ici, mais j'ai trouvé \"{{tokenText}}\".",
+    "générique": "Erreur de syntaxe près de \"{{tokenText}}\"."
   }
 }

@@ -112,6 +112,6 @@ GT_ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 GT_WORD: [a-zA-Z_\u00C0-\u00FF][a-zA-Z0-9_\u00C0-\u00FF]*;
 
 // --- Comments & Whitespace ---
-GT_COMMENT: '//' ~[\r\n]* -> skip;
-GT_BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+GT_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
+GT_BLOCK_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 GT_WS: [ \t\r\n]+ -> skip;

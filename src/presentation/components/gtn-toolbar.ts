@@ -12,9 +12,9 @@ import {
   type AppMode,
   type CameraType
 } from '@app/state/GTNApplicationState';
-import { materialIconsStyle } from '../styles/shared-styles';
+import { materialIconsStyle } from '@ui/styles/shared-styles';
 
-import { UiLanguageController } from '../controllers/UiLanguageController';
+import { UiLanguageController } from '@ui/controllers/UiLanguageController';
 import { toDslLanguage, toUiLanguage, type DslLanguage, type UiLanguage } from '@domain/types';
 
 import styles from './gtn-toolbar.scss?inline';

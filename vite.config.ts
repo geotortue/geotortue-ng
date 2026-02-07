@@ -13,6 +13,10 @@ export default defineConfig({
         {
           src: 'src/assets/locales',
           dest: '.'
+        },
+        {
+          src: './LICENSE',
+          dest: '.'
         }
       ]
     }),

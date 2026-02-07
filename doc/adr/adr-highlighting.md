@@ -1,5 +1,7 @@
 # Highlighting
 
+/!\ On trouve ci-dessous des références à Monaco !!! /!\
+
 TODO : créer un script ts pour générer les regroupements de tokens du Lexer à partir des regroupements définis dans le parser
 et les mettre dans un fichier json qui sera lu par GTNSemanticTokensProvider
 

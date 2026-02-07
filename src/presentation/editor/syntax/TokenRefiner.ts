@@ -1,5 +1,7 @@
 import { CommonTokenStream, Token } from 'antlr4ng';
+
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 
 export class TokenRefiner {
