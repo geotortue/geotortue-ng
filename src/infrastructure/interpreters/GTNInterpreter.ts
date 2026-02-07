@@ -8,15 +8,21 @@ import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleReposito
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
 import { TokenRefiner } from '@ui/editor/syntax/TokenRefiner';
+import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+import { GTNContainer } from '@infrastructure/di/GTNContainer';
 
 export class GTNInterpreter implements IGTNInterpreter {
   private readonly tokenRefiner;
+  private readonly createVisitor: (repo: IGTNTurtleRepository) => GTNExecutionVisitor;
 
   constructor(
     private readonly turtleRepo: IGTNTurtleRepository,
     private readonly languageService: IGTNLanguageService
   ) {
+    const container = GTNContainer.getInstance();
+
     this.tokenRefiner = new TokenRefiner(languageService);
+    this.createVisitor = container.resolve(GTN_TYPES.ExecutionVisitorFactory);
   }
 
   public async execute(script: string): Promise<void> {
@@ -52,9 +58,20 @@ export class GTNInterpreter implements IGTNInterpreter {
     // 4. Parse (Create Tree)
     const tree = parser.program();
 
-    // 5. Execute
-    const visitor = new GTNExecutionVisitor(this.turtleRepo);
-    visitor.visit(tree);
+    // 5. Execute with Animation (The Runner Loop)
+    const visitor = this.createVisitor(this.turtleRepo);
+
+    try {
+      // We don't need a while(isRunning) loop here.
+      // The execution 'stays' on this line, pausing and resuming
+      // automatically every time the visitor calls 'await this.tick()'.
+      await visitor.visitProgram(tree);
+
+      console.log('✅ Execution finished successfully.');
+    } catch (e) {
+      console.error('❌ Execution error:', e);
+      throw e;
+    }
   }
 
   /**

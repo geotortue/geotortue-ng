@@ -42,6 +42,9 @@ describe('GTNExecutionVisitor', () => {
   let mockLangService: IGTNLanguageService;
 
   beforeEach(() => {
+    // Enable fake timers to bypass the 1000ms delay in tick()
+    vi.useFakeTimers();
+
     // 1. Clear Container
     const container = GTNContainer.getInstance();
     container.clear();
@@ -56,7 +59,10 @@ describe('GTNExecutionVisitor', () => {
       setPenSize: vi.fn(),
       penUp: vi.fn(),
       penDown: vi.fn(),
-      state: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } },
+      state: {
+        position: { x: 0, y: 0, z: 0 },
+        rotation: { x: 0, y: 0, z: 0, w: 1 }
+      },
       isVisible: true
     };
 
@@ -74,7 +80,9 @@ describe('GTNExecutionVisitor', () => {
       evaluate: vi.fn((expr: string, scope?: any, _mode?: any) => {
         // Simple mock logic: return parsed float or handle variables passed in scope
         const num = parseFloat(expr);
-        if (!isNaN(num)) return num;
+        if (!isNaN(num)) {
+          return num;
+        }
 
         // Return variable from scope if exists
         if (scope && Object.hasOwn(scope, expr)) {
@@ -82,14 +90,18 @@ describe('GTNExecutionVisitor', () => {
         }
 
         // Return string literal if quotes (for colors)
-        if (expr.startsWith('"') || expr.startsWith("'")) return expr.replace(/['"]/g, '');
+        if (expr.startsWith('"') || expr.startsWith("'")) {
+          return expr.replace(/['"]/g, '');
+        }
 
         // Throw for undefined variables (needed for Fallback Strategy test)
-        if (expr === 'UNKNOWN_VAR') throw new Error('Undefined symbol UNKNOWN_VAR');
+        if (expr === 'UNKNOWN_VAR') {
+          throw new Error('Undefined symbol UNKNOWN_VAR');
+        }
 
         return expr; // Return as string
       })
-    };
+    } as unknown as IGTNMathEvaluator;
 
     // 4. Setup Logger
     mockLogger = {
@@ -105,6 +117,7 @@ describe('GTNExecutionVisitor', () => {
         const map: any = { rouge: 'red', bleu: 'blue' };
         return map[name];
       })
+      //, getInternalKeyword: vi.fn()
     } as unknown as IGTNLanguageService;
 
     // 6. Register Mocks BEFORE instantiating Visitor
@@ -114,27 +127,35 @@ describe('GTNExecutionVisitor', () => {
 
     // 6. Instantiate Visitor (it will resolve dependencies now)
     visitor = new GTNExecutionVisitor(mockRepo);
+
+    // Mock 'tick' to resolve immediately so we don't need to wait 1s per step
+    // This makes the tests fast and removes the "Non-Promise" linter issues
+    vi.spyOn(visitor as any, 'tick').mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   // --- Movement Tests ---
 
-  it('should execute MoveForward (GT_FORWARD 100)', () => {
+  it('should execute MoveForward (GT_FORWARD 100)', async () => {
     const tree = parse('GT_FORWARD 100', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.forward).toHaveBeenCalledWith(100);
   });
 
-  it('should execute MoveBackward (GT_BACKWARD 50)', () => {
+  it('should execute MoveBackward (GT_BACKWARD 50)', async () => {
     const tree = parse('GT_BACKWARD 50', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.backward).toHaveBeenCalledWith(50);
   });
 
-  it('should execute TurnRight (GT_RIGHT 90)', () => {
+  it('should execute TurnRight (GT_RIGHT 90)', async () => {
     const tree = parse('GT_RIGHT 90', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     // Visitor converts to degrees. Assuming logic is direct for this test.
     // If toDegree does conversion, check that value.
@@ -144,31 +165,28 @@ describe('GTNExecutionVisitor', () => {
 
   // --- Logic & Control Flow ---
 
-  it('should handle Assignments and Variables in single program', () => {
+  it('should handle Assignments and Variables in single program', async () => {
     // Run in ONE program string so scope persists
     const code = 'x := 42; GT_FORWARD x;';
     const tree = parse(code);
-
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.forward).toHaveBeenCalledWith(42);
   });
 
-  it('should execute Repeat Block (GT_REP)', () => {
+  it('should execute Repeat Block (GT_REP)', async () => {
     const tree = parse('GT_REP 3 [ GT_FORWARD 10; ]', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.forward).toHaveBeenCalledTimes(3);
     expect(mockTurtle.forward).toHaveBeenCalledWith(10);
   });
 
-  it('should execute If Block (GT_IF)', () => {
+  it('should execute If Block (GT_IF)', async () => {
     // Mock math to return true/false
     vi.mocked(mockMath.evaluate).mockImplementationOnce(() => true);
-
     const tree = parse('GT_IF 1 [ GT_FORWARD 10 ]', 'program');
-    visitor.visit(tree);
-
+    await (visitor.visitProgram(tree) as Promise<any>);
     expect(mockTurtle.forward).toHaveBeenCalledWith(10);
   });
 
@@ -176,16 +194,16 @@ describe('GTNExecutionVisitor', () => {
 
   describe('visitSetColor', () => {
     const CMD = 'GT_PEN_COLOR';
-    it('Strategy 1: Direct String Literal (GT_PEN_COLOR "rouge")', () => {
+    it('Strategy 1: Direct String Literal (GT_PEN_COLOR "rouge")', async () => {
       const tree = parse(`${CMD} "rouge"`, 'program');
-      visitor.visit(tree);
+      await (visitor.visitProgram(tree) as Promise<any>);
 
       // Should bypass math evaluator for literals
       // resolveCssColor strips quotes -> "rouge" -> langService -> "red"
       expect(mockTurtle.setPenColor).toHaveBeenCalledWith('red');
     });
 
-    it('Strategy 2: Variable Evaluation (GT_PEN_COLOR x)', () => {
+    it('Strategy 2: Variable Evaluation (GT_PEN_COLOR x)', async () => {
       // Use assignment command to define variable naturally.
       // 1. Assign "bleu" to x. (Quotes needed for string literal).
       // 2. Use x in color command.
@@ -194,7 +212,7 @@ describe('GTNExecutionVisitor', () => {
 
       // 2. Parse as STATEMENT to avoid visiting Program (which resets scopes)
       const tree = parse(code);
-      visitor.visit(tree);
+      await (visitor.visitProgram(tree) as Promise<any>);
 
       // Verify Steps
       // 1. Math eval should have been called for 'x'
@@ -207,14 +225,19 @@ describe('GTNExecutionVisitor', () => {
       expect(mockTurtle.setPenColor).toHaveBeenCalledWith('blue');
     });
 
-    it('Strategy 3: Fallback (GT_PEN_COLOR rouge - no quotes)', () => {
-      // Math evaluator throws "Undefined symbol", Visitor catches and treats "rouge" as literal
-      vi.mocked(mockMath.evaluate).mockImplementationOnce(() => {
+    it('Strategy 3: Fallback (GT_PEN_COLOR rouge - no quotes)', async () => {
+      // Math.js ne reconnait pas la variable nommé rouge et émet en conséquence une exception
+      // Elle est capturé par visitSetColor car elle correspond au pattern 'Undefined symbol'
+      // afin de retourner "rouge" comme couleur
+      // avec alors la recherche de la couleur css correspondante
+
+      // Math evaluator throws "Undefined symbol", Visitor catches and treats rouge as literal "rouge"
+      vi.mocked(mockMath.evaluate).mockImplementation(() => {
         throw new Error('Undefined symbol rouge');
       });
 
       const tree = parse(`${CMD} rouge`);
-      visitor.visit(tree);
+      await (visitor.visitProgram(tree) as Promise<any>);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Treating as color literal')
@@ -222,13 +245,13 @@ describe('GTNExecutionVisitor', () => {
       expect(mockTurtle.setPenColor).toHaveBeenCalledWith('red');
     });
 
-    it('should ignore invalid colors', () => {
+    it('should ignore invalid colors', async () => {
       // "invalid_color" returns undefined from LangService, resolveCssColor returns input
       // isCssColor checks if it is valid.
       // Assuming isCssColor('invalid_color') returns false.
 
       const tree = parse('GT_PEN_COLOR "prout"', 'program');
-      visitor.visit(tree);
+      await (visitor.visitProgram(tree) as Promise<any>);
 
       expect(mockTurtle.setPenColor).not.toHaveBeenCalled();
     });
@@ -236,14 +259,14 @@ describe('GTNExecutionVisitor', () => {
 
   // --- Procedures ---
 
-  it('should define and call a user function', () => {
+  it('should define and call a user function', async () => {
     // Current Grammar: GT_FUN identifier (...) := expr
     // It does not support procedure blocks (commands) yet.
     // We test a math function: double(x) := x * 2
 
     // 1. Define
     const defCode = 'GT_FUN double (x) := x * 2';
-    visitor.visit(parse(defCode, 'program'));
+    await (visitor.visitProgram(parse(defCode, 'program')) as Promise<any>);
 
     // 2. Call (Use it in a movement command to verify result)
     // mockMath needs to handle the calculation since Visitor delegates expression eval to it.
@@ -261,27 +284,27 @@ describe('GTNExecutionVisitor', () => {
     expect(visitor['userFunctions'].has('double')).toBe(true);
   });
 
-  it('should warn on unknown procedure call', () => {
+  it('should warn on unknown procedure call', async () => {
     // unknownFunc is interpreted as a ProcedureCall (identifier expr*)
     const tree = parse('unknownFunc 10', 'program');
 
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockLogger.warn).toHaveBeenCalledWith('Unknown procedure: unknownFunc');
   });
 
   // --- System Commands ---
 
-  it('should handle ClearGraphics (GT_VG)', () => {
+  it('should handle ClearGraphics (GT_VG)', async () => {
     const tree = parse('GT_VG', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockRepo.clearAllLines).toHaveBeenCalled();
   });
 
-  it('should handle Home (HOME)', () => {
+  it('should handle Home (HOME)', async () => {
     const tree = parse('home', 'program');
-    visitor.visit(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
 
     // Checks state reset
     expect(mockTurtle.state.position.x).toBe(0);
@@ -289,9 +312,9 @@ describe('GTNExecutionVisitor', () => {
     expect(mockTurtle.state.position.z).toBe(0);
   });
 
-  it('should reset repo on visitProgram', () => {
+  it('should reset repo on visitProgram', async () => {
     const tree = parse('', 'program');
-    visitor.visitProgram(tree);
+    await (visitor.visitProgram(tree) as Promise<any>);
     expect(mockRepo.reset).toHaveBeenCalled();
   });
 });

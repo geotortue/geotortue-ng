@@ -6,6 +6,7 @@ import type { GTNTurtle } from '@domain/entities/GTNTurtle';
 // DI Imports
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
 
 describe('GTNInterpreter Integration', () => {
   let interpreter: GTNInterpreter;
@@ -97,7 +98,13 @@ describe('GTNInterpreter Integration', () => {
       clearAllLines: vi.fn() // Required by visitClearGraphics
     } as unknown as IGTNTurtleRepository;
 
-    // 4. Instantiate Interpreter
+    // 4. Register the factory
+    container.registerInstance(
+      GTN_TYPES.ExecutionVisitorFactory,
+      (repo: IGTNTurtleRepository) => new GTNExecutionVisitor(repo)
+    );
+
+    // 5. Instantiate Interpreter
     // Even though we pass mockLangService here, the Visitor created INSIDE will look in the Container.
     interpreter = new GTNInterpreter(mockRepo, mockLangService);
   });

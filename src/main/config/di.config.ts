@@ -27,6 +27,7 @@ import { GTNBrowserRenderLoop } from '@infrastructure/services/GTNBrowserRenderL
 import { GTNConsoleLogger } from '@infrastructure/services/GTNConsoleLogger';
 import { GTNReverseDictionaryService } from '@infrastructure/i18n/GTNReverseDictionaryService';
 import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
+import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
 
 /**
  * This is the single place where everything is wired together.
@@ -49,6 +50,13 @@ export function configureDependencyInjection(): void {
     const geometry = container.resolve<GTNGeometryService>(GTN_TYPES.GeometryService);
     return new GTNInMemoryTurtleRepository(geometry);
   });
+
+  // DSL Service
+
+  container.registerInstance(
+    GTN_TYPES.ExecutionVisitorFactory,
+    (repo: IGTNTurtleRepository) => new GTNExecutionVisitor(repo)
+  );
 
   // DSL Translation Helper
   container.registerSingleton(
