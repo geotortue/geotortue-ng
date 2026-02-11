@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "GéoTortue NG",
+    "subtitle": "Environnement d’apprentissage de la géométrie",
+    "loading": "Chargement du domaine..."
+  },
+  "menu": {
+    "file": "Fichier",
+    "edit": "Édition",
+    "run": "Exécuter"
+  },
+  "toolbar": {
+    "run": "Exécuter",
+    "clear": "Effacer",
+    "language": "Langues",
+    "selector": {
+      "ui": "Libellés",
+      "dsl": "Commandes"
+    },
+    "open_project": "Ouvrir Projet",
+    "save_project": "Sauvegarder Projet"
+  },
+  "languages": {
+    "fr": "Français",
+    "en": "Anglais"
+  },
+  "entities": {
+    "turtle": "Tortue",
+    "pen": "Crayon"
+  },
+  "errors": {
+    "turtle_not_found": "Tortue introuvable&nbsp;: {{id}}",
+    "invalid_command": "Commande inconnue&nbsp;: {{cmd}}",
+    "missing_argument": "Argument manquant pour la commande {{cmd}}",
+    "script_error": "Erreur lors de l’exécution du script"
+  },
+  "syntax": {
+    "unclosed_block": "Vous avez ouvert un bloc avec '[' mais ne l’avez jamais fermé. Ajoutez un ']' à la fin.",
+    "missing_semicolon_eof": "Il semble que vous ayez oublié un point-virgule (;) à la fin de la ligne précédente.",
+    "unexpected_eof": "Fin de fichier inattendue. Vous avez probablement ouvert un bloc avec '[' mais ne l’avez jamais fermé.",
+    "missing_semicolon": "Il semble que vous ayez oublié un point-virgule (;) avant \"{{tokenText}}\".",
+    "unknown_command": "Je ne comprends pas \"{{tokenText}}\". S’agit-il d’une faute de frappe ? Veuillez vérifier l’orthographe.",
+    "unexpected_token": "Je ne m’attendais pas à trouver \"{{tokenText}}\" ici. Avez-vous ajouté un mot ou un nombre en trop ?",
+    "expected_number": "Je m’attendais à trouver un nombre ici, mais j’ai trouvé \"{{tokenText}}\".",
+    "générique": "Erreur de syntaxe près de \"{{tokenText}}\"."
+  },
+  "mode": {
+    "editor": "Pupitre",
+    "sandbox": "Bac à sable"
+  },
+  "sandbox": {
+    "settings_title": "Paramètres",
+    "step": "Pas",
+    "angle": "Rotation (en °)",
+    "keyboard_on": "Clavier ACTIF",
+    "keyboard_off": "Clavier INACTIF",
+    "history_title": "Historique",
+    "history_empty": "Aucune commande...",
+    "btn": {
+      "penup": "Lève le crayon",
+      "pendown": "Baisse le crayon",
+      "clear_graph": "Efface",
+      "reset": "Nettoie",
+      "hideturtle": "Cache la tortue",
+      "showturtle": "Montre la tortue",
+      "colors": {
+        "red": "rouge",
+        "green": "vert",
+        "blue": "bleu",
+        "yellow": "jaune",
+        "black": "noir",
+        "white": "blanc",
+        "orange": "orange",
+        "pink": "rose",
+        "grey": "grey",
+        "cyan": "cyan",
+        "magenta": "magenta"
+      }
+    },
+    "tooltip": {
+      "forward": "Avance",
+      "backward": "Recule",
+      "left": "Tourne Gauche",
+      "right": "Tourne Droite"
+    }
+  },
+  "compass": { "n": "N", "e": "E", "s": "S", "w": "O" },
+  "commands": {
+    "GT_FORWARD": "AV",
+    "GT_BACKWARD": "RE",
+    "GT_LEFT": "TG",
+    "GT_RIGHT": "TD",
+    "GT_PEN_UP": "LC",
+    "GT_PEN_DOWN": "BC",
+    "GT_VG": "VG",
+    "GT_RZ": "NETTOIE"
+  }
+}
