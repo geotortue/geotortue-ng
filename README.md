@@ -28,15 +28,17 @@ It allows users to draw geometric figures using a turtle moving on the screen. T
 
 ## ⚙️ A bit of technical
 
+It's a Single-page application ([SPA](https://developer.mozilla.org/en-US/docs/Glossary/SPA)).
+
 ### Features
 
-- **Interpreter**: Parse Logo commands and mathematical expressions in real-time.
-- **Command Console**: A modern code editor to input Logo-like commands.
-- **Graphic Console**: A 2D/3D visualization where turtles execute commands.
+- **Interpreter**: Parse Logo commands and mathematical expressions in real-time;
+- **Command Console**: A modern code editor to input Logo-like commands;
+- **Graphic Console**: A 2D/3D visualization where turtles execute commands;
+- **Sandbox**: A simplified interface allowing beginners and the youngest to become familiar with GéoTortue;
 - **Procedure Console**: Create, save, and reuse custom procedures (macros).
-- **Sandbox**: A simplified interface allowing beginners and the youngest to become familiar with GéoTortue.
 
-These last two features have not been implemented yet.
+The last feature has not been implemented yet.
 
 ### Technical Stack
 
@@ -90,6 +92,12 @@ npm run start:open
 ```
 
 The application opens in a new tab under the current browser, the turtle is ready to meet all your wishes.
+
+In practice, the Sandbox mode appears. You can interact with the keyboard or mouse.
+
+To go further, switch to Desk mode.
+
+When developing, a button 'Reset Local Date & Reload' is available in the bottom left corner of the application screen.
 
 ## 🛠️ Développement
 
