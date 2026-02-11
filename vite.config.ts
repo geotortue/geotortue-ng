@@ -6,6 +6,10 @@ import { resolve } from 'path';
 
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/geotortue-ng/' : '/',
+  define: {
+    // JSON.stringify is crucial to ensure it's wrapped in quotes: "/geotortue-ng/"
+    'import.meta.env.BASE_URL': JSON.stringify(command === 'build' ? '/geotortue-ng/' : '/')
+  },
   plugins: [
     tsconfigPaths(),
     viteStaticCopy({
