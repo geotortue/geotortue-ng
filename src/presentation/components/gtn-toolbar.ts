@@ -165,14 +165,14 @@ export class GTNToolbar extends LitElement {
         <button
           class=${classMap({ active: this.currentView === 'EDITOR' })}
           @click=${() => this.handleViewChange('EDITOR')}
-          title="Mode Éditeur"
+          title="${t('mode.editor')}"
         >
           <span class="material-icons">code</span>
         </button>
         <button
           class=${classMap({ active: this.currentView === 'SANDBOX' })}
           @click=${() => this.handleViewChange('SANDBOX')}
-          title="Mode Sandbox"
+          title="${t('mode.sandbox')}"
         >
           <span class="material-icons">touch_app</span>
         </button>

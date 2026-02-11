@@ -44,6 +44,10 @@
     "expected_number": "I expected a number here, but found \"{{tokenText}}\".",
     "generic": "Syntax error near \"{{tokenText}}\"."
   },
+  "mode": {
+    "editor": "Desk",
+    "sandbox": "Sandbox"
+  },
   "sandbox": {
     "settings_title": "Settings",
     "step": "Step",

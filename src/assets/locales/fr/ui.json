@@ -44,6 +44,10 @@
     "expected_number": "Je m’attendais à trouver un nombre ici, mais j’ai trouvé \"{{tokenText}}\".",
     "générique": "Erreur de syntaxe près de \"{{tokenText}}\"."
   },
+  "mode": {
+    "editor": "Pupitre",
+    "sandbox": "Bac à sable"
+  },
   "sandbox": {
     "settings_title": "Paramètres",
     "step": "Pas",
