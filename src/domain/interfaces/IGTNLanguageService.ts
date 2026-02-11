@@ -1,5 +1,5 @@
 import type { DslLanguage, UiLanguage } from '@domain/types';
-import type { NamedCssColor } from '@domain/value-objects';
+import type { NamedCssColor, NamedCssColorType } from '@domain/value-objects';
 
 export interface IGTNLanguageService {
   initialize(): Promise<void>;
@@ -28,7 +28,10 @@ export interface IGTNLanguageService {
    * Returns a localized keyword for a given internal canonical keyword (e.g. in french 'GT_FORWARD' ---> 'av')
    * Uses the DSL Language.
    */
-  getLocalizedKeyword(internalKeyword: string): string;
+  getLocalizedKeyword(
+    internalKeyword: string,
+    selector?: (values: string[]) => string | undefined
+  ): string;
 
   /**
    * Finds the internal canonical keyword corresponding to a localized keyword (e.g. in french, 'av' or 'avancer' ---> 'GT_FORWARD')
@@ -46,7 +49,7 @@ export interface IGTNLanguageService {
    * Translates a localized color name (e.g. "rouge" in french) to a CSS-valid name ("red").
    * Returns undefined if unknown.
    */
-  getCssColor(localizedName: string): NamedCssColor | undefined;
+  getCssColor(localizedName: string): NamedCssColorType | undefined;
 
   /**
    * Translates a full script from one DSL language to another.

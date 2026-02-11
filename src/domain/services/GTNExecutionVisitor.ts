@@ -115,22 +115,20 @@ export class GTNExecutionVisitor
     if (this.returnSignal) return;
 
     // A statement usually has 1 child (Command or Structure)
-    if (ctx.children) {
-      for (const child of ctx.children) {
-        await (child.accept(this) as unknown as Promise<void>);
-      }
+    for (const child of ctx.children) {
+      await (child.accept(this) as unknown as Promise<void>);
     }
   }
 
   public async visitBlock(ctx: GTNParser.BlockContext): Promise<void> {
-    if (ctx.children) {
-      for (const child of ctx.children) {
-        if (this.returnSignal) break;
-        console.debug('Entering statement:', child.getText());
-        // Skip brackets, visit statements
-        if (child instanceof GTNParser.StatementContext) {
-          await (child.accept(this) as unknown as Promise<void>);
-        }
+    for (const child of ctx.children) {
+      if (this.returnSignal) {
+        break;
+      }
+
+      // Skip brackets, visit statements
+      if (child instanceof GTNParser.StatementContext) {
+        await (child.accept(this) as unknown as Promise<void>);
       }
     }
   }
@@ -163,7 +161,10 @@ export class GTNExecutionVisitor
 
   public async visitWhileBlock(ctx: GTNParser.WhileBlockContext): Promise<void> {
     while (this.evaluateBoolean(ctx.expr())) {
-      if (this.returnSignal) break;
+      if (this.returnSignal) {
+        break;
+      }
+
       await this.visitBlock(ctx.block());
     }
   }

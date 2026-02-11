@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js'; // Import classMap
 
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
@@ -19,17 +20,28 @@ import { toDslLanguage, toUiLanguage, type DslLanguage, type UiLanguage } from '
 
 import styles from './gtn-toolbar.scss?inline';
 
+// Define the View Type
+export type ViewMode = 'EDITOR' | 'SANDBOX';
+
 @customElement('gtn-toolbar')
 export class GTNToolbar extends LitElement {
   static override readonly styles = [
     materialIconsStyle,
     css`
       ${unsafeCSS(styles)}
+      /* Add specific styles for the view switcher if not in SCSS */
+      .view-switcher button.active {
+        background-color: #e3f2fd; /* Light Blue highlight */
+        color: #1565c0;
+        border-bottom: 2px solid #1565c0;
+      }
     `
   ];
 
   private readonly langService: IGTNLanguageService;
   private readonly appState: GTNApplicationState;
+
+  // unused controller kept for reactivity
   private readonly langController = new UiLanguageController(this);
 
   @property({ type: String })
@@ -43,6 +55,10 @@ export class GTNToolbar extends LitElement {
 
   @property({ type: String })
   accessor currentCamera: CameraType = DEFAULT_CAMERA_TYPE;
+
+  // New Property for View Mode
+  @property({ type: String })
+  accessor currentView: ViewMode = 'EDITOR';
 
   constructor() {
     super();
@@ -116,6 +132,18 @@ export class GTNToolbar extends LitElement {
     this.appState.toggleCameraType();
   }
 
+  // New Handler for View Switching
+  private handleViewChange(view: ViewMode) {
+    this.currentView = view;
+    this.dispatchEvent(
+      new CustomEvent('view-change', {
+        detail: { view },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+
   protected override render() {
     // Helper for brevity
     const t = (k: string) => this.langService.translate(k);
@@ -130,44 +158,87 @@ export class GTNToolbar extends LitElement {
         <span class="title">${t('app.title')}</span>
       </div>
 
-      <div class="group">
-        <button @click=${this.handleOpen} title="${t('toolbar.open_project')}">
-          <span class="material-icons">folder_open</span>
+      <div
+        class="group view-switcher"
+        style="margin-left: 1rem; border-right: 1px solid #ccc; padding-right: 1rem;"
+      >
+        <button
+          class=${classMap({ active: this.currentView === 'EDITOR' })}
+          @click=${() => this.handleViewChange('EDITOR')}
+          title="Mode Éditeur"
+        >
+          <span class="material-icons">code</span>
         </button>
-        <button @click=${this.handleSave} title="${t('toolbar.save_project')}">
-          <span class="material-icons">save</span>
+        <button
+          class=${classMap({ active: this.currentView === 'SANDBOX' })}
+          @click=${() => this.handleViewChange('SANDBOX')}
+          title="Mode Sandbox"
+        >
+          <span class="material-icons">touch_app</span>
         </button>
+      </div>
 
-        <div class="separator"></div>
+      ${this.currentView === 'EDITOR'
+        ? html`
+            <div class="group">
+              <button @click=${this.handleOpen} title="${t('toolbar.open_project')}">
+                <span class="material-icons">folder_open</span>
+              </button>
+              <button @click=${this.handleSave} title="${t('toolbar.save_project')}">
+                <span class="material-icons">save</span>
+              </button>
 
+              <div class="separator"></div>
+
+              <button class="mode-badge" @click=${this.handleToggleMode} title="Toggle 2D/3D">
+                ${this.currentMode}
+              </button>
+
+              ${this.currentMode === '3D'
+                ? html`
+                    <button
+                      @click=${this.handleToggleCamera}
+                      title="Switch Camera"
+                      style="font-size:0.8rem"
+                    >
+                      <span class="material-icons" style="font-size:1.1rem">videocam</span>
+                      ${this.currentCamera === 'PERSPECTIVE' ? 'PERSP' : 'ORTHO'}
+                    </button>
+                  `
+                : ''}
+
+              <div class="separator"></div>
+
+              <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
+                <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
+              </button>
+              <button class="danger" @click=${this.handleClear}>
+                <span class="material-icons">delete</span> ${t('toolbar.clear')}
+              </button>
+            </div>
+          `
+        : html`
+            <div class="group">
+              <span style="font-size: 0.8rem; color: #666; font-style:italic;"
+                >Mode Interactif</span
+              >
+            </div>
+          `}
+
+      <div class="group" style="margin-left: auto;">
         <button class="mode-badge" @click=${this.handleToggleMode} title="Toggle 2D/3D">
           ${this.currentMode}
         </button>
-
         ${this.currentMode === '3D'
           ? html`
-              <button
-                @click=${this.handleToggleCamera}
-                title="Switch Camera"
-                style="font-size:0.8rem"
-              >
-                <span class="material-icons" style="font-size:1.1rem">videocam</span>
-                ${this.currentCamera === 'PERSPECTIVE' ? 'PERSP' : 'ORTHO'}
+              <button @click=${this.handleToggleCamera} title="Switch Camera">
+                <span class="material-icons">videocam</span>
               </button>
             `
           : ''}
 
         <div class="separator"></div>
 
-        <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
-          <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
-        </button>
-        <button class="danger" @click=${this.handleClear}>
-          <span class="material-icons">delete</span> ${t('toolbar.clear')}
-        </button>
-      </div>
-
-      <div class="group">
         <span class="material-icons">translate</span>
 
         <span class="label">${t('toolbar.language')}</span>

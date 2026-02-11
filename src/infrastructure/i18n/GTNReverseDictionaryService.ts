@@ -3,7 +3,8 @@ import { CharStream, Token, Vocabulary } from 'antlr4ng';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 
 import type { DslLanguage } from '@domain/types';
-import { NAMED_CSS_COLOR, toNamedCssColor, type NamedCssColor } from '@domain/value-objects';
+import { NamedCssColor, toNamedCssColor, type NamedCssColorType } from '@domain/value-objects';
+
 import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
@@ -34,7 +35,7 @@ type LangCache = {
   colorForward: Map<string, string>;
 
   // "GT_RED" ---> "red" as CSS named color
-  colorForwardCss: Map<string, NamedCssColor>;
+  colorForwardCss: Map<string, NamedCssColorType>;
 };
 
 export class GTNReverseDictionaryService {
@@ -55,13 +56,14 @@ export class GTNReverseDictionaryService {
    * @param lang
    * @returns
    */
-  public getCssColor(localizedColorName: string, lang: DslLanguage): NamedCssColor | undefined {
+  public getCssColor(localizedColorName: string, lang: DslLanguage): NamedCssColorType | undefined {
     const cache = this.cache.get(lang);
     if (!cache) {
       return undefined;
     }
 
     const search = localizedColorName.toLowerCase();
+
     const canonicalKeyword = cache.colorReverse.get(search);
     if (!canonicalKeyword) {
       return undefined;
@@ -268,15 +270,42 @@ export class GTNReverseDictionaryService {
  * @param source map between canonical keyword of a color and its css name
  * @returns
  */
+// function createColorMap() {
+//   const forward = new Map<string, NamedCssColor>();
+//   for (const color of Object.values(NamedCssColor)) {
+//     // Forward: Canonical Keyword ---> CSS color name
+//     const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
+//     forward.set(key, toNamedCssColor(color));
+//   }
+//   return forward;
+// }
+
 function createColorMap() {
-  const forward = new Map<string, NamedCssColor>();
-  for (const color of NAMED_CSS_COLOR) {
-    // Forward: Canonical Keyword ---> CSS color name
-    const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
-    forward.set(key, toNamedCssColor(color));
+  const forward = new Map<string, NamedCssColorType>();
+
+  // ✅ Use Object.entries to get both the Key (RED) and Value ('red')
+  for (const [enumKey, enumValue] of Object.entries(NamedCssColor)) {
+    // Skip numeric reverse-mappings if NamedCssColor is a numeric enum
+    if (isNaN(Number(enumKey))) {
+      // Construct key from the Enum Key: "RED" -> "GT_RED"
+      const key = GEOTORTUE_GRAMMAR_PREFIX + enumKey.toUpperCase();
+
+      // Map "GT_RED" -> "red"
+      forward.set(key, enumValue as NamedCssColorType);
+    }
   }
   return forward;
 }
+
+// function createColorMap() {
+//   const forward = new Map<string, NamedCssColorType>();
+//   for (const color of NAMED_CSS_COLOR) {
+//     // Forward: Canonical Keyword ---> CSS color name
+//     const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
+//     forward.set(key, toNamedCssColor(color));
+//   }
+//   return forward;
+// }
 
 function createMapping(source: Record<string, string | string[]>) {
   const forward = new Map<string, string>();

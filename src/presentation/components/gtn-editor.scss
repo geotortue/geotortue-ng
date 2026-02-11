@@ -1,5 +1,6 @@
 :host {
   display: block;
+  font-family: var(--font-code);
   height: 100%;
   overflow: hidden;
   // text-align: left;
@@ -11,6 +12,6 @@
 .cm-editor {
   height: 100%;
 }
-.cm-scroller {
-  font-family: 'Inconsolata', monospace;
+.cm-editor .cm-scroller {
+  font-family: inherit;
 }

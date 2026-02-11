@@ -3,12 +3,17 @@ import Backend from 'i18next-http-backend';
 
 import { isSupportedLanguage, SUPPORTED_LANGUAGES } from '@domain/types/language';
 
-// FUTURE: put the next three constants in a configuration file:
+// FUTURE: put DEFAULT_LANGUAGE & C° in a configuration file:
 export const DEFAULT_LANGUAGE = 'fr';
 
-export const DSL_NS = 'dsl';
-export const UI_NS = 'ui';
-const DEFAULT_NS = UI_NS; // Only load UI by default for the main bundle
+export enum NameSpace {
+  UI = 'ui',
+  DSL = 'dsl'
+}
+type NameSpaceKey = keyof typeof NameSpace;
+export type NameSpaceType = `${NameSpace}`;
+
+const DEFAULT_NS: string = NameSpace.UI; // Only load UI by default for the main bundle
 
 // Initialisation asynchrone
 export const initI18n = async () => {
@@ -18,7 +23,7 @@ export const initI18n = async () => {
     supportedLngs: SUPPORTED_LANGUAGES,
     lng: isSupportedLanguage(savedLang) ? savedLang : DEFAULT_LANGUAGE,
     fallbackLng: DEFAULT_LANGUAGE,
-    ns: [UI_NS, DSL_NS],
+    ns: Object.values(NameSpace),
     defaultNS: DEFAULT_NS,
     backend: {
       //Path to fetch files from /src/assets/locales (provided by Vite)

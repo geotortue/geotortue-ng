@@ -16,11 +16,16 @@ import type { UiLanguage } from '@domain/types';
 
 import styles from './gtn-app.scss?inline';
 
+// Components
 import './components/gtn-toolbar';
 import './components/gtn-editor';
 import './components/gtn-canvas';
 import './components/dev-reset-button';
 import './components/gtn-error-toast';
+import './components/gtn-sandbox'; // Import the sandbox
+
+// Import the Type from toolbar
+import type { ViewMode } from './components/gtn-toolbar';
 
 const isDev = import.meta.env.DEV;
 
@@ -49,12 +54,19 @@ repeat 36 [
 export class GTNApp extends LitElement {
   static override readonly styles = css`
     ${unsafeCSS(styles)}
+    /* Ensure the sandbox fills the sidebar pane area */
+    gtn-sandbox {
+      height: 100%;
+      display: block;
+    }
   `;
 
   @state()
   private accessor code = '';
   @state()
   private accessor errors: GTNError[] = [];
+  @state()
+  private accessor viewMode: ViewMode = 'SANDBOX';
 
   private readonly interpreter: IGTNInterpreter;
   private readonly langService: IGTNLanguageService;
@@ -63,7 +75,7 @@ export class GTNApp extends LitElement {
   private readonly syntaxService: GTNSyntaxService;
   private uiUnsubscribe?: () => void;
 
-  constructor(/*host: ReactiveControllerHost*/) {
+  constructor() {
     super();
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);
@@ -106,7 +118,12 @@ export class GTNApp extends LitElement {
     // Optional: Auto-save to localStorage could go here
   }
 
+  private handleViewChange(event: CustomEvent) {
+    this.viewMode = event.detail.view;
+  }
+
   private async handleRun() {
+    // Only validate if in Editor mode, but the button handles it
     this.errors = this.syntaxService.validate(this.code);
     if (this.errors.length > 0) {
       console.warn('Cannot run code with syntax errors: ', this.errors);
@@ -190,6 +207,8 @@ export class GTNApp extends LitElement {
     return html`
       <div class="header">
         <gtn-toolbar
+          .currentView=${this.viewMode}
+          @view-change=${this.handleViewChange}
           @run=${this.handleRun}
           @clear=${this.handleClear}
           @save-project=${this.handleSaveProject}
@@ -199,15 +218,21 @@ export class GTNApp extends LitElement {
       </div>
 
       <main>
-        <div class="editor-pane">
-          <gtn-editor .code=${this.code} @code-change=${this.handleCodeChange}>
-            <!-- previously this.handleRun -->
-          </gtn-editor>
-        </div>
-        <gtn-error-toast .errors=${this.errors}></gtn-error-toast>
-        <div class="canvas">
-          <gtn-canvas></gtn-canvas>
-        </div>
+        ${this.viewMode === 'EDITOR'
+          ? html`
+              <div class="editor-pane">
+                <gtn-editor .code=${this.code} @code-change=${this.handleCodeChange}> </gtn-editor>
+                <gtn-error-toast .errors=${this.errors}></gtn-error-toast>
+              </div>
+              <div class="canvas">
+                <gtn-canvas></gtn-canvas>
+              </div>
+            `
+          : html`
+              <gtn-sandbox>
+                <gtn-canvas></gtn-canvas>
+              </gtn-sandbox>
+            `}
       </main>
 
       ${isDev ? html`<dev-reset-button></dev-reset-button>` : ''}

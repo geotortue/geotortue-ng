@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "GeoTortue NG",
+    "title": "GéoTortue NG",
     "subtitle": "Geometry Learning Environment",
     "loading": "Loading Domain..."
   },
@@ -43,5 +43,57 @@
     "unexpected_token": "I wasn't expecting \"{{tokenText}}\" here. Did you add an extra word or number?",
     "expected_number": "I expected a number here, but found \"{{tokenText}}\".",
     "generic": "Syntax error near \"{{tokenText}}\"."
+  },
+  "sandbox": {
+    "settings_title": "Settings",
+    "step": "Step",
+    "angle": "Rotation (in °)",
+    "keyboard_on": "Keyboard ON",
+    "keyboard_off": "Keyboard OFF",
+    "history_title": "History",
+    "history_empty": "No commands yet...",
+    "btn": {
+      "penup": "Pen Up",
+      "pendown": "Pen Down",
+      "clear_graph": "Clear G.",
+      "reset": "Reset",
+      "hideturtle": "Hide Turtle",
+      "showturtle": "Show Turtle",
+      "colors": {
+        "red": "red",
+        "green": "green",
+        "blue": "blue",
+        "yellow": "yellow",
+        "black": "black",
+        "white": "white",
+        "orange": "orange",
+        "rose": "rose",
+        "grey": "grey",
+        "cyan": "cyan",
+        "magenta": "magenta"
+      }
+    },
+    "tooltip": {
+      "forward": "Forward",
+      "backward": "Backward",
+      "left": "Turn Left",
+      "right": "Turn Right"
+    }
+  },
+  "compass": {
+    "n": "N",
+    "e": "E",
+    "s": "S",
+    "w": "W"
+  },
+  "commands": {
+    "GT_FORWARD": "FD",
+    "GT_BACKWARD": "BK",
+    "GT_LEFT": "LT",
+    "GT_RIGHT": "RT",
+    "GT_PEN_UP": "PU",
+    "GT_PEN_DOWN": "PD",
+    "GT_VG": "CS",
+    "GT_RZ": "CLEAN"
   }
 }

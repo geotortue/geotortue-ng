@@ -8,12 +8,12 @@ import {
   type DslLanguage,
   type UiLanguage
 } from '@domain/types';
-import { DEFAULT_LANGUAGE, DSL_NS, UI_NS } from '@infrastructure/i18n';
+import { DEFAULT_LANGUAGE, NameSpace } from '@infrastructure/i18n';
 import type { GTNReverseDictionaryService } from './GTNReverseDictionaryService';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
-import type { NamedCssColor } from '@domain/value-objects';
+import type { NamedCssColorType } from '@domain/value-objects';
 
 type DslResourceBundle = Record<string, string | string[]>;
 
@@ -64,7 +64,7 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
   }
 
   private async ensureDslResources(lang: DslLanguage) {
-    if (!i18next.hasResourceBundle(lang, DSL_NS)) {
+    if (!i18next.hasResourceBundle(lang, NameSpace.DSL)) {
       await i18next.loadLanguages(lang);
     }
   }
@@ -150,24 +150,32 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return typeof tokenId === 'number' ? tokenId : undefined;
   }
 
-  public getLocalizedKeyword(internalKey: string): string {
+  /** See IGTNLanguageService.getLocalizedKeyword
+   *  If more than one localized keyword is available, by default the first one is returned.
+   */
+  public getLocalizedKeyword(
+    internalKey: string,
+    selector = (values: string[]) => values[0]
+  ): string {
     // We explicitly use getFixedT or getResourceBundle with the specific DSL language
-    const bundle = i18next.getResourceBundle(this.dslLanguage, DSL_NS);
-
-    if (bundle?.commands) {
-      const val = bundle.commands[internalKey];
-      // Return first alias if it's an array, or the string itself
-      return Array.isArray(val) ? val[0] : val;
+    const bundle = i18next.getResourceBundle(this.dslLanguage, NameSpace.DSL);
+    if (!bundle?.commands) {
+      return internalKey; // Fallback
     }
 
-    return internalKey; // Fallback
+    const values = bundle.commands[internalKey];
+    if (!Array.isArray(values)) {
+      return values;
+    }
+
+    return selector(values) || internalKey;
   }
 
   public getInternalKeyword(localizedKeyword: string): string | undefined {
     const search = localizedKeyword.toUpperCase();
 
     // Use the bundle of the configured DSL language, not the UI language
-    const bundle = i18next.getResourceBundle(this.dslLanguage, DSL_NS);
+    const bundle = i18next.getResourceBundle(this.dslLanguage, NameSpace.DSL);
     if (!bundle!.commands) {
       return undefined;
     }
@@ -190,7 +198,7 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
 
   public getAllKeywords(): string[] {
     const lang = this.dslLanguage;
-    const bundle = i18next.getResourceBundle(lang, DSL_NS);
+    const bundle = i18next.getResourceBundle(lang, NameSpace.DSL);
     if (!bundle?.commands) {
       return [];
     }
@@ -208,12 +216,12 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return keywords;
   }
 
-  public getCssColor(localizedColorName: string): NamedCssColor | undefined {
+  public getCssColor(localizedColorName: string): NamedCssColorType | undefined {
     return this.reverseDictionary.getCssColor(localizedColorName, this.dslLanguage);
   }
 
   public translate(key: string, options?: any): string {
-    const fullkey = key.includes(':') ? key : `${UI_NS}:${key}`;
+    const fullkey = key.includes(':') ? key : `${NameSpace.UI}:${key}`;
     // ALWAYS call i18next.t directly here.
     // Do NOT store 't' in a variable in the constructor.
     const result = i18next.t(fullkey, options);

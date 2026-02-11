@@ -35,8 +35,8 @@ primitive
   | GT_LEFT expr # TurnLeft
   | GT_VG # ClearGraphics
   | GT_RZ # ClearScreen
-  | GT_CT # HideTurtle
-  | GT_MT # ShowTurtle
+  | GT_HIDE_TURTLE # HideTurtle  // ex GT_CT
+  | GT_SHOW_TURTLE # ShowTurtle  // ex GT_MT
   | GT_PEN_UP # PenUp
   | GT_PEN_DOWN # PenDown
   | GT_THICKNESS expr # SetThickness

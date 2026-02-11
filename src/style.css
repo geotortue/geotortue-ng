@@ -1,9 +1,11 @@
 @import 'modern-normalize/modern-normalize.css';
+@import '@fontsource-variable/nunito';
 @import '@fontsource-variable/inconsolata';
 @import 'material-icons/iconfont/material-icons.css';
 
 :root {
-  font-family: 'Inconsolata', monospace;
+  --font-ui: 'Nunito Variable', sans-serif;
+  --font-code: 'Inconsolata Variable', monospace;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
@@ -11,8 +13,18 @@
   color: rgba(255, 255, 255, 0.87);
 }
 
-body {
+body,
+input,
+textarea,
+button,
+select {
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
+}
+
+body {
   display: flex;
   place-items: center;
   min-width: 320px;

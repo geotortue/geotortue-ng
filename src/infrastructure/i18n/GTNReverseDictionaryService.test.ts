@@ -139,14 +139,6 @@ describe('GTNReverseDictionaryService', () => {
     });
   });
 
-  //   it('should resolve CSS colors from localized names', async () => {
-  //     await service.loadDictionary(FR);
-  //
-  //     // "rouge" -> GT_RED -> "red"
-  //     const css = service.getCssColor('rouge', FR);
-  //     expect(css).toBe('red');
-  //   });
-
   describe('Color Resolution (getCssColor)', () => {
     it('should resolve localized color to CSS name', async () => {
       await service.loadDictionary(FR);
