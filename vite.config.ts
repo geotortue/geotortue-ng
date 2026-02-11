@@ -4,8 +4,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { resolve } from 'path';
 
-export default defineConfig({
-  base: 'geotortue-ng',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/geotortue-ng/' : '/',
   plugins: [
     tsconfigPaths(),
     viteStaticCopy({
@@ -87,5 +87,4 @@ export default defineConfig({
       '@generated': resolve(__dirname, './src/infrastructure/antlr/generated')
     }
   }
-});
-//
+}));

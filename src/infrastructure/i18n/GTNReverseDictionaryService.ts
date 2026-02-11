@@ -3,11 +3,13 @@ import { CharStream, Token, Vocabulary } from 'antlr4ng';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 
 import type { DslLanguage } from '@domain/types';
-import { NamedCssColor, toNamedCssColor, type NamedCssColorType } from '@domain/value-objects';
+import { NamedCssColor, type NamedCssColorType } from '@domain/value-objects';
 
 import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+
+const baseUrl = import.meta.env.BASE_URL;
 
 const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
 
@@ -225,7 +227,11 @@ export class GTNReverseDictionaryService {
   private async loadAndProcess(lang: DslLanguage): Promise<LangCache> {
     try {
       // Bypass i18next cache, fetch raw JSON
-      const response = await fetch(`/locales/${lang}/dsl.json`);
+      // const response = await fetch(`locales/${lang}/dsl.json`);
+      // const response = await fetch(`${import.meta.env.BASE_URL}locales/${lang}/dsl.json`);
+      const fullUrl = `${baseUrl}locales/${lang}/dsl.json`;
+      console.log(`loadAndProcess, fullUrl: `, fullUrl);
+      const response = await fetch(fullUrl);
       if (!response.ok) throw new Error(`Failed to load DSL for ${lang}`);
 
       const json: DSLDefinition = await response.json();
@@ -270,16 +276,6 @@ export class GTNReverseDictionaryService {
  * @param source map between canonical keyword of a color and its css name
  * @returns
  */
-// function createColorMap() {
-//   const forward = new Map<string, NamedCssColor>();
-//   for (const color of Object.values(NamedCssColor)) {
-//     // Forward: Canonical Keyword ---> CSS color name
-//     const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
-//     forward.set(key, toNamedCssColor(color));
-//   }
-//   return forward;
-// }
-
 function createColorMap() {
   const forward = new Map<string, NamedCssColorType>();
 
@@ -296,17 +292,6 @@ function createColorMap() {
   }
   return forward;
 }
-
-// function createColorMap() {
-//   const forward = new Map<string, NamedCssColorType>();
-//   for (const color of NAMED_CSS_COLOR) {
-//     // Forward: Canonical Keyword ---> CSS color name
-//     const key = GEOTORTUE_GRAMMAR_PREFIX + color.toUpperCase();
-//     forward.set(key, toNamedCssColor(color));
-//   }
-//   return forward;
-// }
-
 function createMapping(source: Record<string, string | string[]>) {
   const forward = new Map<string, string>();
   const reverse = new Map<string, string>();
