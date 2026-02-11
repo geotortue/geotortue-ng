@@ -5,6 +5,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: 'geotortue-ng',
   plugins: [
     tsconfigPaths(),
     viteStaticCopy({
