@@ -226,8 +226,9 @@ export class GTNReverseDictionaryService {
     try {
       // Bypass i18next cache, fetch raw JSON
       const baseUrl = import.meta.env.BASE_URL;
-      console.log(`loadAndProcess, full url: `, `${baseUrl}locales/${lang}/dsl.json`);
-      const response = await fetch(`${baseUrl}locales/${lang}/dsl.json`);
+      const fullUrl = `${baseUrl}locales/${lang}/dsl.json`;
+      console.log(`loadAndProcess, full url: `, fullUrl);
+      const response = await fetch(fullUrl);
       if (!response.ok) {
         throw new Error(`Failed to load DSL for ${lang}`);
       }

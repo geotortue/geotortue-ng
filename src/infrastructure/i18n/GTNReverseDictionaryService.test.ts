@@ -69,27 +69,11 @@ describe('GTNReverseDictionaryService', () => {
     container.registerInstance(GTN_TYPES.Logger, mockLogger);
 
     service = new GTNReverseDictionaryService();
-    // (globalThis.fetch as any).mockResolvedValue({
-    //   ok: true,
-    //   json: async () => mockDslJson
-    // });
   });
 
   afterEach(() => {
     vi.unstubAllGlobals(); // Clean up fetch mock
   });
-
-  //   it('should load dictionary and provide internal keys', async () => {
-  //     await service.loadDictionary(FR);
-  //
-  //     // Reverse Lookup
-  //     expect(service.getInternalKey('avance', FR)).toBe('GT_FORWARD');
-  //     expect(service.getInternalKey('av', FR)).toBe('GT_FORWARD'); // Alias
-  //     expect(service.getInternalKey('rouge', FR)).toBe('GT_RED');
-  //
-  //     // Case insensitivity
-  //     expect(service.getInternalKey('AVANCE', FR)).toBe('GT_FORWARD');
-  //   });
 
   describe('Dictionary Loading', () => {
     it('should load and cache a language dictionary', async () => {
@@ -172,7 +156,6 @@ describe('GTNReverseDictionaryService', () => {
 
       const translated = await service.translateScript(script, FR, EN);
 
-      // expect(translated).toContain('repeat 4');
       expect(translated).toContain('forward 100');
       // Should look mostly identical except keywords
       expect(translated).toMatch(/\s+repeat 4 \[\s+forward 100;\s+\]/);
