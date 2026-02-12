@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/geotortue/geotortue-ng/compare/v1.2.1...v1.2.2) (2026-02-11)
+
+### Bug Fixes
+
+- url for github pages (2) ([fb9f5a2](https://github.com/geotortue/geotortue-ng/commit/fb9f5a2f84caf22da366020d62bb082ce670bf3c))
+
 ## [1.2.1](https://github.com/geotortue/geotortue-ng/compare/v1.2.0...v1.2.1) (2026-02-11)
 
 ### Bug Fixes
