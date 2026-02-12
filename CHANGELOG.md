@@ -1,3 +1,9 @@
+## [1.2.10](https://github.com/geotortue/geotortue-ng/compare/v1.2.9...v1.2.10) (2026-02-12)
+
+### Bug Fixes
+
+- **ui:** no tree shaking for Lit tags ([9eb4464](https://github.com/geotortue/geotortue-ng/commit/9eb446478ad3ea0933d1c4fb9a0d721f5ae7fc7d))
+
 ## [1.2.9](https://github.com/geotortue/geotortue-ng/compare/v1.2.8...v1.2.9) (2026-02-12)
 
 ### Bug Fixes
