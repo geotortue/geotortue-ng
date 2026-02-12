@@ -11,6 +11,7 @@
     "start": "npm run start:dev",
     "start:open": "concurrently \"npm start\" \"wait-on http://localhost:3000 && open-cli http://localhost:3000\"",
     "build": "rimraf dist && tsc && vite build",
+    "build:debug": "rimraf dist && tsc --noEmit && vite build --debug",
     "lint": "eslint .",
     "format": "prettier --write .",
     "fix:grammar": "tsx scripts/fix-generated.ts src/infrastructure/antlr/generated ParseTreeListener,TokenSource,TokenFactory",
