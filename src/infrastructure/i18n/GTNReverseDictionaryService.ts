@@ -9,8 +9,6 @@ import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 
-const baseUrl = import.meta.env.BASE_URL;
-
 const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
 
 type ReplacementType = { start: number; stop: number; newText: string };
@@ -227,12 +225,12 @@ export class GTNReverseDictionaryService {
   private async loadAndProcess(lang: DslLanguage): Promise<LangCache> {
     try {
       // Bypass i18next cache, fetch raw JSON
-      // const response = await fetch(`locales/${lang}/dsl.json`);
-      // const response = await fetch(`${import.meta.env.BASE_URL}locales/${lang}/dsl.json`);
-      const fullUrl = `${baseUrl}locales/${lang}/dsl.json`;
-      console.log(`loadAndProcess, fullUrl: `, fullUrl);
-      const response = await fetch(fullUrl);
-      if (!response.ok) throw new Error(`Failed to load DSL for ${lang}`);
+      const baseUrl = import.meta.env.BASE_URL;
+      console.log(`loadAndProcess, full url: `, `${baseUrl}locales/${lang}/dsl.json`);
+      const response = await fetch(`${baseUrl}locales/${lang}/dsl.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to load DSL for ${lang}`);
+      }
 
       const json: DSLDefinition = await response.json();
 
