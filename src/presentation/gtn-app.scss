@@ -33,7 +33,17 @@ main {
 
 /* Responsive adjustment: Stack vertically on small screens */
 @media (max-width: 800px) {
+  :host {
+    display: block;        /* Custom elements are inline by default! */
+    height: 100vh;         /* Take full viewport height */
+    width: 100vw;          /* Take full viewport width */
+    overflow: hidden;      /* Prevent scrolling on the body */
+    background-color: #fff; /* Ensure a background */
+  }
+  /* Also ensure the main container takes space */
   .main {
+    height: calc(100% - 60px); /* Adjust based on toolbar height */
+    position: relative;
     flex-direction: column;
   }
   .editor-pane {
@@ -41,8 +51,12 @@ main {
     border-right: none;
     border-bottom: 1px solid #ccc; // #ccc ??? TODO à changer
   }
-  /* .viewport-pane { flex: 1; } */
   .canvas {
     flex: 1;
+  }
+  /* Ensure the sandbox fills the sidebar pane area */
+  gtn-sandbox {
+    height: 100%;
+    display: block;
   }
 }

@@ -54,11 +54,6 @@ repeat 36 [
 export class GTNApp extends LitElement {
   static override readonly styles = css`
     ${unsafeCSS(styles)}
-    /* Ensure the sandbox fills the sidebar pane area */
-    gtn-sandbox {
-      height: 100%;
-      display: block;
-    }
   `;
 
   @state()
