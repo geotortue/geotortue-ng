@@ -18,6 +18,8 @@ const DEFAULT_NS: string = NameSpace.UI; // Only load UI by default for the main
 // Initialisation asynchrone
 export const initI18n = async () => {
   const savedLang = localStorage.getItem('gtn_ui_lang');
+  const baseUrl = import.meta.env.BASE_URL;
+  console.log(`initI18n, base url: `, baseUrl);
 
   await i18next.use(Backend).init({
     supportedLngs: SUPPORTED_LANGUAGES,
@@ -26,8 +28,8 @@ export const initI18n = async () => {
     ns: Object.values(NameSpace),
     defaultNS: DEFAULT_NS,
     backend: {
-      //Path to fetch files from /src/assets/locales (provided by Vite)
-      loadPath: '/locales/{{lng}}/{{ns}}.json'
+      //Path to fetch files from /src/assets/locales
+      loadPath: `${baseUrl}locales/{{lng}}/{{ns}}.json`
     },
     interpolation: {
       escapeValue: false
