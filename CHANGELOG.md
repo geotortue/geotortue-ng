@@ -1,3 +1,9 @@
+## [1.2.8](https://github.com/geotortue/geotortue-ng/compare/v1.2.7...v1.2.8) (2026-02-12)
+
+### Bug Fixes
+
+- **ui:** display app itself in prod mode ([c8f1dea](https://github.com/geotortue/geotortue-ng/commit/c8f1dea20287f9a030bc3b6d4e9e0eca03ed13a9))
+
 ## [1.2.7](https://github.com/geotortue/geotortue-ng/compare/v1.2.6...v1.2.7) (2026-02-12)
 
 ### Bug Fixes
