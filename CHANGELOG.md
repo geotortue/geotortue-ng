@@ -1,3 +1,9 @@
+## [1.2.7](https://github.com/geotortue/geotortue-ng/compare/v1.2.6...v1.2.7) (2026-02-12)
+
+### Bug Fixes
+
+- **ui:** replace icon used as favicon ([bb19d3c](https://github.com/geotortue/geotortue-ng/commit/bb19d3c006ba089a8f9ac9be5cc77907a524d750))
+
 ## [1.2.6](https://github.com/geotortue/geotortue-ng/compare/v1.2.5...v1.2.6) (2026-02-12)
 
 ### Bug Fixes
