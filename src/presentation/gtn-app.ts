@@ -16,13 +16,20 @@ import type { UiLanguage } from '@domain/types';
 
 import styles from './gtn-app.scss?inline';
 
-// Components
-import './components/gtn-toolbar';
-import './components/gtn-editor';
-import './components/gtn-canvas';
-import './components/dev-reset-button';
-import './components/gtn-error-toast';
-import './components/gtn-sandbox'; // Import the sandbox
+// // Components
+// import './components/gtn-toolbar';
+// import './components/gtn-editor';
+// import './components/gtn-canvas';
+// import './components/dev-reset-button';
+// import './components/gtn-error-toast';
+// import './components/gtn-sandbox'; // Import the sandbox
+
+import { GTNToolbar } from './components/gtn-toolbar';
+import { GTNEditor } from './components/gtn-editor';
+import { GTNCanvas } from './components/gtn-canvas';
+import { DevResetButton } from './components/dev-reset-button';
+import { GTNErrorToast } from './components/gtn-error-toast';
+import { GtnSandbox } from './components/gtn-sandbox'; // Import the sandbox
 
 // Import the Type from toolbar
 import type { ViewMode } from './components/gtn-toolbar';
@@ -72,6 +79,13 @@ export class GTNApp extends LitElement {
 
   constructor() {
     super();
+    console.log('[App] Registering components:', GTNToolbar);
+    console.log('[App] Registering components:', GTNEditor);
+    console.log('[App] Registering components:', GTNCanvas);
+    console.log('[App] Registering components:', DevResetButton);
+    console.log('[App] Registering components:', GTNErrorToast);
+    console.log('[App] Registering components:', GtnSandbox);
+
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);
     this.langService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
