@@ -1,3 +1,9 @@
+## [1.2.9](https://github.com/geotortue/geotortue-ng/compare/v1.2.8...v1.2.9) (2026-02-12)
+
+### Bug Fixes
+
+- **ui:** display gtn-app body content in prod mode ([708c511](https://github.com/geotortue/geotortue-ng/commit/708c51142e2a84ef0bf432d567936ee3ee6f2020))
+
 ## [1.2.8](https://github.com/geotortue/geotortue-ng/compare/v1.2.7...v1.2.8) (2026-02-12)
 
 ### Bug Fixes
