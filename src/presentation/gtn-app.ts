@@ -16,14 +16,6 @@ import type { UiLanguage } from '@domain/types';
 
 import styles from './gtn-app.scss?inline';
 
-// // Components
-// import './components/gtn-toolbar';
-// import './components/gtn-editor';
-// import './components/gtn-canvas';
-// import './components/dev-reset-button';
-// import './components/gtn-error-toast';
-// import './components/gtn-sandbox'; // Import the sandbox
-
 import { GTNToolbar } from './components/gtn-toolbar';
 import { GTNEditor } from './components/gtn-editor';
 import { GTNCanvas } from './components/gtn-canvas';
