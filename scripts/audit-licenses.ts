@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { exit } from 'node:process';
 import { parseArgs } from 'node:util';
 
-const DEFAULT_CONFIG_FILE_PATH = 'license-config.json';
+const DEFAULT_CONFIG_FILE_PATH = 'check-license.config.json';
 const DEFAUT_LICENSE_FILES_PATH = 'licenses';
 const DEFAULT_BUILD_PATH = './';
 const DEFAULT_LICENCES_SUB_PATH = 'third-party-notices.html';
