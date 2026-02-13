@@ -5,8 +5,10 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { resolve } from 'path';
 
 export default defineConfig(({ command }) => {
-  const isProd = command === 'build';
-  const basePath = isProd ? '/geotortue-ng/' : '/';
+  // const isProd = command === 'build';
+  // const basePath = isProd ? '/geotortue-ng/' : '/';
+  // Always '/' to be deployed on a subdomain of a web site
+  const basePath = '/';
 
   return {
     base: basePath,
