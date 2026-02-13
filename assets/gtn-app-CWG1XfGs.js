@@ -1,4 +1,4 @@
-var e=Object.defineProperty,t=(t,a)=>e(t,"name",{value:a,configurable:!0});import{G as a,a as r,t as o,b as s,D as i,c as n,d as l,e as c,T as d,f as h,g as p,h as u,i as g,j as b,N as m,k as v,l as f}from"./index-B-VSuB4a.js";import{w as _,x,y,z as w,A as $,G as k,H as S,J as C,K as R}from"./vendor-DyPHgBfp.js";import{V as E,R as L,D as T,E as D,a as A,b as j,o as O,k as z,i as M,c as I,C as G}from"./vendor-cm-BciJk2fn.js";import{g as N}from"./vendor-antlr-BhUY6QBA.js";import"./vendor-math-BRLwH41I.js";import"./vendor-three-BBCA40AT.js";const P=_`
+var e=Object.defineProperty,t=(t,a)=>e(t,"name",{value:a,configurable:!0});import{G as a,a as r,t as o,b as s,D as i,c as n,d as l,e as c,T as d,f as h,g as p,h as u,i as g,j as b,N as m,k as v,l as f}from"./index-DVJC1220.js";import{w as _,x,y,z as w,A as $,G as k,H as S,J as C,K as R}from"./vendor-Djb7465o.js";import{V as E,R as L,D as T,E as D,a as A,b as j,o as O,k as z,i as M,c as I,C as G}from"./vendor-cm-CUNnyTb6.js";import{g as N}from"./vendor-antlr-BhUY6QBA.js";import"./vendor-math-DM08dv3T.js";import"./vendor-three-BBCA40AT.js";const P=_`
   .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -363,4 +363,4 @@ var e=Object.defineProperty,t=(t,a)=>e(t,"name",{value:a,configurable:!0});impor
     `}}or=br(ar),sr=new WeakMap,ir=new WeakMap,nr=new WeakMap,yr(or,4,"code",tr,Tr,sr),yr(or,4,"errors",er,Tr,ir),yr(or,4,"viewMode",Qa,Tr,nr),Tr=yr(or,0,"GTNApp",rr,Tr),wr(Tr,"styles",_`
     ${$(":host{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;background-color:#ecf0f1}.header{flex:0 0 auto;z-index:10}main{flex:1;display:flex;flex-direction:row;overflow:hidden}.editor-pane{width:400px;border-right:1px solid #bdc3c7;display:flex;flex-direction:column}.canvas{flex:1;position:relative;background:#e0e5ec;overflow:hidden}@media(max-width:800px){:host{display:block;height:100vh;width:100vw;overflow:hidden;background-color:#fff}.main{height:calc(100% - 60px);position:relative;flex-direction:column}.editor-pane{flex:1;border-right:none;border-bottom:1px solid #ccc}.canvas{flex:1}gtn-sandbox{height:100%;display:block}}")}
   `),xr(or,1,Tr);export{Tr as GTNApp};
-//# sourceMappingURL=gtn-app-DjsXsMN-.js.map
+//# sourceMappingURL=gtn-app-CWG1XfGs.js.map
