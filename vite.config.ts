@@ -14,13 +14,19 @@ export default defineConfig(({ command }) => {
       tsconfigPaths(),
       viteStaticCopy({
         targets: [
-          // Copie des fichiers de langue vers le dossier de build
+          // Copy language files in build destination folder
           {
             src: 'src/assets/locales',
             dest: '.'
           },
+          // Copy all license files, either own or dependencies
           {
-            src: './LICENSE',
+            src: [
+              './LICENSE',
+              './DEPENDENCIES-LICENSES',
+              './licenses',
+              './third-party-notices.html'
+            ],
             dest: '.'
           }
         ]

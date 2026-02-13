@@ -6,11 +6,13 @@ import { exit } from 'node:process';
 import { parseArgs } from 'node:util';
 
 const DEFAULT_CONFIG_FILE_PATH = 'license-config.json';
-const DEFAUT_LICENSE_FILES_PATH = 'licences';
-const DEFAULT_BUILD_PATH = './dist'; // FUTURE extract compilerOptions/outDir from ./tsconfig.json
+const DEFAUT_LICENSE_FILES_PATH = 'licenses';
+const DEFAULT_BUILD_PATH = './';
 const DEFAULT_LICENCES_SUB_PATH = 'third-party-notices.html';
 
 // --- Type Definitions ---
+
+// Options format as used inside configuration file
 interface LicenseConfig {
   production: boolean;
   allowedLicenses: string[];
@@ -20,6 +22,7 @@ interface LicenseConfig {
   htmlOut?: string;
 }
 
+// Options format as expected by license-checker-rseidelsohn
 interface CheckerOptions {
   start: string;
   production: boolean;
@@ -30,6 +33,7 @@ interface CheckerOptions {
   [key: string]: any;
 }
 
+// Data format as pushed in the output stream
 interface LicenseData {
   licenses?: string | string[]; // licenses is optional to handle missing data
   repository?: string;
@@ -170,7 +174,7 @@ async function runAudit() {
   if (config.htmlOut != null) {
     const configHtmlOutPath = config.htmlOut.trim() || DEFAULT_LICENCES_SUB_PATH;
     // Ensure the parent directory for the HTML file exists
-    // FUTURE try to extract compilerOptions/outDir from ./tsconfig.json befor using DEFAULT_BUILD_PATH
+    // FUTURE try to extract compilerOptions/outDir from ./tsconfig.json before using DEFAULT_BUILD_PATH
     const htmlDirPath = resolve(process.cwd(), DEFAULT_BUILD_PATH, configHtmlOutPath, '..');
     await mkdir(htmlDirPath, { recursive: true });
     console.log(`📂 WEB License HTML page will be copied to: ${htmlDirPath}`);

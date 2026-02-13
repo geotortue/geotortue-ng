@@ -23,5 +23,5 @@
     "OFL-1.1",
     "OFL-1.1-no-RFN"
   ],
-  "excludePackages": []
+  "excludedPackages": ["geo-tortue-web-app"]
 }

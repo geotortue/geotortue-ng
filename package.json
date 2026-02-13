@@ -10,6 +10,7 @@
     "watch:dev": "vite",
     "start": "npm run start:dev",
     "start:open": "concurrently \"npm start\" \"wait-on http://localhost:3000 && open-cli http://localhost:3000\"",
+    "prebuild": "npm run audit:licenses",
     "build": "rimraf dist && tsc && vite build",
     "build:debug": "rimraf dist && tsc --noEmit && vite build --debug",
     "lint": "eslint .",
@@ -38,7 +39,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "type": "module",
   "devDependencies": {
     "@commitlint/cli": "^20.4.1",

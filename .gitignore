@@ -147,4 +147,5 @@ src/infrastructure/antlr/generated/
 bundle-stats.html
 typescript-graph.*
 DEPENDENCIES-LICENSES*
-licences
+licenses
+third-party-notices.*
