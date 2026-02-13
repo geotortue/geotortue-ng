@@ -1,3 +1,9 @@
+## [1.2.11](https://github.com/geotortue/geotortue-ng/compare/v1.2.10...v1.2.11) (2026-02-13)
+
+### Bug Fixes
+
+- **chore:** gathering dependency licenses data ([c0ae1b9](https://github.com/geotortue/geotortue-ng/commit/c0ae1b91765ac593367f0cd5a56d726a42722245))
+
 ## [1.2.10](https://github.com/geotortue/geotortue-ng/compare/v1.2.9...v1.2.10) (2026-02-12)
 
 ### Bug Fixes
