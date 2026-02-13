@@ -1,6 +1,6 @@
 # GéoTortue NG - Frontend (POC)
 
-## 🚀 [Try _GéoTortue NG_ Online](https://geotortue.github.io/geotortue-ng/) 🚀
+## 🚀 [Try _GéoTortue NG_ Online](https://demo.geotortue.org/) 🚀
 
 ## 💡 Rational
 
