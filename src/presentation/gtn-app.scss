@@ -6,57 +6,36 @@
   overflow: hidden;
   background-color: #ecf0f1;
 }
+
 .header {
   flex: 0 0 auto;
   z-index: 10;
 }
+
 main {
   flex: 1;
-  display: flex;
-  flex-direction: row;
+  /* Main now just holds either Workbench or Sandbox.
+     Flex row is no longer needed here as Workbench handles its own internal layout. */
+  display: block;
   overflow: hidden;
-}
-.editor-pane {
-  width: 400px; // flex: 0 0 400px; /* Fixed width for editor */
-  border-right: 1px solid #bdc3c7;
-  // background: white;
-  display: flex;
-  flex-direction: column;
-}
-.canvas {
-  flex: 1;
   position: relative;
-  background: #e0e5ec;
-  /* Ensure the canvas container doesn't overflow improperly */
-  overflow: hidden;
 }
 
-/* Responsive adjustment: Stack vertically on small screens */
+/* * NOTE: The Split Pane logic (.editor-pane, .canvas) has been moved
+ * to src/presentation/components/gtn-workbench.scss
+ */
+
+/* Global Responsive tweaks for the host itself */
 @media (max-width: 800px) {
   :host {
-    display: block;        /* Custom elements are inline by default! */
-    height: 100vh;         /* Take full viewport height */
-    width: 100vw;          /* Take full viewport width */
-    overflow: hidden;      /* Prevent scrolling on the body */
-    background-color: #fff; /* Ensure a background */
+    /* Ensure host remains a block on small screens */
+    display: flex;
   }
-  /* Also ensure the main container takes space */
-  .main {
-    height: calc(100% - 60px); /* Adjust based on toolbar height */
-    position: relative;
-    flex-direction: column;
-  }
-  .editor-pane {
-    flex: 1;
-    border-right: none;
-    border-bottom: 1px solid #ccc; // #ccc ??? TODO à changer
-  }
-  .canvas {
-    flex: 1;
-  }
-  /* Ensure the sandbox fills the sidebar pane area */
-  gtn-sandbox {
-    height: 100%;
+}
+
+/* Ensure children take full height */
+gtn-workbench, gtn-sandbox {
     display: block;
-  }
+    height: 100%;
+    width: 100%;
 }

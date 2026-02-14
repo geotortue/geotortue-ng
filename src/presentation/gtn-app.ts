@@ -16,12 +16,14 @@ import type { UiLanguage } from '@domain/types';
 
 import styles from './gtn-app.scss?inline';
 
+// Components
 import { GTNToolbar } from './components/gtn-toolbar';
 import { GTNEditor } from './components/gtn-editor';
 import { GTNCanvas } from './components/gtn-canvas';
 import { DevResetButton } from './components/dev-reset-button';
 import { GTNErrorToast } from './components/gtn-error-toast';
-import { GtnSandbox } from './components/gtn-sandbox'; // Import the sandbox
+import { GtnSandbox } from './components/gtn-sandbox';
+import { GTNWorkbench } from './components/gtn-workbench'; // ✅ New Import
 
 // Import the Type from toolbar
 import type { ViewMode } from './components/gtn-toolbar';
@@ -71,12 +73,16 @@ export class GTNApp extends LitElement {
 
   constructor() {
     super();
-    console.log('[App] Registering components:', GTNToolbar);
-    console.log('[App] Registering components:', GTNEditor);
-    console.log('[App] Registering components:', GTNCanvas);
-    console.log('[App] Registering components:', DevResetButton);
-    console.log('[App] Registering components:', GTNErrorToast);
-    console.log('[App] Registering components:', GtnSandbox);
+    // Register components to prevent Tree Shaking issues
+    console.log('[App] Registering components:', [
+      GTNToolbar,
+      GTNEditor,
+      GTNCanvas,
+      DevResetButton,
+      GTNErrorToast,
+      GtnSandbox,
+      GTNWorkbench
+    ]);
 
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);
@@ -85,8 +91,6 @@ export class GTNApp extends LitElement {
     this.projectService = container.resolve<GTNProjectService>(GTN_TYPES.ProjectService);
     this.syntaxService = container.resolve<GTNSyntaxService>(GTN_TYPES.SyntaxService);
 
-    // Detect language (handle regional codes like 'fr-FR' -> 'fr')
-    // const detectedLang = i18next.language.split('-')[0] || 'fr';
     const detectedLang = this.langService.getDslLanguage();
     const initialCode = EXAMPLES[detectedLang] || '';
     this.code = initialCode;
@@ -112,11 +116,8 @@ export class GTNApp extends LitElement {
   }
 
   private handleCodeChange(event: CustomEvent) {
-    // This connects the Editor component to the App state
     this.code = event.detail.code;
-    // Validate on the fly (or could be done on "Run" click)
     this.errors = this.syntaxService.validate(this.code);
-    // Optional: Auto-save to localStorage could go here
   }
 
   private handleViewChange(event: CustomEvent) {
@@ -124,36 +125,22 @@ export class GTNApp extends LitElement {
   }
 
   private async handleRun() {
-    // Only validate if in Editor mode, but the button handles it
     this.errors = this.syntaxService.validate(this.code);
     if (this.errors.length > 0) {
       console.warn('Cannot run code with syntax errors: ', this.errors);
-      // FUTURE keep active the button 'Run'
-      // But display a popup with the errors
       return;
     }
 
     try {
-      // Optional: Clear before run?
-      // Usually Logo keeps drawing on top unless explicit CLEAR command is used.
-      // But for a "Run Button", users often expect a fresh start.
-      // Let's stick to strict Logo behavior: Only clear if code says CLEAR.
       await this.interpreter.execute(this.code);
     } catch (error) {
       console.error('Execution error:', error);
       alert('Error executing GéoTortue commands');
-      // Future: Show error toast/notification here
     }
   }
 
   private handleClear() {
-    // Clear 3D Scene
-    // this.renderer.clear();
-
-    // Re-initialize turtle (Reset position)
     this.turtleRepo.clear();
-
-    // Recreate a fresh turtle
     const container = GTNContainer.getInstance();
     const geoService = container.resolve<GTNGeometryService>(GTN_TYPES.GeometryService);
     const repository = container.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
@@ -166,7 +153,6 @@ export class GTNApp extends LitElement {
 
   private async handleSaveProject() {
     try {
-      // save code AND turtles state in a json file
       await this.projectService.saveProject(this.code);
       alert('Project saved!');
     } catch (e) {
@@ -177,27 +163,20 @@ export class GTNApp extends LitElement {
 
   private async handleOpenProject() {
     try {
-      // Charge les données et récupère le code
       const code = await this.projectService.loadProject();
       if (code) {
         this.code = code;
       }
-
       alert('Project loaded!');
     } catch (e) {
       console.error(e);
-      // Future: Show error toast
     }
   }
 
   private async handleDslChange(e: CustomEvent) {
     const { oldLang, newLang } = e.detail;
-
     try {
-      // Perform translation
       const translatedCode = await this.langService.translateScript(this.code, newLang, oldLang);
-
-      // Update State (which updates Editor)
       this.code = translatedCode;
     } catch (err) {
       console.error('Failed to translate DSL:', err);
@@ -221,13 +200,17 @@ export class GTNApp extends LitElement {
       <main>
         ${this.viewMode === 'EDITOR'
           ? html`
-              <div class="editor-pane">
-                <gtn-editor .code=${this.code} @code-change=${this.handleCodeChange}> </gtn-editor>
-                <gtn-error-toast .errors=${this.errors}></gtn-error-toast>
-              </div>
-              <div class="canvas">
-                <gtn-canvas></gtn-canvas>
-              </div>
+              <gtn-workbench>
+                <gtn-editor
+                  slot="editor"
+                  .code=${this.code}
+                  @code-change=${this.handleCodeChange}
+                ></gtn-editor>
+
+                <gtn-error-toast slot="toast" .errors=${this.errors}></gtn-error-toast>
+
+                <gtn-canvas slot="canvas"></gtn-canvas>
+              </gtn-workbench>
             `
           : html`
               <gtn-sandbox>

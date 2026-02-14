@@ -9,9 +9,9 @@ import { fromRadianToDegree, toDegree, toRadian } from '@domain/types';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { UiLanguageController } from '@ui/controllers/UiLanguageController';
 import type { GTNTokenName } from '@domain/types/GTNToken';
+import { NamedCssColor, toNamedCssColor, type GTNColor } from '@domain/value-objects';
 
 import styles from './gtn-sandbox.scss?inline';
-import { NamedCssColor, toNamedCssColor, type GTNColor } from '@domain/value-objects';
 
 @customElement('gtn-sandbox')
 export class GtnSandbox extends LitElement {
