@@ -22,6 +22,7 @@ export class DevResetButton extends LitElement {
   }
 
   protected render() {
+    // no i18n for this msg, only displayed in dev mode
     return html` <button @click="${this.resetApp}">Reset Local Data & Reload</button> `;
   }
 }

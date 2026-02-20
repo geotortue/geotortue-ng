@@ -66,7 +66,7 @@ export class GTNProjectService implements IGTNProjectService {
     try {
       const data: GTNProjectData = JSON.parse(jsonString);
 
-      // 2. Validate Version (Basic check)
+      // 2. Validate availability of meta (version) and turtles
       if (!data.meta || !data.turtles) {
         throw new Error('Invalid GTN Project file');
       }

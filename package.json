@@ -16,7 +16,7 @@
     "preview": "vite preview --open --port 8080",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "fix:grammar": "tsx scripts/fix-antrl-types-generated.ts src/infrastructure/antlr/generated ParseTreeListener,TokenSource,TokenFactory",
+    "fix:grammar": "tsx scripts/fix-antlr-types-generated.ts src/infrastructure/antlr/generated ParseTreeListener,TokenSource,TokenFactory",
     "generate:tokens": "tsx scripts/generate-antlr-token-enum.ts",
     "build:grammar": "antlr-ng -Dlanguage=TypeScript -o src/infrastructure/antlr/generated -l true -v true src/infrastructure/antlr/grammar/GeoTortueLexer.g4 src/infrastructure/antlr/grammar/GeoTortueParser.g4",
     "postbuild:grammar": "npm run fix:grammar && npm run generate:tokens",

@@ -101,7 +101,7 @@ In practice, the Sandbox mode appears. You can interact with the keyboard or mou
 
 To go further, switch to Desk mode.
 
-When developing, a button 'Reset Local Date & Reload' is available in the bottom left corner of the application screen.
+When developing, a button 'Reset Local Data & Reload' is available in the bottom left corner of the application screen.
 
 ## 🛠️ Développement
 
