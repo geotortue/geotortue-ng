@@ -1,3 +1,9 @@
+## [1.2.14](https://github.com/geotortue/geotortue-ng/compare/v1.2.13...v1.2.14) (2026-02-20)
+
+### Bug Fixes
+
+- **chore:** add CNAME to deploy on a custom domain through gh-pages ([c75a945](https://github.com/geotortue/geotortue-ng/commit/c75a94591b99df9da51a144a79ad53a55e82094e)), closes [#pages](https://github.com/geotortue/geotortue-ng/issues/pages)
+
 ## [1.2.13](https://github.com/geotortue/geotortue-ng/compare/v1.2.12...v1.2.13) (2026-02-20)
 
 ### Bug Fixes
