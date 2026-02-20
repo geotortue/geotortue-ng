@@ -52,6 +52,16 @@ export interface IGTNLanguageService {
   getCssColor(localizedName: string): NamedCssColorType | undefined;
 
   /**
+   * Localize a full script from canonical tokens to a DSL language.
+   * Used in explicit Events/Actions, not through Listeners/Observables.
+   * Async because it may need to fetch the DSL definitions for the language.
+   * @param script The code to translate.
+   * @param fromLang The source language code (e.g. 'en').
+   * @param toLang The target language code (e.g. 'fr').
+   */
+  localizeScript(script: string, toLang?: DslLanguage): Promise<string>;
+
+  /**
    * Translates a full script from one DSL language to another.
    * Used in explicit Events/Actions, not through Listeners/Observables.
    * Async because it may need to fetch the DSL definitions for the languages.

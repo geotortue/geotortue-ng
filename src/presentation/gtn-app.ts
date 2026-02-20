@@ -73,16 +73,8 @@ export class GTNApp extends LitElement {
 
   constructor() {
     super();
-    // Register components to prevent Tree Shaking issues
-    console.log('[App] Registering components:', [
-      GTNToolbar,
-      GTNEditor,
-      GTNCanvas,
-      DevResetButton,
-      GTNErrorToast,
-      GtnSandbox,
-      GTNWorkbench
-    ]);
+    // does nothing but preventing tree shaking issues
+    [GTNToolbar, GTNEditor, GTNCanvas, DevResetButton, GTNErrorToast, GtnSandbox, GTNWorkbench];
 
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);

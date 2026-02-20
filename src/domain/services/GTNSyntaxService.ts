@@ -29,7 +29,8 @@ export class GTNSyntaxService {
 
     // 2. Attach our custom friendly listener
     const errorListener = new GTNErrorListener();
-    parser.addErrorListener(errorListener);
+    lexer.addErrorListener(errorListener); // Catch "Unknown character" errors
+    parser.addErrorListener(errorListener); // Catch "Unexpected token" errors
 
     // 3. Parse (Walks the tree to find errors)
     parser.program();
@@ -41,7 +42,7 @@ export class GTNSyntaxService {
    * Returns a complete map of TokenID -> CSS Class Suffix
    * e.g. 17 -> 'command' (so the editor uses .cm-gt-command)
    *
-   * Note. Must be updated after any add or suppression of rules in g4 grammar parser.
+   * Note. Must be updated after any add or suppression of **rules** in g4 grammar parser.
    */
   public getTokenStyleMap(): ReadonlyMap<number, string> {
     if (this.cachedStyleMap) {

@@ -30,8 +30,17 @@ export class GTNInterpreter implements IGTNInterpreter {
       return;
     }
 
-    // 1. Canonicalize (i.e. localized ---> internal)
+    // Canonicalize (i.e. localized ---> internal)
     const canonicalScript = this.canonicalize(script);
+    return this.doExecute(canonicalScript);
+  }
+
+  public async doExecute(canonicalScript: string): Promise<void> {
+    if (!canonicalScript.trim()) {
+      return;
+    }
+
+    // 1. as a reminder of transforming localized script or command in canonical one
 
     // 2. Setup ANTLR Pipeline
     const inputStream = CharStream.fromString(canonicalScript);
@@ -45,6 +54,7 @@ export class GTNInterpreter implements IGTNInterpreter {
 
     // 3. Error Handling
     parser.removeErrorListeners();
+    // FUTURE see GTNErrorListener and GTNError
     parser.addErrorListener({
       syntaxError: (_recognizer, _offendingSymbol, line, charPositionInLine, msg, _e) => {
         console.error(`Parser Error at ${line}:${charPositionInLine} - ${msg}`);

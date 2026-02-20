@@ -39,8 +39,9 @@ It's a Single-page application ([SPA](https://developer.mozilla.org/en-US/docs/G
 - **Graphic Console**: A 2D/3D visualization where turtles execute commands;
 - **Sandbox**: A simplified interface allowing beginners and the youngest to become familiar with GéoTortue;
 - **Procedure Console**: Create, save, and reuse custom procedures (macros).
+- **Non-Euclidien Geometries**: Spherical geometry, the Poincaré disk and half-plane model.
 
-The last feature has not been implemented yet.
+The two last features have not been implemented yet.
 
 ### Technical Stack
 
@@ -70,9 +71,10 @@ The main tools:
 
 ### Prerequisites
 
-- Node.js (LTS version recommended)
-- NPM
-- GIT
+- [Node.js](https://nodejs.org/en) >=24.12.0 (LTS version recommended)
+- [GIT](https://git-scm.com/) >= 11.0.0
+
+> Node.js comes with `npm` and `npx`.
 
 ### Installation
 
@@ -106,12 +108,17 @@ When developing, a button 'Reset Local Date & Reload' is available in the bottom
 If you are interested in the project, you can contribute to it, including:
 
 - By talking about the software to your colleagues and friends;
-- By reporting the bugs;
 - By sending your figures to enrich the documentation;
-- By proposing improvements or suggesting new features;
-- By writing tutorials.
+- By writing tutorials;
+- By reporting bugs;
+- By testing development and deployment on older configurations;
+- By proposing improvements or suggesting new features.
 
 See more details here: [Contributing Guide](./CONTRIBUTING.md).
+
+## 🌐 Live Demo
+
+A GéoTortue NG demo application is deployed to GitHub Pages: **[Try _GéoTortue NG_ Online](https://demo.geotortue.org/)**
 
 ## 🛡️ Licensing
 

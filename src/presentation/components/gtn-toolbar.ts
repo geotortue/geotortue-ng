@@ -190,25 +190,6 @@ export class GTNToolbar extends LitElement {
 
               <div class="separator"></div>
 
-              <button class="mode-badge" @click=${this.handleToggleMode} title="Toggle 2D/3D">
-                ${this.currentMode}
-              </button>
-
-              ${this.currentMode === '3D'
-                ? html`
-                    <button
-                      @click=${this.handleToggleCamera}
-                      title="Switch Camera"
-                      style="font-size:0.8rem"
-                    >
-                      <span class="material-icons" style="font-size:1.1rem">videocam</span>
-                      ${this.currentCamera === 'PERSPECTIVE' ? 'PERSP' : 'ORTHO'}
-                    </button>
-                  `
-                : ''}
-
-              <div class="separator"></div>
-
               <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
                 <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
               </button>
@@ -226,13 +207,24 @@ export class GTNToolbar extends LitElement {
           `}
 
       <div class="group" style="margin-left: auto;">
-        <button class="mode-badge" @click=${this.handleToggleMode} title="Toggle 2D/3D">
-          ${this.currentMode}
+        <button
+          class="mode-badge"
+          @click=${this.handleToggleMode}
+          title="${t('toolbar.toggle.dim')}"
+        >
+          ${this.currentMode === '3D' ? t('toolbar.toggle.dim.3d') : t('toolbar.toggle.dim.2d')}
         </button>
         ${this.currentMode === '3D'
           ? html`
-              <button @click=${this.handleToggleCamera} title="Switch Camera">
-                <span class="material-icons">videocam</span>
+              <button
+                @click=${this.handleToggleCamera}
+                title="${t('toolbar.toggle.cam')}"
+                style="font-size:0.8rem"
+              >
+                <span class="material-icons" style="font-size:1.1rem">videocam</span>
+                ${this.currentCamera === 'PERSPECTIVE'
+                  ? t('toolbar.toggle.cam.perspective')
+                  : t('toolbar.toggle.cam.orthographic')}
               </button>
             `
           : ''}
@@ -250,14 +242,21 @@ export class GTNToolbar extends LitElement {
             <option value="en">${t('languages.en')}</option>
           </select>
         </div>
-
-        <div class="selector-wrapper">
-          <label for="select-dsl" class="label">${t('toolbar.selector.dsl')}</label>
-          <select id="select-dsl" @change=${this.handleDslLangChange} .value=${this.currentDslLang}>
-            <option value="fr">${t('languages.fr')}</option>
-            <option value="en">${t('languages.en')}</option>
-          </select>
-        </div>
+        ${this.currentView === 'EDITOR'
+          ? html`
+              <div class="selector-wrapper">
+                <label for="select-dsl" class="label">${t('toolbar.selector.dsl')}</label>
+                <select
+                  id="select-dsl"
+                  @change=${this.handleDslLangChange}
+                  .value=${this.currentDslLang}
+                >
+                  <option value="fr">${t('languages.fr')}</option>
+                  <option value="en">${t('languages.en')}</option>
+                </select>
+              </div>
+            `
+          : ''}
       </div>
     `;
   }

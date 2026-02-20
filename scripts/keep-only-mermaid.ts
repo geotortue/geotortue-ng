@@ -1,24 +1,20 @@
 import { createInterface } from 'node:readline';
 import { stdin, stdout } from 'node:process';
-import { EOL } from 'node:os';
 
-// Configuration: Change this to your specific Mermaid start tag
+// Configuration: Supported Mermaid start tags
 const DIAGRAM_KEYWORDS = ['graph', 'flowchart', 'classDiagram', 'stateDiagram', 'erDiagram'];
 
 // class labels are not displayed by some reader as Gnome viewer
 // even with the configuration below.
 const config = `---
 config:
-    htmlLabels: false,
+    htmlLabels: false
     flowchart:
         htmlLabels: false
 ---
 `;
-const headerLines = config.split(EOL);
 
-headerLines.forEach((l) => {
-  stdout.write(l + EOL);
-});
+stdout.write(config);
 
 const rl = createInterface({
   input: stdin,
@@ -28,18 +24,20 @@ const rl = createInterface({
 let foundDiagram = false;
 
 rl.on('line', (line: string) => {
-  // Check if the line contains the tag (or starts with it)
-  const trimmed = line.trim();
-  if (!foundDiagram && DIAGRAM_KEYWORDS.some((kw) => trimmed.startsWith(kw))) {
-    foundDiagram = true;
+  // Early exit: If we already found the diagram, just pipe the line and skip the checks
+  if (foundDiagram) {
+    stdout.write(line + '\n');
+    return;
   }
 
-  // Once the tag is found, start printing lines
-  if (foundDiagram) {
+  // Look for the start of the diagram
+  const trimmed = line.trim();
+  if (DIAGRAM_KEYWORDS.some((kw) => trimmed.startsWith(kw))) {
+    foundDiagram = true;
     stdout.write(line + '\n');
   }
 });
 
 rl.on('error', (err) => {
-  console.error('Stream Error:', err);
+  console.error('💥 Stream Error in keep-only-mermaid:', err);
 });

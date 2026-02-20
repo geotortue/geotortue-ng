@@ -20,7 +20,6 @@ export const initI18n = async () => {
   const savedLang = localStorage.getItem('gtn_ui_lang');
   const baseUrl = import.meta.env.BASE_URL;
   const localesUrl = `${baseUrl}locales/`;
-  console.log(`initI18n, locales url: `, localesUrl);
 
   await i18next.use(Backend).init({
     supportedLngs: SUPPORTED_LANGUAGES,

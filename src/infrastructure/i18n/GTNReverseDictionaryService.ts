@@ -4,10 +4,18 @@ import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 
 import type { DslLanguage } from '@domain/types';
 import { NamedCssColor, type NamedCssColorType } from '@domain/value-objects';
-
 import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+
+export const CANONICAL_LANGUAGE = '--';
+export type CanonicalLanguage = '--';
+
+/** * Type Guard to check if it is the canonical language
+ */
+export const isCanonicalLanguage = (lang: unknown): lang is CanonicalLanguage => {
+  return typeof lang === 'string' && CANONICAL_LANGUAGE === lang;
+};
 
 const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
 
@@ -107,15 +115,122 @@ export class GTNReverseDictionaryService {
   }
 
   /**
+   * Localizes a script from canonical tokens to destination language
+   *
+   */
+  public async localizeScript(script: string, targetLang: DslLanguage) {
+    if (!script.trim()) {
+      return '';
+    }
+
+    // 1. Ensure dictionary is loaded
+    const targetDict = await this.getOrLoadDictionary(targetLang);
+
+    // 2. Tokenize script
+    const chars = CharStream.fromString(script);
+    const lexer = new GeoTortueLexer(chars);
+
+    // Get all tokens (including those on hidden channels if any, though getAllTokens usually fetches channel 0.
+    // We strictly use start/stop indices to preserve whitespace, so we just need the "significant" tokens to translate).
+    const tokens = lexer.getAllTokens();
+    const vocabulary = lexer.vocabulary;
+
+    const replacements: ReplacementType[] = [];
+
+    // 3. Iterate on tokens
+    for (const token of tokens) {
+      if (token.text == null) {
+        continue;
+      }
+
+      const translatedText = this.doLocalize(token, vocabulary, targetDict);
+      // Only verify against text to avoid unnecessary string ops if identical
+      if (translatedText === token.text) {
+        continue;
+      }
+
+      replacements.push({ start: token.start, stop: token.stop, newText: translatedText! });
+    }
+
+    // Apply replacements in reverse order, i.e. from end to start
+    const localizedCode = replacements.toReversed().reduce((acc, rep) => {
+      const before = acc.substring(0, rep.start);
+      const after = acc.substring(rep.stop + 1);
+      const result = before + rep.newText + after;
+      return result;
+    }, script);
+
+    return localizedCode;
+  }
+
+  private doLocalize(
+    token: Token,
+    vocabulary: Vocabulary,
+    targetDict: LangCache
+  ): string | undefined {
+    if (token.text == null) {
+      return token.text;
+    }
+
+    const tokenType = token.type;
+    const symbolicName = vocabulary.getSymbolicName(tokenType); // e.g., "GT_FORWARD" or null
+
+    // ---------------------------------------------------------
+    // STRATEGY A: Direct Token Type Match
+    // ---------------------------------------------------------
+    // If the Lexer explicitly recognized the token (e.g. it was a hardcoded keyword in grammar),
+    // we map the Token Type directly to the Target Language word.
+    if (symbolicName && targetDict.commandForward.has(symbolicName)) {
+      return targetDict.commandForward.get(symbolicName)!;
+    }
+    if (symbolicName && targetDict.keywordForward.has(symbolicName)) {
+      return targetDict.keywordForward.get(symbolicName)!;
+    }
+
+    // ---------------------------------------------------------
+    // STRATEGY B: Reverse Text Lookup (Fallback)
+    // ---------------------------------------------------------
+    // If the Lexer treated the word as a generic 'GT_WORD' or 'GT_ID',
+    // we look up the text in the SOURCE dictionary to find its canonical ID,
+    // then map that ID to the TARGET language.
+
+    const originalText = token.text;
+    const key = originalText.toUpperCase();
+    // 1. Check Commands (e.g. GT_FORWARD ---> "forward")
+    if (targetDict.commandForward.has(key)) {
+      return targetDict.commandForward.get(key) || originalText;
+    }
+
+    // 2. Check Keywords (e.g. GT_REP ---> "repeat") -> THIS WAS MISSING
+    if (targetDict.keywordForward.has(key)) {
+      return targetDict.keywordForward.get(key) || originalText;
+    }
+
+    // 3. Check Colors (e.g. "red")
+    const stripped = key.replace(/^'(.*)'$/, '$1').replace(/^"(.*)"$/, '$1');
+    const canonicalColor = GEOTORTUE_GRAMMAR_PREFIX + stripped.toUpperCase();
+    if (targetDict.colorForward.has(canonicalColor)) {
+      const del = stripped === key ? '' : key.charAt(0);
+      const color = del + (targetDict.colorForward.get(canonicalColor) ?? '') + del;
+      return color || originalText;
+    }
+
+    // 4. No translation found, return the original
+    return originalText;
+  }
+
+  /**
    * Translates a script from one language to another using ANTLR tokens.
+   *
    */
   public async translateScript(
     script: string,
     fromLang: DslLanguage,
     targetLang: DslLanguage
   ): Promise<string> {
-    if (!script.trim()) return '';
-
+    if (!script.trim()) {
+      return '';
+    }
     // 1. Ensure dictionaries are loaded
     const [sourceDict, targetDict] = await Promise.all([
       this.getOrLoadDictionary(fromLang),
@@ -138,6 +253,7 @@ export class GTNReverseDictionaryService {
       if (token.text == null) {
         continue;
       }
+
       const translatedText = this.doTranslate(token, vocabulary, sourceDict, targetDict);
       // Only verify against text to avoid unnecessary string ops if identical
       if (translatedText === token.text) {
@@ -163,7 +279,7 @@ export class GTNReverseDictionaryService {
     vocabulary: Vocabulary,
     sourceDict: LangCache,
     targetDict: LangCache
-  ) {
+  ): string | undefined {
     if (token.text == null) {
       return token.text;
     }
@@ -209,7 +325,8 @@ export class GTNReverseDictionaryService {
       const key = sourceDict.colorReverse.get(lowerText)!;
       return targetDict.colorForward.get(key) || originalText;
     }
-    // C. No translation found, return the original
+
+    // 4. No translation found, return the original
     return originalText;
   }
 
@@ -227,7 +344,6 @@ export class GTNReverseDictionaryService {
       // Bypass i18next cache, fetch raw JSON
       const baseUrl = import.meta.env.BASE_URL;
       const fullUrl = `${baseUrl}locales/${lang}/dsl.json`;
-      console.log(`loadAndProcess, full url: `, fullUrl);
       const response = await fetch(fullUrl);
       if (!response.ok) {
         throw new Error(`Failed to load DSL for ${lang}`);
@@ -291,6 +407,7 @@ function createColorMap() {
   }
   return forward;
 }
+
 function createMapping(source: Record<string, string | string[]>) {
   const forward = new Map<string, string>();
   const reverse = new Map<string, string>();

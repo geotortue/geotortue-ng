@@ -315,6 +315,6 @@ describe('GTNExecutionVisitor', () => {
   it('should reset repo on visitProgram', async () => {
     const tree = parse('', 'program');
     await (visitor.visitProgram(tree) as Promise<any>);
-    expect(mockRepo.reset).toHaveBeenCalled();
+    expect(mockRepo.reset).not.toHaveBeenCalled();
   });
 });

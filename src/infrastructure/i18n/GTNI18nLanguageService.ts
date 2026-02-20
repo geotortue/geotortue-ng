@@ -241,4 +241,9 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
 
     return this.reverseDictionary.translateScript(script, sourceLang, targetLang);
   }
+
+  public async localizeScript(script: string, targetLang?: DslLanguage): Promise<string> {
+    const language = targetLang || this.getDslLanguage();
+    return this.reverseDictionary.localizeScript(script, language);
+  }
 }

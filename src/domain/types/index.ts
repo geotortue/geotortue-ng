@@ -4,6 +4,7 @@ export * from './degree';
 export * from './radian';
 export * from './angle.util';
 export * from './millisec';
-export * from './GTNTurtleId';
 export * from './uiLanguage';
 export * from './dslLanguage';
+export * from './GTNTurtleId';
+export * from './GTNToken';

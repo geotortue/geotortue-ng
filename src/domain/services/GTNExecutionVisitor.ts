@@ -100,9 +100,9 @@ export class GTNExecutionVisitor
 
   // 1. Entry point
   public async visitProgram(ctx: GTNParser.ProgramContext): Promise<void> {
-    this.turtleRepo.reset();
-    this.scopes = [{}];
-    this.userFunctions.clear();
+    // this.turtleRepo.reset();
+    // this.scopes = [{}];
+    // this.userFunctions.clear();
 
     if (ctx.children) {
       for (const child of ctx.children) {
@@ -387,13 +387,27 @@ export class GTNExecutionVisitor
 
   // --- System Commands ---
 
+  /** Remove all drawings but keep the turtles as it
+   *
+   * @see GeoTortueParserVisitor.visitClearGraphics
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
   public async visitClearGraphics(_ctx: GTNParser.ClearGraphicsContext): Promise<void> {
     this.turtleRepo.clearAllLines();
     await this.tick();
   }
 
+  /** Remove all drawings and **reset** all the turtles.
+   *
+   * @see GeoTortueParserVisitor.visitClearScreen
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
   public async visitClearScreen(_ctx: GTNParser.ClearScreenContext): Promise<void> {
     this.turtleRepo.reset();
+    this.scopes = [{}];
+    this.userFunctions.clear();
     await this.tick();
   }
 

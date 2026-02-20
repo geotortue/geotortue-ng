@@ -6,7 +6,7 @@ import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 export class UiLanguageController implements ReactiveController {
   private readonly host: ReactiveControllerHost;
   private readonly languageService: IGTNLanguageService;
-  private unsubscribe?: () => void;
+  private unsubscribe?: (() => void) | null;
 
   constructor(host: ReactiveControllerHost) {
     this.host = host;
@@ -29,6 +29,7 @@ export class UiLanguageController implements ReactiveController {
     // Clean up when component is removed
     if (this.unsubscribe) {
       this.unsubscribe();
+      this.unsubscribe = null;
     }
   }
 }
