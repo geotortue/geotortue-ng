@@ -102,10 +102,12 @@ export class GTNToolbar extends LitElement {
     const oldLang = this.currentDslLang;
     const newLang = toDslLanguage(target.value);
 
-    // Dispatch event BEFORE updating local service?
-    // Usually better to let parent orchestrate, but we can emit "request-change"
+    // Ensure the DSL language is switched first so editor services
+    // (autocomplete/highlighting) read the correct dictionary immediately.
+    await this.langService.setDslLanguage(newLang);
+    this.currentDslLang = newLang;
 
-    // Notify Parent to translate code
+    // Then notify parent so it can translate existing code content.
     this.dispatchEvent(
       new CustomEvent('dsl-lang-change', {
         detail: { oldLang, newLang },
@@ -113,15 +115,6 @@ export class GTNToolbar extends LitElement {
         composed: true
       })
     );
-
-    // Update local state to reflect UI immediately
-    await this.langService.setDslLanguage(newLang);
-    this.currentDslLang = newLang;
-
-    // // Notify Parent to translate code
-    // this.dispatchEvent(new CustomEvent('dsl-lang-change', {
-    //     detail: { oldLang, newLang }
-    // }));
   }
 
   private handleToggleMode() {
