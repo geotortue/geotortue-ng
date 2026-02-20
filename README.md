@@ -9,7 +9,7 @@ This project is a [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product) fo
 - select the technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
 - validate an architecture based on [DDD](https://en.wikipedia.org/wiki/Domain-driven_design);
 - validate a multi-language [DSL](https://en.wikipedia.org/wiki/Domain-specific_language), i.e. in french, english, ...
-- use [AI](https://en.wikipedia.org/wiki/Artificial_intelligence), e.g. [Google Gemini](https://gemini.google.com),
+- use [AI](https://en.wikipedia.org/wiki/Artificial_intelligence), e.g. [Google Gemini](https://gemini.google.com) or [ChatGPT Codex](https://chatgpt.com/codex),
   to do reverse engineering of legacy code and coding the `New Generation` application.
 
 Then "GéoTortue NG", with "NG" for "Nouvelle Génération", i.e. _GeoTurtle - New Generation_.

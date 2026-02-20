@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky",
+    "prestart:dev": "tsx scripts/ensure-antlr-generated.ts",
     "start:dev": "vite",
     "watch:dev": "vite",
     "start": "npm run start:dev",
@@ -21,6 +22,7 @@
     "build:grammar": "antlr-ng -Dlanguage=TypeScript -o src/infrastructure/antlr/generated -l true -v true src/infrastructure/antlr/grammar/GeoTortueLexer.g4 src/infrastructure/antlr/grammar/GeoTortueParser.g4",
     "postbuild:grammar": "npm run fix:grammar && npm run generate:tokens",
     "tsg": "tsg",
+    "pretest": "tsx scripts/ensure-antlr-generated.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run -c vitest.unit.config.ts",
