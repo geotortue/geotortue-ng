@@ -1,3 +1,9 @@
+## [1.2.13](https://github.com/geotortue/geotortue-ng/compare/v1.2.12...v1.2.13) (2026-02-20)
+
+### Bug Fixes
+
+- **chore:** tree shaking too aggressive ([cc3e3c9](https://github.com/geotortue/geotortue-ng/commit/cc3e3c9cd6f3f32f58d686920ddeaef0ba08f950))
+
 ## [1.2.12](https://github.com/geotortue/geotortue-ng/compare/v1.2.11...v1.2.12) (2026-02-13)
 
 ### Bug Fixes
