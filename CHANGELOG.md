@@ -1,3 +1,9 @@
+## [1.2.12](https://github.com/geotortue/geotortue-ng/compare/v1.2.11...v1.2.12) (2026-02-13)
+
+### Bug Fixes
+
+- **chore:** rename licenses config file to avoid wrong reporting on github repo ([6672417](https://github.com/geotortue/geotortue-ng/commit/667241748a5848b6230881732ceed0b45d554812))
+
 ## [1.2.11](https://github.com/geotortue/geotortue-ng/compare/v1.2.10...v1.2.11) (2026-02-13)
 
 ### Bug Fixes
