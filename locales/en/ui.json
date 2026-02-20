@@ -18,11 +18,20 @@
       "dsl": "Commands"
     },
     "open_project": "Open Project",
-    "save_project": "Save Project"
+    "save_project": "Save Project",
+    "toggle.dim": "Toggle 2D/3D",
+    "toggle.dim.2d": "2D",
+    "toggle.dim.3d": "3D",
+    "toggle.cam": "Switch Camera",
+    "toggle.cam.perspective": "PERSP",
+    "toggle.cam.orthographic": "ORTHO"
   },
   "languages": {
     "fr": "French",
     "en": "English"
+  },
+  "unit": {
+    "degree": "°"
   },
   "entities": {
     "turtle": "Turtle",
@@ -49,9 +58,14 @@
     "sandbox": "Sandbox"
   },
   "sandbox": {
-    "settings_title": "Settings",
-    "step": "Step",
-    "angle": "Rotation (in °)",
+    "settings.title": "Settings",
+    "compass.title": "Direction",
+    "color.title": "Pen",
+    "commands.title": "Commands",
+    "navigation.title": "Navigation",
+    "controls.title": "Controls",
+    "step": "Step (in pixel)",
+    "angle": "Rotation (in degree)",
     "keyboard_on": "Keyboard ON",
     "keyboard_off": "Keyboard OFF",
     "history_title": "History",
@@ -78,13 +92,14 @@
       }
     },
     "tooltip": {
-      "forward": "Forward",
-      "backward": "Backward",
-      "left": "Turn Left",
-      "right": "Turn Right"
+      "forward": "Forward (↑)",
+      "backward": "Backward (↓)",
+      "left": "Turn Left (←)",
+      "right": "Turn Right (→)"
     }
   },
   "compass": {
+    "set.heading": "Click to set heading",
     "n": "N",
     "e": "E",
     "s": "S",
