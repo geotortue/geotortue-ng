@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
+
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';

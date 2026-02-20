@@ -76,7 +76,16 @@ export default defineConfig(({ command }) => {
         // 3. Aggressive Tree Shaking
         treeshake: {
           preset: 'recommended',
-          moduleSideEffects: false // Tells Rollup your code is side-effect free
+          moduleSideEffects: (id) => {
+            // Always keep styles
+            if (/\.(s?css|sass|less)$/.test(id)) return true;
+
+            // Keep your Lit components (which register themselves)
+            if (id.includes('src/presentation/components/')) return true;
+
+            // Everything else can be safely tree-shaken
+            return false;
+          }
         }
       }
     },

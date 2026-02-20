@@ -6,7 +6,7 @@ import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { GTNToken } from '@domain/types';
 
-import '@ui/components/utils/gtn-icon';
+import { GtnIcon } from '@ui/components/utils/gtn-icon';
 
 @customElement('gtn-commands-panel')
 export class GTNCommandsPanel extends LitElement {
@@ -88,6 +88,9 @@ export class GTNCommandsPanel extends LitElement {
 
   constructor() {
     super();
+
+    // does nothing but preventing tree shaking issues (see `treeshake.moduleSideEffects: false` in Vite configuration)
+    [GtnIcon];
     this.langService = GTNContainer.getInstance().resolve(GTN_TYPES.LanguageService);
   }
 

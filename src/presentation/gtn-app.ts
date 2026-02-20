@@ -73,8 +73,8 @@ export class GTNApp extends LitElement {
 
   constructor() {
     super();
-    // does nothing but preventing tree shaking issues
-    [GTNToolbar, GTNEditor, GTNCanvas, DevResetButton, GTNErrorToast, GtnSandbox, GTNWorkbench];
+    // does nothing but preventing tree shaking issues (see `treeshake.moduleSideEffects: false` in Vite configuration)
+    [DevResetButton, GTNCanvas, GTNEditor, GTNErrorToast, GtnSandbox, GTNToolbar, GTNWorkbench];
 
     const container = GTNContainer.getInstance();
     this.interpreter = container.resolve<IGTNInterpreter>(GTN_TYPES.Interpreter);

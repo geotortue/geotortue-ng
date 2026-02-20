@@ -1,8 +1,7 @@
 import { fixture, html } from '@open-wc/testing';
 
-// Import the component so it registers in the customElements registry
-import './gtn-icon';
-import type { GtnIcon } from './gtn-icon';
+// Import the component as class, not type, so it registers in the customElements registry
+import { GtnIcon } from './gtn-icon';
 
 describe('GtnIcon Component', () => {
   let consoleWarnSpy: ReturnType<typeof vi.spyOn>;

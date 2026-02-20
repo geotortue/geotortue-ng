@@ -12,7 +12,6 @@ import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { UiLanguageController } from '@ui/controllers/UiLanguageController';
-
 import { createAntlrHighlighter } from '@ui/editor/syntax/createAntlrHighlighter';
 import { geoTortueSyntaxTheme } from '@ui/editor/themes/geoTortueSyntaxTheme';
 

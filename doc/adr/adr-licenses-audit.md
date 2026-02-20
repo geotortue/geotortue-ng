@@ -43,18 +43,86 @@ In fact a simpler overrrides is enough:
     "minimist": "^1.2.8",
     "lodash.set": "^4.3.2",
     "@eslint/eslintrc": "^3.2.0"
-
 },
 ```
 
 But there is still an issue `ajv`:
 TypeError: Cannot set properties of undefined (setting 'defaultMeta')
 
-Compromise : remove ajv from overrides and accept 3 moderate vulnerability
+Compromise : remove ajv from overrides and accept some moderate severity vulnerabilities
 
 ```json
+  "overrides": {
+    "tar": "^7.5.8",
+    "glob": "^11.0.1",
+    "minimatch": "^10.0.1",
+    "minimist": "^1.2.8",
+    "lodash.set": "^4.3.2"
+  },
+```
 
+```bash
+rm -rf node_modules package-lock.json
+npm install
+# npm warn deprecated read-package-json@6.0.4: This package is no longer supported. Please use @npmcli/package-json instead.
+# npm warn deprecated puppeteer@23.11.1: < 24.15.0 is no longer supported
+# npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#
+# > geo-tortue-web-app@1.2.11 prepare
+# > husky
+#
+#
+# added 1211 packages, and audited 1362 packages in 1m
+#
+# 250 packages are looking for funding
+#   run `npm fund` for details
+#
+# 5 moderate severity vulnerabilities
+#
+# To address all issues (including breaking changes), run:
+#   npm audit fix --force
+#
+# Run `npm audit` for details.
 
+npm list ajv
+# [...]/frontend
+# ├─┬ @commitlint/cli@20.4.2
+# │ └─┬ @commitlint/load@20.4.0
+# │   └─┬ @commitlint/config-validator@20.4.0
+# │     └── ajv@8.18.0
+# └─┬ eslint@9.39.2
+#   ├─┬ @eslint/eslintrc@3.3.3
+#   │ └── ajv@6.12.6
+#   └── ajv@6.12.6
+
+git add .
+
+git commit -m 'refactor: mainly sandbox'
+✔ Backed up original state in git stash (b97a178)
+✔ Running tasks for staged files...
+✔ Applying modifications from tasks...
+✔ Cleaning up temporary files...
+[main 87eb398] refactor: mainly sandbox
+ 47 files changed, 5143 insertions(+), 1765 deletions(-)
+ create mode 100644 doc/adr/adr-licenses-audit.md
+ create mode 100644 scripts/fix-antlr-types-generated.ts
+ delete mode 100644 scripts/fix-generated.ts
+ create mode 100644 scripts/generate-antlr-token-enum.ts
+ delete mode 100644 scripts/generate-token-enum.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-color-panel.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-commands-panel.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-compass-panel.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-controls-panel.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-navigation-panel.ts
+ create mode 100644 src/presentation/components/sandbox/gtn-settings-panel.ts
+ create mode 100644 src/presentation/components/utils/gtn-icon.test.ts
+ create mode 100644 src/presentation/components/utils/gtn-icon.ts
+ create mode 100644 src/presentation/components/utils/gtn-keyboard.ts
+ create mode 100644 src/presentation/components/utils/keyboard.test.ts
+ create mode 100644 src/presentation/components/utils/keyboard.ts
+ create mode 100644 src/presentation/components/utils/registered-icons.test.ts
+ create mode 100644 src/presentation/components/utils/registered-icons.ts
+```
 
 ## Rational
 
@@ -135,4 +203,3 @@ By using `nlf` as a data source and wrapping it in a TypeScript script, that ach
 | **Output**           | Hardcoded formats                   | Fully custom (MD, HTML, JSON)        |
 | **Reliability**      | Known for "Unknown" results         | Excellent at resolving ambiguity     |
 | **GPL-3 Compliance** | Hard to enforce custom rules        | **Strictly enforced by a whitelist** |
-```

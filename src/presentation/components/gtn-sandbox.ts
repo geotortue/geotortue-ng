@@ -1,18 +1,12 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { until } from 'lit/directives/until.js';
 
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { IGTNInterpreter } from '@domain/interfaces/IGTNInterpreter';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
-import {
-  getLiteralName,
-  GTNToken,
-  toDslLanguage,
-  toUiLanguage,
-  type DslLanguage
-} from '@domain/types';
+import { getLiteralName, GTNToken, toDslLanguage } from '@domain/types';
+import type { NamedCssColorType } from '@domain/value-objects';
 
 // Import sub-components
 import { GTNNavigationPanel } from './sandbox/gtn-navigation-panel';
@@ -26,10 +20,9 @@ import {
 import { GTNCommandsPanel } from './sandbox/gtn-commands-panel';
 import { GTNColorPanel } from './sandbox/gtn-color-panel';
 import { GTNControlsPanel } from './sandbox/gtn-controls-panel';
+import { DpadCode } from './utils/gtn-keyboard';
 
 import styles from './gtn-sandbox.scss?inline';
-import type { NamedCssColorType } from '@domain/value-objects';
-import { DpadCode } from './utils/gtn-keyboard';
 
 const cmdSep = getLiteralName(GTNToken.GT_SEMICOLON);
 const ARROW_NAV_KEYS: DpadCode[] = [
@@ -62,12 +55,12 @@ export class GtnSandbox extends LitElement {
     super();
     // does nothing but preventing tree shaking issues
     [
-      GTNNavigationPanel,
-      GTNCompassPanel,
-      GTNSettingsPanel,
-      GTNCommandsPanel,
       GTNColorPanel,
-      GTNControlsPanel
+      GTNCommandsPanel,
+      GTNCompassPanel,
+      GTNControlsPanel,
+      GTNNavigationPanel,
+      GTNSettingsPanel
     ];
 
     const container = GTNContainer.getInstance();

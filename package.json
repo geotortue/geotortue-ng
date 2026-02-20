@@ -13,6 +13,7 @@
     "prebuild": "npm run audit:licenses",
     "build": "rimraf dist && tsc && vite build",
     "build:debug": "rimraf dist && tsc --noEmit && vite build --debug",
+    "preview": "vite preview --open --port 8080",
     "lint": "eslint .",
     "format": "prettier --write .",
     "fix:grammar": "tsx scripts/fix-antrl-types-generated.ts src/infrastructure/antlr/generated ParseTreeListener,TokenSource,TokenFactory",

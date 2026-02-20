@@ -9,7 +9,7 @@ import {
   type UiLanguage
 } from '@domain/types';
 import { DEFAULT_LANGUAGE, NameSpace } from '@infrastructure/i18n';
-import type { GTNReverseDictionaryService } from './GTNReverseDictionaryService';
+import type { GTNReverseDictionaryService } from '@infrastructure/i18n/GTNReverseDictionaryService';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
