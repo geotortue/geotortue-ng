@@ -14,10 +14,12 @@ const shouldBuildGrammar = (): boolean => {
 };
 
 if (shouldBuildGrammar()) {
-  console.log('[pretest] ANTLR generated directory is missing or empty. Running build:grammar...');
+  console.log(
+    '[pretest or prestart:dev] ANTLR generated directory is missing or empty. Running build:grammar...'
+  );
   execSync('npm run build:grammar', { stdio: 'inherit' });
 } else {
   console.log(
-    '[pretest] ANTLR generated directory already contains files. Skipping build:grammar.'
+    '[pretest or prestart:dev] ANTLR generated directory already contains files. Skipping build:grammar.'
   );
 }

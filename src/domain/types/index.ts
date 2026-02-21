@@ -8,3 +8,4 @@ export * from './uiLanguage';
 export * from './dslLanguage';
 export * from './GTNTurtleId';
 export * from './GTNToken';
+export * from './GTNCommandArity';
