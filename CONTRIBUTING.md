@@ -23,10 +23,9 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 - enhance the look & feel
 - enhance the grammar
-- more features from legacy GéoTortue: Procedure, Sandbox, Geometries, Video, ...
+- more features from legacy GéoTortue: Procedure, Geometries, Audio, Video, ...
 - tool to retrieve hard coded text and deal with them in i18n
 - typography enhancers
-- gather licenses of the technical stack components
 - collaboration features and tools (e.g. with TogetherJS)
 - API with the real world (Audio, ...)
 - QA: more tests, versionning, SonarQube, ...
@@ -46,7 +45,7 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ### Technical Stack
 
-- **UI Framework**: [Lit](https://lit.dev/)
+- **UI Framework**: [Lit](https://lit.dev/) & [scss]() (°)
 - **Icons & fonts**: material-icons, fortawesome
 - **DI**: internal component, see class `GTNContainer` and function `configureDependencyInjection`
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -56,10 +55,7 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 - **Editor**: [CodeMirror](https://codemirror.net/)
 - **I18n**: [i18next](https://www.i18next.com/)
 
-This project ATM doesn't use any css frameworks such as scss or sass. And especially not Tailwind! :wink:
-
-> TODO About css, see some semantic approach?
-> See [ADR - CSS Semantic](doc/adr/adr-css-semantic.md)
+> (°) About `Semantic CSS` versus [Tailwind CSS](https://tailwindcss.com/), see [ADR - Semantic CSS](doc/adr/adr-css-semantic.md)
 
 ### Tools
 
@@ -67,10 +63,10 @@ This project ATM doesn't use any css frameworks such as scss or sass. And especi
 - [GIT](https://git-scm.com/) as [VCS](https://en.wikipedia.org/wiki/Version_control)
 - [Vite](https://vite.dev/) as build tool
 - [Vitest](https://vitest.dev/) for testing
-- prettier & eslint for QA
-- "@ysk8hori/typescript-graph" for dependency diagram
-- "rollup-plugin-visualizer" & "vite-bundle-visualizer" for bundle size management
-- mainly [Google Gemini Pro](https://gemini.google.com/) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
+- [prettier](https://prettier.io/) & [eslint](https://eslint.org/) for QA
+- [@ysk8hori/typescript-graph](https://github.com/ysk8hori/typescript-graph) for dependency diagram
+- [rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) & [vite-bundle-visualizer](https://github.com/KusStar/vite-bundle-visualizer) for bundle size management
+- mainly [Google Gemini Pro](https://gemini.google.com/) and [ChatGPT Codex](https://chatgpt.com/codex) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
 
 ## Development Workflow
 

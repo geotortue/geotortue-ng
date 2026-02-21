@@ -1,4 +1,4 @@
-# ADR - CSS Semantic
+# ADR - Semantic CSS
 
 Tailwind or not?
 
@@ -11,6 +11,10 @@ Written and illustrated by Annie Sexton • Tue Mar 12 2024
 Tailwind vs. Semantic CSS
 February 28, 2024
 <https://gomakethings.com/tailwind-vs.-semantic-css/>
+
+TailwindCSS vs Semantic CSS
+23 mai 2024
+<https://dev.to/7jw92nvd1klaq1/tailwindcss-vs-semantic-css-411j>
 
 Tailwind is bad
 February 22, 2024
@@ -49,6 +53,14 @@ Making UI Layout: Fast, Pixel Perfect, Without Stress 🚀
 Niko Borisov, Posted on Aug 29, 2024
 <https://dev.to/niko_doing_dev/making-ui-layout-fast-pixel-perfect-without-stress-1n5m>
 Utilise Figma, Angular & TailwindCSS
+
+CSS Semantics: Best Practices
+9th June 2012, Rob Dodson
+<https://robdodson.me/posts/css-semantics/>
+
+Why you should use semantic naming in CSS
+Spyros Argalias, Feb 3, 2020
+<https://levelup.gitconnected.com/why-you-should-use-semantic-naming-in-css-901e3324cc4>
 
 [10 frameworks CSS à utiliser en 2025](https://www.codeur.com/blog/frameworks-css/), Thomas Lazzaroni, 11/2025
 

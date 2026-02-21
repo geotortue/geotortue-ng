@@ -26,9 +26,9 @@ The GéoTortue software stands out on two points:
 It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tl` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
 
 > (°) The language used by GéoTortue is a Logo-like but it's not a Logo language. It doesn't have the functional richness of a [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html).
-> And it doesn't follow certain well-established logo syntax conventions.
+> And it doesn't follow some well-established logo syntax conventions.
 
-## ⚙️ A bit of technical
+## 🏗️ A bit of technical
 
 It's a Single-page application ([SPA](https://developer.mozilla.org/en-US/docs/Glossary/SPA)).
 
@@ -97,13 +97,20 @@ npm run start:open
 
 The application opens in a new tab under the current browser, the turtle is ready to meet all your wishes.
 
-In practice, the Sandbox mode appears. You can interact with the keyboard or mouse.
+In practice, your starts in the Sandbox mode: you can interact with the keyboard or the mouse.
 
 To go further, switch to Desk mode.
 
-When developing, a button 'Reset Local Data & Reload' is available in the bottom left corner of the application screen.
-
 ## 🛠️ Développement
+
+When launching the application in development mode as above:
+
+- a button 'Reset Local Data & Reload' is available in the bottom left corner of the application screen;
+- the grammar files are generated before starting the application if they don't exist yet.
+
+See more details here: [Contributing Guide](./CONTRIBUTING.md).
+
+## 👋 Contributing
 
 If you are interested in the project, you can contribute to it, including:
 
@@ -130,19 +137,24 @@ This project is licensed under the [GPLv3 License](./LICENSE).
   The software owes a lot to the ideas, suggestions and enthusiastic remarks of Stéphan Petitjean, Erwan Adam, Jean-François Jamart and Frédéric Clerc.
 
 - [GéoTortue](http://geotortue.free.fr/) was developed within the [IREM Paris-Nord](https://www-irem.univ-paris13.fr):
-  - [GéoTortue 3D: utilisation et exemples d’activités](https://www-irem.univ-paris13.fr/site_spip/spip.php?article352) _(in french)_: _GéoTortue 3D: use and examples of activities_
-  - [LOGO, ordinateurs et apprentissages](https://www-irem.univ-paris13.fr/site_spip/spip.php?article32) _(in french)_: _LOGO, computers and learning_
-  - ...
 
 - R. Hartig drew the [mascot](src/main/resources/cfg/tortue-v4.png).
 
-## 🔗 Logo Links
+## 📚 Learn More
+
+### GéoTortue
+
+- [GéoTortue 3D: utilisation et exemples d’activités](https://www-irem.univ-paris13.fr/site_spip/spip.php?article352) _(in french)_: _GéoTortue 3D: use and examples of activities_
+
+- [LOGO, ordinateurs et apprentissages](https://www-irem.univ-paris13.fr/site_spip/spip.php?article32) _(in french)_: _LOGO, computers and learning_
+
+### Logo
 
 - [Logo Foundation](https://el.media.mit.edu/logo-foundation/)
 
 - [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html)
 
-- [Logo Language](https://wiki.c2.com/?LogoLanguage)
+- [Wiki - Logo Language](https://wiki.c2.com/?LogoLanguage)
 
 - [Wikipedia - Logo (programming language)](<https://en.wikipedia.org/wiki/Logo_(programming_language)>)
 
