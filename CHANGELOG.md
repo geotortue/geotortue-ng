@@ -1,3 +1,10 @@
+## [1.2.15](https://github.com/geotortue/geotortue-ng/compare/v1.2.14...v1.2.15) (2026-02-20)
+
+### Bug Fixes
+
+- **chore:** wrong npm script ([dcfa78e](https://github.com/geotortue/geotortue-ng/commit/dcfa78e9f364081bb53e6af1b8cd331bf8a30576))
+- **ui:** ensure synch when changing DSL language ([02c6028](https://github.com/geotortue/geotortue-ng/commit/02c602881e59076025ac2642246619e738d6fd0f))
+
 ## [1.2.14](https://github.com/geotortue/geotortue-ng/compare/v1.2.13...v1.2.14) (2026-02-20)
 
 ### Bug Fixes
