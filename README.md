@@ -4,7 +4,9 @@
 
 ## 💡 Rational
 
-This project is a [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product) for a "new generation" of **[GéoTortue](http://geotortue.free.fr/)**, i.e. a **modern web rewriting** of the original desktop Java application [**GéoTortue**](http://geotortue.free.fr/). With as main goals:
+This project is a [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product) for a "new generation" of **[GéoTortue](http://geotortue.free.fr/)**, i.e. a **modern web successor** to the historic desktop Java application [**GéoTortue**](http://geotortue.free.fr/). It takes the same principles of learning geometry via the Logo language.
+
+This project main goals are:
 
 - select the technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
 - validate an architecture based on [DDD](https://en.wikipedia.org/wiki/Domain-driven_design);
@@ -25,8 +27,17 @@ The GéoTortue software stands out on two points:
 
 It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tl` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
 
+Recalling Seymour Papert’s principle of a low floor and a high ceiling, GéoTortue NG aims:
+
+- to lower the “floor” (Easy to begin) with a d-pad and mouse sandbox but also by removing the barrier of linguistic background: any label is in the human language of your choice
+  and furthermore the code itself can be written, read, and executed in any human language.
+
+- to raise the “ceiling” (Room to grow) not only with 3D visualization and non Euclidien geometries, but also audio, video, ...
+
+TODO Add a few words about Resnick's Wide Walls and the fact that GéoTortue doesn't try to approach it.
+
 > (°) The language used by GéoTortue is a Logo-like but it's not a Logo language. It doesn't have the functional richness of a [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html).
-> And it doesn't follow some well-established logo syntax conventions.
+> And it doesn't follow some well-established logo syntax conventions. See [Contributing Guide](./CONTRIBUTING.md#géotortue-legacy-dsl-versus-logo).
 
 ## 🏗️ A bit of technical
 
@@ -67,7 +78,7 @@ The main tools:
 - [Vitest](https://vitest.dev/) for testing
 - mainly [Google Gemini Pro](https://gemini.google.com/) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
 
-## 🏁 Getting Started
+## 🏁 Quick Start
 
 ### Prerequisites
 
@@ -142,11 +153,32 @@ This project is licensed under the [GPLv3 License](./LICENSE).
 
 ## 📚 Learn More
 
+## Generality
+
+- [Falling in Love with Seymour’s Ideas](https://web.media.mit.edu/~mres/papers/AERA-seymour-final.pdf)
+  Mitchel Resnick, March 25, 2008
+
+_Mindstorms: Children, Computers, and Powerful Ideas_
+Seymour Papert,
+Basic Books, 1980, ISBN: 0-465-04627-4 (1993, ISBN-13 978-0465046744)
+
+## Turtle Geometry
+
+- [Building knowledge with turtle geometry](https://iamarf.ch/unifi/turtle.pdf)
+  Exploring the land of powerful scientific ideas with Logo’s Turtle
+  Andreas R. Formiconi, 2022
+
+- _Turtle Geometry_, the classic text on the subject
+  Abelson, Harold & Andrea diSessa
+  MIT Press, 1981, ISBN-13 978-0262010634
+
 ### GéoTortue
 
 - [GéoTortue 3D: utilisation et exemples d’activités](https://www-irem.univ-paris13.fr/site_spip/spip.php?article352) _(in french)_: _GéoTortue 3D: use and examples of activities_
 
 - [LOGO, ordinateurs et apprentissages](https://www-irem.univ-paris13.fr/site_spip/spip.php?article32) _(in french)_: _LOGO, computers and learning_
+
+- [GéoTortue 4](http://geotortue.free.fr/index.php?page=v4) _(in french)_: _GéoTortue 4, new commands_
 
 ### Logo
 
@@ -162,6 +194,6 @@ This project is licensed under the [GPLv3 License](./LICENSE).
 
 - [jsLogo](https://www.calormen.com/jslogo/), online interpreter (code source available)
 
-- _Turtle Geometry_, the classic text on the subject
-  Abelson, Harold & Andrea diSessa
-  MIT Press, 1981, ISBN-13 978-0262010634
+### ANTLR4
+
+- [The Definitive ANTLR 4 Reference](https://pragprog.com/titles/tpantlr2/the-definitive-antlr-4-reference/)
