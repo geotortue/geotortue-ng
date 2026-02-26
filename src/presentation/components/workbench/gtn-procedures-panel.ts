@@ -7,7 +7,7 @@ import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 
 @customElement('gtn-procedures-panel')
 export class GTNProceduresPanel extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: flex;
       flex-direction: column;

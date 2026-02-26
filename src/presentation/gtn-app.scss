@@ -9,7 +9,8 @@
 
 .header {
   flex: 0 0 auto;
-  z-index: 10;
+  position: relative;
+  z-index: 1000;
 }
 
 main {
@@ -19,6 +20,7 @@ main {
   display: block;
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
 
 /* * NOTE: The Split Pane logic (.editor-pane, .canvas) has been moved

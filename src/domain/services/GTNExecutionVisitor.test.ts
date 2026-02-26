@@ -290,7 +290,7 @@ describe('GTNExecutionVisitor', () => {
 
     await (visitor.visitProgram(tree) as Promise<any>);
 
-    expect(mockLogger.warn).toHaveBeenCalledWith('Unknown procedure: unknownFunc');
+    expect(mockLogger.warn).toHaveBeenCalledWith('Unknown procedure or function: unknownFunc');
   });
 
   // --- System Commands ---

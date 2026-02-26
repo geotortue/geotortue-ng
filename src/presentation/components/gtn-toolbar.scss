@@ -12,6 +12,7 @@
   display: block;
   width: 100%;
   height: 50px;
+  z-index: 100;
 }
 
 .toolbar-wrapper {
@@ -23,27 +24,33 @@
   color: white;
   height: 100%; /* Fill the host height */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  overflow: visible;
 }
 
 .group {
   display: flex;
   gap: 10px;
   align-items: center;
-
+  overflow: visible;
+  position: relative;
 
   .toolbar-icon {
     width: 42px;
     height: 42px;
     object-fit: contain;
   }
+}
+
+[data-tooltip] {
+  position: relative;
 
   &::after {
     content: attr(data-tooltip);
     position: absolute;
 
     top: 100%;
-    right: auto;
-    transform: translateY(8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
 
     padding: 10px 16px;
     font-size: 0.9rem;
@@ -52,21 +59,24 @@
     background-color: #333;
     color: #fff;
     white-space: nowrap;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2); // Added shadow for better depth on bigger element
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3); // Added shadow for better depth on bigger element
 
     opacity: 0;
+    display: none;
     visibility: hidden;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease;
     pointer-events: none;
   }
 
   &:hover::after {
+    display: block;
     opacity: 1;
     visibility: visible;
-    transform: translateY(4px);
+    transform: translateX(-50%) translateY(4px);
   }
 }
+
 /* Optional: Hide label on very small screens if needed */
 .label {
   font-size: 0.7rem;
@@ -80,6 +90,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: visible;
 }
 .separator {
   width: 1px;
@@ -147,6 +159,8 @@ select {
   cursor: pointer;
   font-size: 0.85rem;
   min-width: 50px;
+  position: relative;
+  z-index: 10;
 }
 .title {
   font-weight: bold;
