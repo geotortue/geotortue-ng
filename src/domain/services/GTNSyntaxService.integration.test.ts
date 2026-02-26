@@ -16,7 +16,7 @@ describe('GTNSyntaxService Integration', () => {
 
     // Check known commands from the grammar
     expect(map.get(GeoTortueLexer.GT_FORWARD)).toBe('command');
-    expect(map.get(GeoTortueLexer.GT_RIGHT)).toBe('command');
+    expect(map.get(GeoTortueLexer.GT_TURN_RIGHT)).toBe('command');
     expect(map.get(GeoTortueLexer.GT_PEN_UP)).toBe('command');
   });
 
@@ -25,24 +25,24 @@ describe('GTNSyntaxService Integration', () => {
 
     expect(map.get(GeoTortueLexer.GT_WHILE)).toBe('keyword');
     expect(map.get(GeoTortueLexer.GT_IF)).toBe('keyword');
-    expect(map.get(GeoTortueLexer.GT_REP)).toBe('keyword');
+    expect(map.get(GeoTortueLexer.GT_REPEAT)).toBe('keyword');
   });
 
   it('should map math operators to "operator" style', () => {
     const map = service.getTokenStyleMap();
 
     expect(map.get(GeoTortueLexer.GT_PLUS)).toBe('operator');
-    expect(map.get(GeoTortueLexer.GT_MULT)).toBe('operator');
-    expect(map.get(GeoTortueLexer.GT_EQ)).toBe('operator');
+    expect(map.get(GeoTortueLexer.GT_MULTIPLY)).toBe('operator');
+    expect(map.get(GeoTortueLexer.GT_EQUAL)).toBe('operator');
   });
 
   it('should include manually mapped tokens (numbers, strings, comments)', () => {
     const map = service.getTokenStyleMap();
 
-    expect(map.get(GeoTortueLexer.GT_NUMBER)).toBe('number');
-    expect(map.get(GeoTortueLexer.GT_STRING)).toBe('string');
-    expect(map.get(GeoTortueLexer.GT_COMMENT)).toBe('comment');
-    expect(map.get(GeoTortueLexer.GT_ID)).toBe('variable');
+    expect(map.get(GeoTortueLexer.GT_INTEGER_LITERAL)).toBe('number');
+    expect(map.get(GeoTortueLexer.GT_STRING_LITERAL)).toBe('string');
+    expect(map.get(GeoTortueLexer.GT_LINE_COMMENT_SLASH)).toBe('comment');
+    expect(map.get(GeoTortueLexer.GT_IDENTIFIER)).toBe('variable');
   });
 
   it('should cache the map after first generation', () => {

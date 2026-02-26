@@ -29,6 +29,60 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 - collaboration features and tools (e.g. with TogetherJS)
 - API with the real world (Audio, ...)
 - QA: more tests, versionning, SonarQube, ...
+  <<<<<<< Updated upstream
+  =======
+- replace license-checker-rseidelsohn?
+
+## GéoTortue Legacy DSL versus Logo
+
+Differences between GéoTortue grammar and mainstream Logo dialects:
+
+1. **French structural keywords instead of the classic English core**
+   - GéoTortue reserves keywords such as `pour`, `fin`, `alors`, `sinon`, `de`, and `à`.
+   - Mainstream Logo dialects are usually presented with `to`, `end`, `if`, `else`, and related English forms.
+
+2. **French turtle-command lexicon for core movement primitives**
+   - The documented base commands are `av`, `re`, `td`, and `tg`.
+   - In mainstream Logo, the common equivalents are usually `fd`, `bk`, `rt`, and `lt`.
+
+3. **Different control-flow naming conventions**
+   - Repetition/control constructs are documented with `rep`, `tant_que`, and `boucle`.
+   - Mainstream dialects typically teach `repeat`, `while`, and dialect-specific `for` syntaxes.
+
+4. **Multi-turtle addressing is explicit in grammar usage**
+   - GéoTortue documents direct addressing of one or more turtles with `à`.
+   - Many mainstream environments are centered on a single active turtle by default.
+
+5. **Statement separator supports both newline and semicolon (`;`)**
+   - The command parser explicitly splits instructions on either `;` or line breaks.
+   - In mainstream Logo teaching material, line-based instruction flow is common, while semicolon has dialect-dependent meaning (often not a universal statement terminator).
+
+6. **Comments support multiple styles (`#`, `//`, and `/* ... */`)**
+   - GéoTortue comment parsing accepts shell-style, C++-style, and C-style block comments.
+   - Mainstream Logo dialects more commonly center semicolon-based or dialect-specific comment conventions.
+
+7. **String delimiter is the double quote (`"`) with escape handling**
+   - String scopes are parsed from `"` to `"`, and escaped quotes (`\"`) are handled explicitly.
+   - This differs from classic Logo traditions where quote is frequently tied to word notation and where string conventions vary by implementation.
+
+8. **Colon (`:`) usage differs from mainstream Logo conventions**
+   - In GéoTortue examples, `:` appears notably in function signatures (for example `def f:x->x^2+1`) and assignment is expressed with `:=`.
+   - In mainstream Logo dialects, a common convention is `:name` to read a variable value (with dialect-specific write forms such as `make`).
+
+9. **Native 3D and 4D primitives in the command surface**
+   - Commands such as `pvh`, `pvb`, `pvxy`, `pvxz`, and `pvyz` are explicitly documented.
+   - This goes beyond the mainstream Logo baseline, which is most often 2D-first.
+
+10. **Dimension-aware runtime semantics and errors**
+    - The runtime message catalog includes dedicated dimension errors (`GTJEP_NOT_3D`, `GTJEP_NOT_4D`).
+    - Command execution checks dimensional constraints before applying geometry-dependent rotations.
+
+11. **Integrated music/MIDI command layer**
+    - The command set includes `PLAY`, `SCORE`, and `CONCERT` (documented in French as `chante`, `partition`, `concert`).
+    - Runtime handling validates MIDI events/channels and raises dedicated MIDI errors.
+
+12. **Broader geometry scope than mainstream Logo introductions** - The project README explicitly positions GéoTortue as extending Logo to 3D space and non-Euclidean geometries. - Tips also highlight 4D geometry as part of the language environment.
+    > > > > > > > Stashed changes
 
 ## Business Reference Files
 
@@ -45,7 +99,7 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ### Technical Stack
 
-- **UI Framework**: [Lit](https://lit.dev/) & [scss]() (°)
+- **UI Framework**: [Lit](https://lit.dev/) & [scss](<https://en.wikipedia.org/wiki/Sass_(style_sheet_language)>) (°)
 - **Icons & fonts**: material-icons, fortawesome
 - **DI**: internal component, see class `GTNContainer` and function `configureDependencyInjection`
 - **Language**: [TypeScript](https://www.typescriptlang.org/)

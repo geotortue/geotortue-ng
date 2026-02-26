@@ -98,6 +98,9 @@
       "right": "Tourne Droite (→)"
     }
   },
+  "workbench": {
+    "procedures.title": "📖 Procédures"
+  },
   "compass": {
     "set.heading": "Cliquer pour donner la direction",
     "n": "N",
@@ -108,11 +111,11 @@
   "commands": {
     "GT_FORWARD": "AV",
     "GT_BACKWARD": "RE",
-    "GT_LEFT": "TG",
-    "GT_RIGHT": "TD",
+    "GT_TURN_LEFT": "TG",
+    "GT_TURN_RIGHT": "TD",
     "GT_PEN_UP": "LC",
     "GT_PEN_DOWN": "BC",
-    "GT_VG": "VG",
-    "GT_RZ": "NETTOIE"
+    "GT_CLEAR_GRAPHICS": "VG",
+    "GT_RESET": "NETTOIE"
   }
 }

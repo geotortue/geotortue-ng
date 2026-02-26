@@ -52,9 +52,9 @@ describe('GTNInterpreter Integration', () => {
         const map: Record<string, string> = {
           AVANCE: 'GT_FORWARD',
           AV: 'GT_FORWARD',
-          DROITE: 'GT_RIGHT',
-          TD: 'GT_RIGHT',
-          REP: 'GT_REP',
+          DROITE: 'GT_TURN_RIGHT',
+          TD: 'GT_TURN_RIGHT',
+          REP: 'GT_REPEAT',
           CRAYON: 'GT_PEN_COLOR'
         };
         return map[word.toUpperCase()];
@@ -123,13 +123,13 @@ describe('GTNInterpreter Integration', () => {
     expect(mockTurtle.forward).toHaveBeenCalledWith(100);
   });
 
-  it('should handle alias commands (TD -> GT_RIGHT)', async () => {
+  it('should handle alias commands (TD -> GT_TURN_RIGHT)', async () => {
     await interpreter.execute('TD 90;');
     expect(mockTurtle.right).toHaveBeenCalledWith(90);
   });
 
-  it('should execute a loop structure (REP -> GT_REP)', async () => {
-    // REP 2 [ AV 50 ]
+  it('should execute a loop structure (REP -> GT_REPEAT)', async () => {
+    // const script = `REP 2 [ AV 50 ]`;
     const script = `
       REP 2 [
         AV 50;

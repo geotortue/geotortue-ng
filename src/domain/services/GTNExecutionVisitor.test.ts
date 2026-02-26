@@ -153,8 +153,8 @@ describe('GTNExecutionVisitor', () => {
     expect(mockTurtle.backward).toHaveBeenCalledWith(50);
   });
 
-  it('should execute TurnRight (GT_RIGHT 90)', async () => {
-    const tree = parse('GT_RIGHT 90', 'program');
+  it('should execute TurnRight (GT_TURN_RIGHT 90)', async () => {
+    const tree = parse('GT_TURN_RIGHT 90', 'program');
     await (visitor.visitProgram(tree) as Promise<any>);
 
     // Visitor converts to degrees. Assuming logic is direct for this test.
@@ -174,8 +174,8 @@ describe('GTNExecutionVisitor', () => {
     expect(mockTurtle.forward).toHaveBeenCalledWith(42);
   });
 
-  it('should execute Repeat Block (GT_REP)', async () => {
-    const tree = parse('GT_REP 3 [ GT_FORWARD 10; ]', 'program');
+  it('should execute Repeat Block (GT_REPEAT)', async () => {
+    const tree = parse('GT_REPEAT 3 [ GT_FORWARD 10; ]', 'program');
     await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.forward).toHaveBeenCalledTimes(3);
@@ -260,12 +260,12 @@ describe('GTNExecutionVisitor', () => {
   // --- Procedures ---
 
   it('should define and call a user function', async () => {
-    // Current Grammar: GT_FUN identifier (...) := expr
+    // Current Grammar: GT_FUNCTION_DEF identifier (...) := expr
     // It does not support procedure blocks (commands) yet.
     // We test a math function: double(x) := x * 2
 
     // 1. Define
-    const defCode = 'GT_FUN double (x) := x * 2';
+    const defCode = 'GT_FUNCTION_DEF double (x) := x * 2';
     await (visitor.visitProgram(parse(defCode, 'program')) as Promise<any>);
 
     // 2. Call (Use it in a movement command to verify result)
@@ -295,8 +295,8 @@ describe('GTNExecutionVisitor', () => {
 
   // --- System Commands ---
 
-  it('should handle ClearGraphics (GT_VG)', async () => {
-    const tree = parse('GT_VG', 'program');
+  it('should handle ClearGraphics (GT_CLEAR_GRAPHICS)', async () => {
+    const tree = parse('GT_CLEAR_GRAPHICS', 'program');
     await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockRepo.clearAllLines).toHaveBeenCalled();

@@ -23,7 +23,7 @@ The GéoTortue software stands out on two points:
 - it was designed for all, whether in class (from elementary school to high school), home, with friends, ...
 - it extends the scope of application to geometry in space and to non-Euclidean geometries (spherical geometry, the Poincaré disk and half-plane model).
 
-It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tl` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
+It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tr` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
 
 > (°) The language used by GéoTortue is a Logo-like but it's not a Logo language. It doesn't have the functional richness of a [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html).
 > And it doesn't follow some well-established logo syntax conventions.
@@ -162,6 +162,14 @@ This project is licensed under the [GPLv3 License](./LICENSE).
 
 - [jsLogo](https://www.calormen.com/jslogo/), online interpreter (code source available)
 
+<<<<<<< Updated upstream
+
 - _Turtle Geometry_, the classic text on the subject
   Abelson, Harold & Andrea diSessa
   MIT Press, 1981, ISBN-13 978-0262010634
+  =======
+
+### ANTLR4
+
+- [The Definitive ANTLR 4 Reference](https://pragprog.com/titles/tpantlr2/the-definitive-antlr-4-reference/)
+  > > > > > > > Stashed changes

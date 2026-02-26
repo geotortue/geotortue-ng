@@ -98,6 +98,9 @@
       "right": "Turn Right (→)"
     }
   },
+  "workbench": {
+    "procedures.title": "📖 Procedures"
+  },
   "compass": {
     "set.heading": "Click to set heading",
     "n": "N",
@@ -108,11 +111,11 @@
   "commands": {
     "GT_FORWARD": "FD",
     "GT_BACKWARD": "BK",
-    "GT_LEFT": "LT",
-    "GT_RIGHT": "RT",
+    "GT_TURN_LEFT": "LT",
+    "GT_TURN_RIGHT": "RT",
     "GT_PEN_UP": "PU",
     "GT_PEN_DOWN": "PD",
-    "GT_VG": "CS",
-    "GT_RZ": "CLEAN"
+    "GT_CLEAR_GRAPHICS": "CS",
+    "GT_RESET": "CLEAN"
   }
 }

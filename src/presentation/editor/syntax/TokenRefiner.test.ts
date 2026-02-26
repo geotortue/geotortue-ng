@@ -8,9 +8,9 @@ describe('TokenRefiner', () => {
   const mockLangService = {
     getCanonicalId: vi.fn((word: string) => {
       // Simulation: "AVANCE" maps to GT_FORWARD (ID 10 for example)
-      // "DROITE" maps to GT_RIGHT (ID 11)
+      // "DROITE" maps to GT_TURN_RIGHT (ID 11)
       if (word === 'AVANCE') return GeoTortueLexer.GT_FORWARD;
-      if (word === 'DROITE') return GeoTortueLexer.GT_RIGHT;
+      if (word === 'DROITE') return GeoTortueLexer.GT_TURN_RIGHT;
       return undefined;
     })
   } as unknown as IGTNLanguageService;
@@ -33,10 +33,10 @@ describe('TokenRefiner', () => {
   };
 
   it('should refine generic tokens into canonical command IDs', () => {
-    // Input: [GT_WORD("AVANCE"), GT_WS, GT_WORD("DROITE")]
+    // Input: [GT_WORD("AVANCE"), GT_HORIZONTAL_WHITESPACE, GT_WORD("DROITE")]
     const inputTokens = [
       createToken('AVANCE', GeoTortueLexer.GT_WORD),
-      createToken(' ', GeoTortueLexer.GT_WS),
+      createToken(' ', GeoTortueLexer.GT_HORIZONTAL_WHITESPACE),
       createToken('DROITE', GeoTortueLexer.GT_WORD)
     ];
 
@@ -49,10 +49,10 @@ describe('TokenRefiner', () => {
     expect(mockLangService.getCanonicalId).toHaveBeenCalledWith('AVANCE');
 
     // Whitespace should remain unchanged
-    expect(refined[1]!.type).toBe(GeoTortueLexer.GT_WS);
+    expect(refined[1]!.type).toBe(GeoTortueLexer.GT_HORIZONTAL_WHITESPACE);
 
-    // "DROITE" should become GT_RIGHT
-    expect(refined[2]!.type).toBe(GeoTortueLexer.GT_RIGHT);
+    // "DROITE" should become GT_TURN_RIGHT
+    expect(refined[2]!.type).toBe(GeoTortueLexer.GT_TURN_RIGHT);
   });
 
   it('should leave unknown generic words unchanged', () => {
@@ -67,13 +67,13 @@ describe('TokenRefiner', () => {
   });
 
   it('should ignore non-generic tokens (optimization)', () => {
-    // Input: [GT_NUMBER("100")]
-    const inputTokens = [createToken('100', GeoTortueLexer.GT_NUMBER)];
+    // Input: [GT_INTEGER_LITERAL("100")]
+    const inputTokens = [createToken('100', GeoTortueLexer.GT_INTEGER_LITERAL)];
 
     const refined = tokenRefiner.getRefinedTokens(() => inputTokens);
 
-    // Should NOT call the dictionary because GT_NUMBER is not "generic"
-    expect(refined[0]!.type).toBe(GeoTortueLexer.GT_NUMBER);
+    // Should NOT call the dictionary because GT_INTEGER_LITERAL is not "generic"
+    expect(refined[0]!.type).toBe(GeoTortueLexer.GT_INTEGER_LITERAL);
 
     // Ensure we didn't waste resources checking the dictionary for a number
     expect(mockLangService.getCanonicalId).not.toHaveBeenCalledWith('100');

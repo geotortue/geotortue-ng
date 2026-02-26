@@ -81,6 +81,6 @@ export class TokenRefiner {
   }
 
   private isGenericWord(type: number): boolean {
-    return type === GeoTortueLexer.GT_WORD || type === GeoTortueLexer.GT_ID;
+    return type === GeoTortueLexer.GT_WORD || type === GeoTortueLexer.GT_IDENTIFIER;
   }
 }

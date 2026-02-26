@@ -24,7 +24,7 @@ import { DpadCode } from './utils/gtn-keyboard';
 
 import styles from './gtn-sandbox.scss?inline';
 
-const cmdSep = getLiteralName(GTNToken.GT_SEMICOLON);
+const cmdSep = getLiteralName(GTNToken.GT_STATEMENT_SEPARATOR);
 const ARROW_NAV_KEYS: DpadCode[] = [
   DpadCode.ArrowUp,
   DpadCode.ArrowDown,
@@ -139,11 +139,11 @@ export class GtnSandbox extends LitElement {
       case GTNToken.GT_BACKWARD:
         cmd = `${GTNToken[action]} ${this.step}` + cmdSep;
         break;
-      case GTNToken.GT_LEFT:
+      case GTNToken.GT_TURN_LEFT:
         cmd = `${GTNToken[action]} ${this.angle}` + cmdSep;
         this.currentHeading = (this.currentHeading - this.angle + 360) % 360;
         break;
-      case GTNToken.GT_RIGHT:
+      case GTNToken.GT_TURN_RIGHT:
         cmd = `${GTNToken[action]} ${this.angle}` + cmdSep;
         this.currentHeading = (this.currentHeading + this.angle) % 360;
         break;
@@ -160,7 +160,7 @@ export class GtnSandbox extends LitElement {
     this.currentHeading = newHeading;
 
     const angle = newHeading - oldHeading;
-    this.execute(`${GTNToken[GTNToken.GT_RIGHT]} ${angle}` + cmdSep);
+    this.execute(`${GTNToken[GTNToken.GT_TURN_RIGHT]} ${angle}` + cmdSep);
   }
 
   private handleSettingChange(e: CustomEvent) {
@@ -181,8 +181,8 @@ export class GtnSandbox extends LitElement {
       ![
         GTNToken.GT_FORWARD,
         GTNToken.GT_BACKWARD,
-        GTNToken.GT_LEFT,
-        GTNToken.GT_RIGHT,
+        GTNToken.GT_TURN_LEFT,
+        GTNToken.GT_TURN_RIGHT,
         GTNToken.GT_PEN_UP,
         GTNToken.GT_PEN_DOWN,
         GTNToken.GT_SHOW_TURTLE,
@@ -197,13 +197,14 @@ export class GtnSandbox extends LitElement {
   }
 
   private handleReset() {
-    const cmd = GTNToken[GTNToken.GT_VG] + cmdSep + GTNToken[GTNToken.GT_RZ] + cmdSep;
+    const cmd =
+      GTNToken[GTNToken.GT_CLEAR_GRAPHICS] + cmdSep + GTNToken[GTNToken.GT_RESET] + cmdSep;
     this.execute(cmd);
     this.currentHeading = 0; // Reset Compass
   }
 
   private handleClear() {
-    const cmd = GTNToken[GTNToken.GT_VG] + cmdSep;
+    const cmd = GTNToken[GTNToken.GT_CLEAR_GRAPHICS] + cmdSep;
     this.execute(cmd);
   }
 
@@ -228,10 +229,10 @@ export class GtnSandbox extends LitElement {
         return this.doHandleMove(GTNToken.GT_BACKWARD);
       case DpadCode.ArrowLeft:
       case DpadCode.KeyLeft:
-        return this.doHandleMove(GTNToken.GT_LEFT);
+        return this.doHandleMove(GTNToken.GT_TURN_LEFT);
       case DpadCode.ArrowRight:
       case DpadCode.KeyRight:
-        return this.doHandleMove(GTNToken.GT_RIGHT);
+        return this.doHandleMove(GTNToken.GT_TURN_RIGHT);
       case DpadCode.Backspace:
       case DpadCode.Delete:
         return this.handleClear();

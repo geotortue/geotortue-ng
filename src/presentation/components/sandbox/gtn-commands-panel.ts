@@ -118,8 +118,8 @@ export class GTNCommandsPanel extends LitElement {
     const t = (k: string) => this.langService.translate(k);
     const fd = t('commands.GT_FORWARD');
     const bk = t('commands.GT_BACKWARD');
-    const lt = t('commands.GT_LEFT');
-    const rt = t('commands.GT_RIGHT');
+    const lt = t('commands.GT_TURN_LEFT');
+    const rt = t('commands.GT_TURN_RIGHT');
     const da = t('unit.degree');
 
     return html`
@@ -138,15 +138,15 @@ export class GTNCommandsPanel extends LitElement {
       <div class="separator"></div>
 
       <div class="cmd-row">
-        <button @click=${() => this.emit(GTNToken.GT_LEFT, 30)}>${lt} 30${da}</button>
-        <button @click=${() => this.emit(GTNToken.GT_LEFT, 45)}>${lt} 45${da}</button>
-        <button @click=${() => this.emit(GTNToken.GT_LEFT, 90)}>${lt} 90${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_LEFT, 30)}>${lt} 30${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_LEFT, 45)}>${lt} 45${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_LEFT, 90)}>${lt} 90${da}</button>
       </div>
 
       <div class="cmd-row">
-        <button @click=${() => this.emit(GTNToken.GT_RIGHT, 30)}>${rt} 30${da}</button>
-        <button @click=${() => this.emit(GTNToken.GT_RIGHT, 45)}>${rt} 45${da}</button>
-        <button @click=${() => this.emit(GTNToken.GT_RIGHT, 90)}>${rt} 90${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_RIGHT, 30)}>${rt} 30${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_RIGHT, 45)}>${rt} 45${da}</button>
+        <button @click=${() => this.emit(GTNToken.GT_TURN_RIGHT, 90)}>${rt} 90${da}</button>
       </div>
 
       <div class="separator"></div>

@@ -52,9 +52,23 @@ export class GTNSyntaxService {
     const entries: [number, string][] = [];
 
     // Extract from Structure (The ATN Traversal)
-    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_primitive, 'command'));
-    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_structure, 'keyword'));
-    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_expr, 'operator'));
+    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_primitive, 'command'));
+    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_structure, 'keyword'));
+    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_expr, 'operator'));
+    entries.push(
+      ...this.mapRuleToStyle(GeoTortueParser.RULE_fixedArityZeroCommandStatement, 'command')
+    );
+    entries.push(
+      ...this.mapRuleToStyle(GeoTortueParser.RULE_fixedArityOneCommandStatement, 'command')
+    );
+    entries.push(
+      ...this.mapRuleToStyle(GeoTortueParser.RULE_fixedArityTwoCommandStatement, 'command')
+    );
+    entries.push(
+      ...this.mapRuleToStyle(GeoTortueParser.RULE_variableArityMarkerCommandStatement, 'command')
+    );
+    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_structureStatement, 'keyword'));
+    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_expression, 'operator'));
 
     // Keywords (Map specific sub-rules instead of the parent 'structure')
     // Inspect your generated Parser to see the rule names. usually:
@@ -62,16 +76,22 @@ export class GTNSyntaxService {
     entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_whileBlock, 'keyword')); // GT_WHILE
     entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_ifBlock, 'keyword')); // GT_IF, GT_THEN, GT_ELSE
     entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_forEachBlock, 'keyword')); // GT_FOR_EACH, GT_FROM, GT_TO
-    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_functionDef, 'keyword')); // GT_FUN
+    entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_functionDef, 'keyword')); // GT_FUNCTION_DEF
 
     // Extract from Lexical Definition (Manual mapping)
-    entries.push(this.addManualToken(GeoTortueLexer.GT_NUMBER, 'number'));
-    entries.push(this.addManualToken(GeoTortueLexer.GT_STRING, 'string'));
+    // entries.push(this.addManualToken(GeoTortueLexer.GT_NUMBER, 'number'));
+    // entries.push(this.addManualToken(GeoTortueLexer.GT_STRING, 'string'));
+    // entries.push(this.addManualToken(GeoTortueLexer.GT_ID, 'variable'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_INTEGER_LITERAL, 'number'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_FLOATING_POINT_LITERAL, 'number'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_STRING_LITERAL, 'string'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_WORD, 'string'));
-    entries.push(this.addManualToken(GeoTortueLexer.GT_ID, 'variable'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_IDENTIFIER, 'variable'));
 
     // Comments are special: usually hidden from parser channel, so we map them manually
-    entries.push(this.addManualToken(GeoTortueLexer.GT_COMMENT, 'comment'));
+    // entries.push(this.addManualToken(GeoTortueLexer.GT_COMMENT, 'comment'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_LINE_COMMENT_HASH, 'comment'));
+    entries.push(this.addManualToken(GeoTortueLexer.GT_LINE_COMMENT_SLASH, 'comment'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_BLOCK_COMMENT, 'comment'));
 
     const map = new Map<number, string>(entries);

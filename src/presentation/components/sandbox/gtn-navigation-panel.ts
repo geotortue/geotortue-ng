@@ -88,7 +88,10 @@ export class GTNNavigationPanel extends LitElement {
         </button>
         <button class="center"></button>
 
-        <button @click=${() => this.emit(GTNToken.GT_LEFT)} title="${t('sandbox.tooltip.left')}">
+        <button
+          @click=${() => this.emit(GTNToken.GT_TURN_LEFT)}
+          title="${t('sandbox.tooltip.left')}"
+        >
           ◀
         </button>
         <button
@@ -97,7 +100,10 @@ export class GTNNavigationPanel extends LitElement {
         >
           ▼
         </button>
-        <button @click=${() => this.emit(GTNToken.GT_RIGHT)} title="${t('sandbox.tooltip.right')}">
+        <button
+          @click=${() => this.emit(GTNToken.GT_TURN_RIGHT)}
+          title="${t('sandbox.tooltip.right')}"
+        >
           ▶
         </button>
       </div>

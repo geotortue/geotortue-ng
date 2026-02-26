@@ -25,13 +25,25 @@ export class GTNInterpreter implements IGTNInterpreter {
     this.createVisitor = container.resolve(GTN_TYPES.ExecutionVisitorFactory);
   }
 
-  public async execute(script: string): Promise<void> {
-    if (!script.trim()) {
+  /**
+   * Executes a script, optionally prepending named procedures.
+   * @param script The main commands to execute.
+   * @param proceduresScript The background procedures defined in the DSL panel.
+   */
+  public async execute(script: string, proceduresScript: string = ''): Promise<void> {
+    // 1. The Prepend Strategy: Merge procedures and commands
+    // We add a newline to ensure we don't accidentally merge the last line of the
+    // procedures with the first line of the command.
+    const fullScript = proceduresScript.trim() ? `${proceduresScript}\n${script}` : script;
+
+    if (!fullScript.trim()) {
       return;
     }
 
-    // Canonicalize (i.e. localized ---> internal)
-    const canonicalScript = this.canonicalize(script);
+    // 2. Canonicalize (i.e. localized ---> internal)
+    // By passing the fullScript, localized keywords inside the procedures panel
+    // (like 'pour' or 'fin') will be properly translated before execution!
+    const canonicalScript = this.canonicalize(fullScript);
     return this.doExecute(canonicalScript);
   }
 

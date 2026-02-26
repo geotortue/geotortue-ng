@@ -12,7 +12,7 @@ export class GTNWorkbench extends LitElement {
   protected override render() {
     return html`
       <div class="workbench-layout">
-        <aside class="sidebar">
+        <aside class="sidebar left-sidebar" aria-label="Command Editor">
           <div class="editor-area">
             <slot name="editor"></slot>
           </div>
@@ -21,9 +21,15 @@ export class GTNWorkbench extends LitElement {
           </div>
         </aside>
 
-        <section class="main-content">
+        <section class="main-content" aria-label="Turtle Graphics Canvas">
           <slot name="canvas"></slot>
         </section>
+
+        <aside class="sidebar right-sidebar" aria-label="Named Procedures Library">
+          <div class="procedures-area">
+            <slot name="procedures"></slot>
+          </div>
+        </aside>
       </div>
     `;
   }

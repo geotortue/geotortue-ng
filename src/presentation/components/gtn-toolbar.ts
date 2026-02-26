@@ -23,17 +23,35 @@ import styles from './gtn-toolbar.scss?inline';
 // Define the View Type
 export type ViewMode = 'EDITOR' | 'SANDBOX';
 
+const DEFAULT_VIEW_MODE: ViewMode = 'SANDBOX';
+
 @customElement('gtn-toolbar')
 export class GTNToolbar extends LitElement {
   static override readonly styles = [
     materialIconsStyle,
     css`
       ${unsafeCSS(styles)}
-      /* Add specific styles for the view switcher if not in SCSS */
+
+      // .view-switcher button.active {
+      //   background-color: #e3f2fd; /* Light Blue highlight */
+      //   color: #1565c0;
+      //   border-bottom: 2px solid #1565c0;
+      // }
+
+      .view-switcher button {
+        // background: var(--gtn-btn-bg, #eee);
+        // color: var(--gtn-text, #333);
+        // border: 1px solid #ccc;
+        transition: all 0.1s ease;
+      }
+
+      .view-switcher button[aria-pressed='true'],
       .view-switcher button.active {
-        background-color: #e3f2fd; /* Light Blue highlight */
-        color: #1565c0;
-        border-bottom: 2px solid #1565c0;
+        background: #1a252f;
+        color: #3498db;
+        border-color: #0f171e;
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6);
+        transform: translateY(1px);
       }
     `
   ];
@@ -58,7 +76,7 @@ export class GTNToolbar extends LitElement {
 
   // New Property for View Mode
   @property({ type: String })
-  accessor currentView: ViewMode = 'EDITOR';
+  accessor currentView: ViewMode = DEFAULT_VIEW_MODE;
 
   constructor() {
     super();
@@ -125,7 +143,6 @@ export class GTNToolbar extends LitElement {
     this.appState.toggleCameraType();
   }
 
-  // New Handler for View Switching
   private handleViewChange(view: ViewMode) {
     this.currentView = view;
     this.dispatchEvent(
@@ -146,110 +163,116 @@ export class GTNToolbar extends LitElement {
     this.currentDslLang = this.langService.getDslLanguage();
 
     return html`
-      <div class="group">
-        <span class="material-icons">school</span>
-        <span class="title">${t('app.title')}</span>
-      </div>
-
-      <div
-        class="group view-switcher"
-        style="margin-left: 1rem; border-right: 1px solid #ccc; padding-right: 1rem;"
-      >
-        <button
-          class=${classMap({ active: this.currentView === 'EDITOR' })}
-          @click=${() => this.handleViewChange('EDITOR')}
-          title="${t('mode.editor')}"
-        >
-          <span class="material-icons">code</span>
-        </button>
-        <button
-          class=${classMap({ active: this.currentView === 'SANDBOX' })}
-          @click=${() => this.handleViewChange('SANDBOX')}
-          title="${t('mode.sandbox')}"
-        >
-          <span class="material-icons">touch_app</span>
-        </button>
-      </div>
-
-      ${this.currentView === 'EDITOR'
-        ? html`
-            <div class="group">
-              <button @click=${this.handleOpen} title="${t('toolbar.open_project')}">
-                <span class="material-icons">folder_open</span>
-              </button>
-              <button @click=${this.handleSave} title="${t('toolbar.save_project')}">
-                <span class="material-icons">save</span>
-              </button>
-
-              <div class="separator"></div>
-
-              <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
-                <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
-              </button>
-              <button class="danger" @click=${this.handleClear}>
-                <span class="material-icons">delete</span> ${t('toolbar.clear')}
-              </button>
-            </div>
-          `
-        : html`
-            <div class="group">
-              <span style="font-size: 0.8rem; color: #666; font-style:italic;"
-                >Mode Interactif</span
-              >
-            </div>
-          `}
-
-      <div class="group" style="margin-left: auto;">
-        <button
-          class="mode-badge"
-          @click=${this.handleToggleMode}
-          title="${t('toolbar.toggle.dim')}"
-        >
-          ${this.currentMode === '3D' ? t('toolbar.toggle.dim.3d') : t('toolbar.toggle.dim.2d')}
-        </button>
-        ${this.currentMode === '3D'
-          ? html`
-              <button
-                @click=${this.handleToggleCamera}
-                title="${t('toolbar.toggle.cam')}"
-                style="font-size:0.8rem"
-              >
-                <span class="material-icons" style="font-size:1.1rem">videocam</span>
-                ${this.currentCamera === 'PERSPECTIVE'
-                  ? t('toolbar.toggle.cam.perspective')
-                  : t('toolbar.toggle.cam.orthographic')}
-              </button>
-            `
-          : ''}
-
-        <div class="separator"></div>
-
-        <span class="material-icons">translate</span>
-
-        <span class="label">${t('toolbar.language')}</span>
-
-        <div class="selector-wrapper">
-          <label for="select-ui" class="label">${t('toolbar.selector.ui')}</label>
-          <select id="select-ui" @change=${this.handleUiLangChange} .value=${this.currentUiLang}>
-            <option value="fr">${t('languages.fr')}</option>
-            <option value="en">${t('languages.en')}</option>
-          </select>
+      <div class="toolbar-wrapper" role="toolbar" aria-label="Workspace Controls">
+        <div class="group" aria-hidden="true" data-tooltip="${t('app.subtitle')}">
+          <img src="/src/assets/icons/icon-128.png" alt="GéoTortue Logo" class="toolbar-icon" />
+          <span class="title">${t('app.title')}</span>
         </div>
+
+        <div
+          class="group view-switcher"
+          role="group"
+          aria-label="View Modes"
+          style="margin-left: 1rem; border-right: 1px solid #ccc; padding-right: 1rem;"
+        >
+          <button
+            aria-pressed=${this.currentView === 'EDITOR'}
+            @click=${() => this.handleViewChange('EDITOR')}
+            title="${t('mode.editor')}"
+          >
+            <span class="material-icons">code</span>
+            ${t('mode.editor')}
+          </button>
+          <button
+            aria-pressed=${this.currentView === 'SANDBOX'}
+            @click=${() => this.handleViewChange('SANDBOX')}
+            title="${t('mode.sandbox')}"
+          >
+            <span class="material-icons">touch_app</span>
+            ${t('mode.sandbox')}
+          </button>
+        </div>
+
         ${this.currentView === 'EDITOR'
           ? html`
-              <div class="selector-wrapper">
-                <label for="select-dsl" class="label">${t('toolbar.selector.dsl')}</label>
-                <select
-                  id="select-dsl"
-                  @change=${this.handleDslLangChange}
-                  .value=${this.currentDslLang}
-                >
-                  <option value="fr">${t('languages.fr')}</option>
-                  <option value="en">${t('languages.en')}</option>
-                </select>
+              <div class="group">
+                <button @click=${this.handleOpen} title="${t('toolbar.open_project')}">
+                  <span class="material-icons">folder_open</span>
+                </button>
+                <button @click=${this.handleSave} title="${t('toolbar.save_project')}">
+                  <span class="material-icons">save</span>
+                </button>
+
+                <div class="separator"></div>
+
+                <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
+                  <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
+                </button>
+                <button class="danger" @click=${this.handleClear}>
+                  <span class="material-icons">delete</span> ${t('toolbar.clear')}
+                </button>
               </div>
             `
-          : ''}
+          : html`
+              <div class="group">
+                <span style="font-size: 0.8rem; color: #666; font-style:italic;"
+                  >Mode Interactif</span
+                >
+              </div>
+            `}
+
+        <div class="group" style="margin-left: auto;">
+          <button
+            class="mode-badge"
+            @click=${this.handleToggleMode}
+            title="${t('toolbar.toggle.dim')}"
+          >
+            ${this.currentMode === '3D' ? t('toolbar.toggle.dim.3d') : t('toolbar.toggle.dim.2d')}
+          </button>
+          ${this.currentMode === '3D'
+            ? html`
+                <button
+                  @click=${this.handleToggleCamera}
+                  title="${t('toolbar.toggle.cam')}"
+                  style="font-size:0.8rem"
+                >
+                  <span class="material-icons" style="font-size:1.1rem">videocam</span>
+                  ${this.currentCamera === 'PERSPECTIVE'
+                    ? t('toolbar.toggle.cam.perspective')
+                    : t('toolbar.toggle.cam.orthographic')}
+                </button>
+              `
+            : ''}
+
+          <div class="separator"></div>
+
+          <span class="material-icons">translate</span>
+
+          <span class="label">${t('toolbar.language')}</span>
+
+          <div class="selector-wrapper">
+            <label for="select-ui" class="label">${t('toolbar.selector.ui')}</label>
+            <select id="select-ui" @change=${this.handleUiLangChange} .value=${this.currentUiLang}>
+              <option value="fr">${t('languages.fr')}</option>
+              <option value="en">${t('languages.en')}</option>
+            </select>
+          </div>
+          ${this.currentView === 'EDITOR'
+            ? html`
+                <div class="selector-wrapper">
+                  <label for="select-dsl" class="label">${t('toolbar.selector.dsl')}</label>
+                  <select
+                    id="select-dsl"
+                    @change=${this.handleDslLangChange}
+                    .value=${this.currentDslLang}
+                  >
+                    <option value="fr">${t('languages.fr')}</option>
+                    <option value="en">${t('languages.en')}</option>
+                  </select>
+                </div>
+              `
+            : ''}
+        </div>
       </div>
     `;
   }
