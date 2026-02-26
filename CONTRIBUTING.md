@@ -29,8 +29,6 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 - collaboration features and tools (e.g. with TogetherJS)
 - API with the real world (Audio, ...)
 - QA: more tests, versionning, SonarQube, ...
-  <<<<<<< Updated upstream
-  =======
 - replace license-checker-rseidelsohn?
 
 ## GéoTortue Legacy DSL versus Logo
@@ -81,8 +79,10 @@ Differences between GéoTortue grammar and mainstream Logo dialects:
     - The command set includes `PLAY`, `SCORE`, and `CONCERT` (documented in French as `chante`, `partition`, `concert`).
     - Runtime handling validates MIDI events/channels and raises dedicated MIDI errors.
 
-12. **Broader geometry scope than mainstream Logo introductions** - The project README explicitly positions GéoTortue as extending Logo to 3D space and non-Euclidean geometries. - Tips also highlight 4D geometry as part of the language environment.
-    > > > > > > > Stashed changes
+12. **Broader geometry scope than mainstream Logo introductions**
+
+- The project README explicitly positions GéoTortue as extending Logo to 3D space and non-Euclidean geometries.
+- Tips also highlight 4D geometry as part of the language environment.
 
 ## Business Reference Files
 
@@ -153,7 +153,7 @@ We follow the **Conventional Commits** specification. Please format your commit 
 
 ### 3. Coding Standards
 
-We follow the **[Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html** best practices:
+We follow the **[Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)** best practices:
 
 - **Formatting**: Handled by _\*\*[Prettier](https://prettier.io/)_. Run `npm run lint` to verify.
 - **Linting**: Handled by **[ESLint](https://eslint.org/)**.

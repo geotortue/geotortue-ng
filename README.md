@@ -162,14 +162,10 @@ This project is licensed under the [GPLv3 License](./LICENSE).
 
 - [jsLogo](https://www.calormen.com/jslogo/), online interpreter (code source available)
 
-<<<<<<< Updated upstream
-
 - _Turtle Geometry_, the classic text on the subject
   Abelson, Harold & Andrea diSessa
   MIT Press, 1981, ISBN-13 978-0262010634
-  =======
 
 ### ANTLR4
 
 - [The Definitive ANTLR 4 Reference](https://pragprog.com/titles/tpantlr2/the-definitive-antlr-4-reference/)
-  > > > > > > > Stashed changes
