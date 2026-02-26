@@ -1,3 +1,10 @@
+## [1.2.16](https://github.com/geotortue/geotortue-ng/compare/v1.2.15...v1.2.16) (2026-02-26)
+
+### Bug Fixes
+
+- **docs:** remove git scories ([e99f1df](https://github.com/geotortue/geotortue-ng/commit/e99f1dfd6e2d502887d76d7cfc168781f571f772))
+- **ui:** access to toolbar buttons ([2b52df4](https://github.com/geotortue/geotortue-ng/commit/2b52df448647985922689dd6965057a6b4eef6ab))
+
 ## [1.2.15](https://github.com/geotortue/geotortue-ng/compare/v1.2.14...v1.2.15) (2026-02-20)
 
 ### Bug Fixes
