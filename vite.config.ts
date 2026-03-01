@@ -44,20 +44,22 @@ export default defineConfig(({ command }) => {
       sourcemap: true,
       minify: 'terser',
       terserOptions: {
+        // Libraries like antlr4 and mathjs heavily rely on reflection (reading Function.name
+        // or Class.name at runtime) to map AST nodes and mathematical operations.
+        // It's safe to let Terser compress the logic, but it MUST preserve the original
+        // names of functions and classes to prevent these engines from crashing.
+        keep_classnames: true,
+        keep_fnames: true,
+
         compress: {
-          // Drop console logs in production
-          drop_console: true,
+          // Drop ONLY log, info, and debug. Keep warn and error!
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
           drop_debugger: true,
-          // High-level optimizations for modern JS
-          ecma: 2020, // ECMA up to 2020, see tsup ???
+          ecma: 2020, // ECMA up to 2020
           passes: 2
         },
         format: {
           comments: false // Clean bundles for Prettier-friendly output if inspected
-        },
-        mangle: {
-          // If you need to keep specific variables for math.js/three.js logic
-          reserved: ['THREE', 'math']
         }
       },
       rollupOptions: {
@@ -75,17 +77,7 @@ export default defineConfig(({ command }) => {
         },
         // 3. Aggressive Tree Shaking
         treeshake: {
-          preset: 'recommended',
-          moduleSideEffects: (id) => {
-            // Always keep styles
-            if (/\.(s?css|sass|less)$/.test(id)) return true;
-
-            // Keep your Lit components (which register themselves)
-            if (id.includes('src/presentation/components/')) return true;
-
-            // Everything else can be safely tree-shaken
-            return false;
-          }
+          preset: 'recommended'
         }
       }
     },
