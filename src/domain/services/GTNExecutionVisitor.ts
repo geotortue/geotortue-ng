@@ -19,6 +19,7 @@ import { toDegree, toMs } from '@domain/types';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
+import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
 
 const DEFAULT_STEP_DELAY = toMs(50); // 50ms per step = 20 steps per second
 
@@ -28,6 +29,7 @@ export class GTNExecutionVisitor
 {
   private readonly stepDelayMs = DEFAULT_STEP_DELAY;
 
+  private readonly procedureRegistry: IGTNProcedureRegistry;
   private readonly mathEvaluator: IGTNMathEvaluator;
   private readonly languageService: IGTNLanguageService;
   private readonly logger: IGTNLogger;
@@ -36,13 +38,14 @@ export class GTNExecutionVisitor
   private readonly userFunctions: Map<string, GTNParser.FunctionDefContext> = new Map();
   private scopes: Record<string, any>[] = [{}];
   private readonly memory: Map<string, any> = new Map();
-  private readonly userProcedures: Map<string, GTNParser.ProcedureDefinitionContext> = new Map();
+  // private readonly userProcedures: Map<string, GTNParser.ProcedureDefinitionContext> = new Map();
 
   constructor(private readonly turtleRepo: IGTNTurtleRepository) {
     super();
     const container = GTNContainer.getInstance();
     this.mathEvaluator = container.resolve<IGTNMathEvaluator>(GTN_TYPES.MathEvaluator);
     this.languageService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
+    this.procedureRegistry = container.resolve<IGTNProcedureRegistry>(GTN_TYPES.ProcedureRegistry);
     this.logger = container.resolve<IGTNLogger>(GTN_TYPES.Logger);
   }
 
@@ -91,7 +94,7 @@ export class GTNExecutionVisitor
         continue;
       }
 
-      const childResult = this.visitChild(child); //await child.accept(this);
+      const childResult = await this.visitChild(child); //await child.accept(this);
       result = await this.aggregateResult(result, childResult);
     }
     return result;
@@ -216,7 +219,7 @@ export class GTNExecutionVisitor
     ctx: GTNParser.ForEachBlockContext,
     loopVar: string
   ) {
-    const list = this.evaluate(ctx.expression(0)!);
+    const list = this.evaluate(ctx.expression(0));
     if (!Array.isArray(list)) {
       return;
     }
@@ -232,8 +235,8 @@ export class GTNExecutionVisitor
   }
 
   private async doVisitForEachBlockInRange(ctx: GTNParser.ForEachBlockContext, loopVar: string) {
-    const from = this.evaluateNumber(ctx.expression(0)!);
-    const to = this.evaluateNumber(ctx.expression(1)!);
+    const from = this.evaluateNumber(ctx.expression(0));
+    const to = this.evaluateNumber(ctx.expression(1));
 
     // Handle both ascending and descending ranges
     const step = from <= to ? 1 : -1;
@@ -253,7 +256,7 @@ export class GTNExecutionVisitor
    */
   public async visitFunctionDef(ctx: GTNParser.FunctionDefContext): Promise<void> {
     // Defining a function is instantaneous, no yield needed.
-    const name = ctx.GT_IDENTIFIER(0)!.getText();
+    const name = ctx.GT_IDENTIFIER(0)!.getText().toLowerCase();
     this.userFunctions.set(name, ctx);
   }
 
@@ -262,8 +265,8 @@ export class GTNExecutionVisitor
    */
   public async visitProcedureDef(ctx: GTNParser.ProcedureDefContext): Promise<void> {
     const procDef = ctx.procedureDefinition();
-    const name = procDef.GT_IDENTIFIER().getText();
-    this.userProcedures.set(name, procDef);
+    const name = procDef.GT_IDENTIFIER().getText().toLowerCase();
+    this.procedureRegistry.register(name, procDef);
   }
 
   /**
@@ -272,13 +275,17 @@ export class GTNExecutionVisitor
   public async visitProcedureCallStatement(
     ctx: GTNParser.ProcedureCallStatementContext
   ): Promise<any> {
-    const name = ctx.GT_IDENTIFIER().getText();
+    const originalName = ctx.GT_IDENTIFIER().getText();
+    const name = originalName.toLowerCase();
+    this.logger.info(`[Visitor] 📞 Calling procedure: ${name}`);
     const args = ctx.commandArgument().map((arg) => this.evaluate(arg.expression()));
     const localScope: Record<string, unknown> = {};
 
     // 1. Try Multi-line Procedure (pour ... fin)
-    const procDef = this.userProcedures.get(name);
+
+    const procDef = this.procedureRegistry.getProcedure(name);
     if (procDef) {
+      this.logger.info(`[Visitor] ✅ Found procedure '${name}' in registry. Setting up scope...`);
       const params = procDef.procedureParameter();
       params.forEach((param, index) => {
         if (index < args.length) {
@@ -292,9 +299,22 @@ export class GTNExecutionVisitor
       this.scopes.push(localScope);
 
       // Execute the procedure body
-      await this.visit(procDef.procedureBody());
-
-      this.scopes.pop();
+      try {
+        // ⚡ THE FIX: Bypass 'this.visit' and explicitly force 'visitChildren'
+        // to guarantee our custom asynchronous loop is used for the procedure body.
+        const bodyCtx = procDef.procedureBody();
+        if (bodyCtx) {
+          await this.visitChildren(bodyCtx);
+        } else {
+          this.logger.warn(`[Visitor] ⚠️ Procedure '${name}' has no body!`);
+        }
+      } catch (error) {
+        this.logger.error(`[Visitor] ❌ Crash inside procedure '${name}':`, error);
+        throw error;
+      } finally {
+        // Guarantee the scope is ALWAYS popped, even if an error occurs
+        this.scopes.pop();
+      }
 
       // Handle 'retourne' (return) signal if triggered inside the procedure
       let result = null;
@@ -310,6 +330,7 @@ export class GTNExecutionVisitor
     // 2. Try Single-line Function (function f(x) = expr)
     const funcDef = this.userFunctions.get(name);
     if (funcDef) {
+      this.logger.info(`[Visitor] ✅ Found math function '${name}'. Evaluating...`);
       const paramIds = funcDef.GT_IDENTIFIER().slice(1);
       paramIds.forEach((paramId, index) => {
         if (index < args.length) {
@@ -318,70 +339,24 @@ export class GTNExecutionVisitor
       });
 
       this.scopes.push(localScope);
-      const result = this.evaluate(funcDef.expression());
-      this.scopes.pop();
+      let result = null;
+      try {
+        result = this.evaluate(funcDef.expression());
+      } finally {
+        this.scopes.pop();
+      }
 
       await this.tick();
       return result;
     }
 
-    this.logger.warn(`Unknown procedure or function: ${name}`);
+    this.logger.warn(`[Visitor] ❌ Unknown procedure or function: ${originalName}`);
     return null;
   }
-
-  //   /**
-  //    * {@link GeoTortueParserVisitor#visitProcedureCallStatement}
-  //    */
-  //   public async visitFunctionCallStatement(
-  //     ctx: GTNParser.ProcedureCallStatementContext
-  //   ): Promise<any> {
-  //     const name = ctx.GT_IDENTIFIER().getText();
-  //     const funcDef = this.userFunctions.get(name);
-  //
-  //     if (!funcDef) {
-  //       this.logger.warn(`Unknown procedure: ${name}`);
-  //       return;
-  //     }
-  //
-  //     const args = ctx.commandArgument().map((arg) => this.evaluate(arg.expression()));
-  //     const paramIds = funcDef.GT_IDENTIFIER().slice(1); // First ID is func name
-  //     const localScope: Record<string, unknown> = {};
-  //
-  //     paramIds.forEach((paramId, index) => {
-  //       if (index < args.length) {
-  //         localScope[paramId.getText()] = this.evaluate(args[index]!);
-  //       }
-  //     });
-  //
-  //     this.scopes.push(localScope);
-  //
-  //     // Evaluate function body (which might contain statements)
-  //     // Note: If function is purely expression-based in grammar, this might need check.
-  //     // But usually procedure calls execute a body (expression or block).
-  //     // Assuming funcDef.expression() is the body here based on previous code?
-  //     // Wait, previous code was: `this.evaluate(funcDef.expression())`.
-  //     // If procedures only return values, they are synchronous.
-  //     // If procedures do drawing, they must be visited.
-  //
-  //     // CHECK: Your grammar says: functionDef : ... = expression
-  //     // This implies functions are pure calculations in this specific grammar version?
-  //     // If yes, we don't synch. If you change grammar to support Blocks in functions, use synch..
-  //
-  //     // Preserving logic: It seems functions are expressions here.
-  //     const result = this.evaluate(funcDef.expression());
-  //
-  //     this.scopes.pop();
-  //     // ProcedureCall is a command in the grammar, so we ignore result,
-  //     // but if it was called as expression, evaluate() handles it.
-  //     await this.tick();
-  //     return result;
-  //   }
 
   // --- Primitive Commands (Turtle Actions) ---
 
   private extractOneArgAsExpr(ctx: { commandArgument: () => GTNParser.CommandArgumentContext }) {
-    // const args = [ctx.commandArgument?.() ?? null]
-    // const arg0 = args[0] ?? null;
     const arg = ctx.commandArgument?.() ?? null;
     const expr0 = arg?.expression() ?? null;
     return expr0;
@@ -514,6 +489,7 @@ export class GTNExecutionVisitor
         this.getFlattenedScope(),
         MathEvaluatorMode.error
       );
+      // FUTURE check here if the evaluation result is a valid css color
       return String(result);
     } catch (e: any) {
       // ---------------------------------------------------------
@@ -536,10 +512,12 @@ export class GTNExecutionVisitor
 
   private resolveCssColor(rawColor: string): string {
     const color = rawColor.replace(/['"]/g, '').toLowerCase();
-    const cssColor = isCssHexColor(color)
-      ? color
-      : this.languageService.getCssColor(color) || color;
-    return cssColor;
+    if (isCssHexColor(color)) {
+      return color;
+    } else {
+      const cssColor = this.languageService.getCssColor(color);
+      return cssColor || color;
+    }
   }
 
   /**

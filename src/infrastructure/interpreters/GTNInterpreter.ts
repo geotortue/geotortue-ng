@@ -43,18 +43,19 @@ export class GTNInterpreter implements IGTNInterpreter {
     // 2. Canonicalize (i.e. localized ---> internal)
     // By passing the fullScript, localized keywords inside the procedures panel
     // (like 'pour' or 'fin') will be properly translated before execution!
-    const canonicalScript = this.canonicalize(fullScript);
-    return this.doExecute(canonicalScript);
+    const canonicalScript = await this.languageService.canonicalizeScript(fullScript);
+    return this.canonicalExecute(canonicalScript);
   }
 
-  public async doExecute(canonicalScript: string): Promise<void> {
+  /**
+   * Here even the color are canonicalized in the script ?!
+   */
+  public async canonicalExecute(canonicalScript: string): Promise<void> {
     if (!canonicalScript.trim()) {
       return;
     }
 
-    // 1. as a reminder of transforming localized script or command in canonical one
-
-    // 2. Setup ANTLR Pipeline
+    // Setup ANTLR Pipeline
     const inputStream = CharStream.fromString(canonicalScript);
     const lexer = new GeoTortueLexer(inputStream);
 
@@ -64,7 +65,7 @@ export class GTNInterpreter implements IGTNInterpreter {
 
     const parser = new GeoTortueParser(tokenStream);
 
-    // 3. Error Handling
+    // Error Handling
     parser.removeErrorListeners();
     // FUTURE see GTNErrorListener and GTNError
     parser.addErrorListener({
@@ -77,10 +78,10 @@ export class GTNInterpreter implements IGTNInterpreter {
       reportContextSensitivity: () => {}
     });
 
-    // 4. Parse (Create Tree)
+    // Parse (Create Tree)
     const tree = parser.program();
 
-    // 5. Execute with Animation (The Runner Loop)
+    // Execute with Animation (The Runner Loop)
     const visitor = this.createVisitor(this.turtleRepo);
 
     try {
@@ -94,31 +95,5 @@ export class GTNInterpreter implements IGTNInterpreter {
       console.error('❌ Execution error:', e);
       throw e;
     }
-  }
-
-  /**
-   * Translates localized keywords ('avance') to canonical keywords ('GT_FORWARD')
-   */
-  private canonicalize(script: string): string {
-    // This is a naive implementation.
-    // In a real compiler, the Lexer should handle this or we use TokenStream rewriting.
-    // But for MVP, string replacement works if keywords are unique enough.
-
-    const processed = script.toUpperCase(); // Grammar expects UPPERCASE currently
-
-    // We iterate over all known commands in the current language
-    // and replace them with "canonical" equivalents.
-    // Note: This relies on the LanguageService exposing the mapping.
-    // Since getInternalKeyword exists:
-
-    // Better approach for MVP:
-    // Split by non-word characters, try to translate each word, join back.
-    // This preserves numbers and structure.
-
-    return processed.replace(/[A-Z\u00C0-\u00D6\u00D8-\u00DE]+/g, (word) => {
-      // [A-ZÀ-ÖØ-Þ]
-      const canonicalKeyword = this.languageService.getInternalKeyword(word);
-      return canonicalKeyword ? canonicalKeyword.toUpperCase() : word;
-    });
   }
 }

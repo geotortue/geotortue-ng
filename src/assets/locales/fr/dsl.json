@@ -19,6 +19,8 @@
     "GT_FOR_EACH": ["boucle", "pour_chaque"]
   },
   "keywords": {
+    "GT_PROCEDURE_START": "pour",
+    "GT_PROCEDURE_END": "fin",
     "GT_THEN": "alors",
     "GT_ELSE": "sinon",
     "GT_FROM": "de",
@@ -34,7 +36,7 @@
     "GT_WHITE": "blanc",
     "GT_ORANGE": "orange",
     "GT_PINK": "rose",
-    "GT_GREY": "grey",
+    "GT_GREY": "gris",
     "GT_CYAN": "cyan",
     "GT_MAGENTA": "magenta"
   }

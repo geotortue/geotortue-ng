@@ -134,9 +134,9 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
 
   public getCanonicalId(word: string): number | undefined {
     // 1. Get the internal canonical keyword (string) from the dictionary service (e.g. "GT_FORWARD")
-    const internalKey = this.reverseDictionary.getInternalKey(word, this.dslLanguage);
+    const canonicalKey = this.reverseDictionary.getCanonicalKey(word, this.dslLanguage);
 
-    if (!internalKey) {
+    if (!canonicalKey) {
       return undefined;
     }
 
@@ -145,7 +145,7 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     // We use a cast to 'any' or 'Record<string, any>' because TypeScript doesn't know
     // we are accessing static members dynamically.
     // FUTURE to move in reverse dictionary
-    const tokenId = (GeoTortueLexer as any)[internalKey];
+    const tokenId = (GeoTortueLexer as any)[canonicalKey];
 
     return typeof tokenId === 'number' ? tokenId : undefined;
   }
@@ -171,7 +171,7 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return selector(values) || internalKey;
   }
 
-  public getInternalKeyword(localizedKeyword: string): string | undefined {
+  public getCanonicalKeyword(localizedKeyword: string): string | undefined {
     const search = localizedKeyword.toUpperCase();
 
     // Use the bundle of the configured DSL language, not the UI language
@@ -216,8 +216,11 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return keywords;
   }
 
-  public getCssColor(localizedColorName: string): NamedCssColorType | undefined {
-    return this.reverseDictionary.getCssColor(localizedColorName, this.dslLanguage);
+  public getCssColor(
+    localizedColorName: string,
+    dslLang?: DslLanguage
+  ): NamedCssColorType | undefined {
+    return this.reverseDictionary.getCssColor(localizedColorName, dslLang ?? this.dslLanguage);
   }
 
   public translate(key: string, options?: any): string {
@@ -229,21 +232,55 @@ export class GTNI18nLanguageService implements IGTNLanguageService {
     return result as string;
   }
 
-  public async translateScript(
-    script: string,
-    targetLang: DslLanguage,
-    fromLang?: DslLanguage
-  ): Promise<string> {
-    const sourceLang = fromLang || this.getDslLanguage();
-    if (sourceLang === targetLang) {
-      return script;
-    }
-
-    return this.reverseDictionary.translateScript(script, sourceLang, targetLang);
+  public localizeScriptSync(script: string, targetLang?: DslLanguage): string {
+    // Make sure the dictionary is pre-loaded in memory for this to work!
+    const language = targetLang || this.getDslLanguage();
+    return this.reverseDictionary.localizeScriptSync(script, language);
   }
 
   public async localizeScript(script: string, targetLang?: DslLanguage): Promise<string> {
     const language = targetLang || this.getDslLanguage();
     return this.reverseDictionary.localizeScript(script, language);
+  }
+
+  public translateScriptSync(
+    script: string,
+    sourceLang: DslLanguage,
+    targetLang: DslLanguage
+  ): string {
+    if (sourceLang === targetLang) {
+      return script;
+    }
+
+    // Make sure the dictionaries are pre-loaded in memory for this to work!
+    const sourceLanguage = sourceLang || this.getDslLanguage();
+    const targetLanguage = targetLang || this.getDslLanguage();
+    return this.reverseDictionary.translateScriptSync(script, sourceLanguage, targetLanguage);
+  }
+
+  public async translateScript(
+    script: string,
+    sourceLang?: DslLanguage,
+    targetLang?: DslLanguage
+  ): Promise<string> {
+    if (sourceLang === targetLang) {
+      return script;
+    }
+
+    const sourceLanguage = sourceLang || this.getDslLanguage();
+    const targetLanguage = targetLang || this.getDslLanguage();
+    return this.reverseDictionary.translateScript(script, sourceLanguage, targetLanguage);
+  }
+
+  public canonicalizeScriptSync(script: string, sourceLang?: DslLanguage): string {
+    // Make sure the dictionary is pre-loaded in memory for this to work!
+    const language = sourceLang || this.getDslLanguage();
+    return this.reverseDictionary.canonicalizeScriptSync(script, language);
+  }
+
+  public async canonicalizeScript(script: string, sourceLang?: DslLanguage): Promise<string> {
+    const language = sourceLang || this.getDslLanguage();
+    const canonicalized = this.reverseDictionary.canonicalizeScript(script, language);
+    return canonicalized;
   }
 }

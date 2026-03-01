@@ -211,12 +211,15 @@ export class GTNToolbar extends LitElement {
                 <button class="danger" @click=${this.handleClear}>
                   <span class="material-icons">delete</span> ${t('toolbar.clear')}
                 </button>
+                <span style="font-size: 0.8rem; color: #666; font-style:italic;"
+                  >${t('mode.editor.description')}</span
+                >
               </div>
             `
           : html`
               <div class="group">
                 <span style="font-size: 0.8rem; color: #666; font-style:italic;"
-                  >Mode Interactif</span
+                  >${t('mode.sandbox.description')}</span
                 >
               </div>
             `}

@@ -32,6 +32,6 @@ export interface GTNTurtleDTO {
 
 export interface GTNProcedureDTO {
   name: string;
-  args: string[];
-  body: string;
+  args?: string[];
+  body?: string;
 }

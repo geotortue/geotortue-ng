@@ -55,7 +55,9 @@
   },
   "mode": {
     "editor": "Pupitre",
-    "sandbox": "Bac à sable"
+    "editor.description": "Mode éditeur",
+    "sandbox": "Bac à sable",
+    "sandbox.description": "Mode interactif"
   },
   "sandbox": {
     "settings.title": "Paramètres",

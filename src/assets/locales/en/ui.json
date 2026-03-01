@@ -55,7 +55,9 @@
   },
   "mode": {
     "editor": "Desk",
-    "sandbox": "Sandbox"
+    "editor.description": "Editor Mode ",
+    "sandbox": "Sandbox",
+    "sandbox.description": "Interactive Mode"
   },
   "sandbox": {
     "settings.title": "Settings",

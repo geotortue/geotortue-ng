@@ -80,8 +80,8 @@ describe('GTNReverseDictionaryService', () => {
       await service.loadDictionary(FR);
 
       // Access private cache via "any" cast to verify state (white-box testing)
-      // or verify via public side-effects (getInternalKey)
-      const key = service.getInternalKey('avance', FR);
+      // or verify via public side-effects (getCanonicalKey)
+      const key = service.getCanonicalKey('avance', FR);
       expect(key).toBe('GT_FORWARD');
     });
 
@@ -96,30 +96,30 @@ describe('GTNReverseDictionaryService', () => {
 
       expect(mockLogger.error).toHaveBeenCalled();
       // Should return undefined, not crash
-      expect(service.getInternalKey('avance', FR)).toBeUndefined();
+      expect(service.getCanonicalKey('avance', FR)).toBeUndefined();
     });
   });
 
-  describe('Lookups (getInternalKey)', () => {
+  describe('Lookups (getCanonicalKey)', () => {
     it('should resolve primary command names', async () => {
       await service.loadDictionary(FR);
-      expect(service.getInternalKey('avance', FR)).toBe('GT_FORWARD');
+      expect(service.getCanonicalKey('avance', FR)).toBe('GT_FORWARD');
     });
 
     it('should resolve aliases (av -> GT_FORWARD)', async () => {
       await service.loadDictionary(FR);
-      expect(service.getInternalKey('av', FR)).toBe('GT_FORWARD');
+      expect(service.getCanonicalKey('av', FR)).toBe('GT_FORWARD');
     });
 
     it('should be case-insensitive', async () => {
       await service.loadDictionary(FR);
-      expect(service.getInternalKey('AVANCE', FR)).toBe('GT_FORWARD');
-      expect(service.getInternalKey('AvAnCe', FR)).toBe('GT_FORWARD');
+      expect(service.getCanonicalKey('AVANCE', FR)).toBe('GT_FORWARD');
+      expect(service.getCanonicalKey('AvAnCe', FR)).toBe('GT_FORWARD');
     });
 
     it('should return undefined if dictionary is not loaded', () => {
       // We didn't call loadDictionary
-      expect(service.getInternalKey('avance', FR)).toBeUndefined();
+      expect(service.getCanonicalKey('avance', FR)).toBeUndefined();
     });
   });
 

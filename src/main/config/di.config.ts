@@ -28,6 +28,8 @@ import { GTNConsoleLogger } from '@infrastructure/services/GTNConsoleLogger';
 import { GTNReverseDictionaryService } from '@infrastructure/i18n/GTNReverseDictionaryService';
 import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
+import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
+import { GTNProcedureRegistry } from '@infrastructure/store/GTNProcedureRegistry';
 
 /**
  * This is the single place where everything is wired together.
@@ -57,6 +59,8 @@ export function configureDependencyInjection(): void {
     GTN_TYPES.ExecutionVisitorFactory,
     (repo: IGTNTurtleRepository) => new GTNExecutionVisitor(repo)
   );
+
+  container.registerSingleton(GTN_TYPES.ProcedureRegistry, () => new GTNProcedureRegistry());
 
   // DSL Translation Helper
   container.registerSingleton(

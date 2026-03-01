@@ -17,6 +17,7 @@ export const GTN_TYPES = {
   Logger: Symbol.for('Logger'),
   AudioService: Symbol.for('AudioService'),
   ExecutionVisitorFactory: Symbol.for('ExecutionVisitorFactory'),
+  ProcedureRegistry: Symbol.for('ProcedureRegistry'),
 
   // --- Infrastructure / Application ---
 

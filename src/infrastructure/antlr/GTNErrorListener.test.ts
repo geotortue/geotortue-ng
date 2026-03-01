@@ -60,7 +60,7 @@ describe('GTNErrorListener - Friendly Messages', () => {
       // Mock the translate function to return our expected English strings
       translate: vi.fn(mockTranslate),
       // Mock other methods to avoid undefined errors if referenced elsewhere
-      getInternalKeyword: vi.fn(),
+      getCanonicalKeyword: vi.fn(),
       getCssColor: vi.fn(),
       getCanonicalId: vi.fn()
     };

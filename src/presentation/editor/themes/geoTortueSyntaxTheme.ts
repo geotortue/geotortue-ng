@@ -22,5 +22,10 @@ export const geoTortueSyntaxTheme = EditorView.baseTheme({
 
   // Comments & Operators
   '.cm-gt-comment': { color: '#5c6370', fontStyle: 'italic' }, // Grey
-  '.cm-gt-operator': { color: '#56b6c2' } // Cyan
+  '.cm-gt-operator': { color: '#56b6c2' }, // Cyan
+
+  '.cm-gt-user-procedure': {
+    color: '#c678dd', // A nice purple (OneDark style)
+    fontWeight: 'bold'
+  }
 });

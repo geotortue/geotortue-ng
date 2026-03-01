@@ -90,6 +90,7 @@ export class GTNCommandsPanel extends LitElement {
     super();
 
     // does nothing but preventing tree shaking issues (see `treeshake.moduleSideEffects: false` in Vite configuration)
+    /* eslint-disable @typescript-eslint/S905 */
     [GtnIcon];
     this.langService = GTNContainer.getInstance().resolve(GTN_TYPES.LanguageService);
   }

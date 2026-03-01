@@ -20,7 +20,7 @@ export class GTNProjectService implements IGTNProjectService {
   /**
    * Serialization: Runtime Global State -> JSON
    */
-  public async saveProject(codeContent: string): Promise<void> {
+  public async saveProject(project: { code: string; procedures: string[] }): Promise<void> {
     const turtles = this.turtleRepo.getAll();
 
     // 1. Map Turtles to DTOs
@@ -44,8 +44,9 @@ export class GTNProjectService implements IGTNProjectService {
         delay: 0
       },
       turtles: turtleDTOs,
-      procedures: [], // TODO: Get from ProcedureRepository
-      code: codeContent
+      // ATM, little trick: all the procedure is put in 'name' as a single string
+      procedures: project.procedures.map((p) => ({ name: p })), // TODO: Get from ProcedureRepository
+      code: project.code
     };
 
     // 3. Write to disk
@@ -58,10 +59,10 @@ export class GTNProjectService implements IGTNProjectService {
    * Deserialization: JSON -> Runtime Global State
    * Returns the code to put back into the application.
    */
-  public async loadProject(): Promise<string> {
+  public async loadProject(): Promise<{ code?: string; procedures?: string[] }> {
     // 1. Read from disk
     const jsonString = await this.fileSystem.openFile(GTN_PROJECT_ACCEPTED_TYPES);
-    if (!jsonString) return '';
+    if (!jsonString) return {};
 
     try {
       const data: GTNProjectData = JSON.parse(jsonString);
@@ -98,7 +99,10 @@ export class GTNProjectService implements IGTNProjectService {
       });
 
       // 4. Return code
-      return data.code;
+      const code = data.code;
+      // ATM little trick, all the procedures as a single string inside the property 'name' of first item
+      const procedures = data.procedures.map((p) => p.name);
+      return { code, procedures: procedures };
     } catch (e) {
       console.error('Failed to load project', e);
       throw e;
