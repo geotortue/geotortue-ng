@@ -1,3 +1,9 @@
+# [1.3.0](https://github.com/geotortue/geotortue-ng/compare/v1.2.16...v1.3.0) (2026-03-01)
+
+### Features
+
+- add procedure editor ([f619f79](https://github.com/geotortue/geotortue-ng/commit/f619f79afa2824ec645292826a9cfc6fd9b25d7e))
+
 ## [1.2.16](https://github.com/geotortue/geotortue-ng/compare/v1.2.15...v1.2.16) (2026-02-26)
 
 ### Bug Fixes
