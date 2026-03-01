@@ -60,7 +60,7 @@ littlesquare
 
 const PROCEDURE_EXAMPLES: Record<string, string> = {
   fr: `pour petitcarre\n  rep 4 [\n    av 50\n    td 90\n  ]\nfin`,
-  en: `def littlesquare\n  repeat 4 [\n    fw 50\n    rt 90\n  ]\nend`
+  en: `def littlesquare\n  repeat 4 [\n    fd 50\n    rt 90\n  ]\nend`
 };
 
 @customElement('gtn-app')
