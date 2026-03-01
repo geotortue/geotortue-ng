@@ -41,17 +41,15 @@
   }
 }
 
-[data-tooltip] {
+.group[data-tooltip] {
   position: relative;
 
   &::after {
     content: attr(data-tooltip);
     position: absolute;
 
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(8px);
-
+    transform: translateY(48px);
+    margin-left: 8px;
     padding: 10px 16px;
     font-size: 0.9rem;
     border-radius: 6px;
@@ -69,11 +67,15 @@
     pointer-events: none;
   }
 
+  &::before {
+    left: 20px; /* Position the arrow under the logo */
+    transform: none;
+  }
+
   &:hover::after {
     display: block;
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(4px);
   }
 }
 

@@ -18,6 +18,7 @@ import { materialIconsStyle } from '@ui/styles/shared-styles';
 import { UiLanguageController } from '@ui/controllers/UiLanguageController';
 import { toDslLanguage, toUiLanguage, type DslLanguage, type UiLanguage } from '@domain/types';
 
+import logoUrl from '../../assets/icons/icon-128.png';
 import styles from './gtn-toolbar.scss?inline';
 
 // Define the View Type
@@ -165,7 +166,7 @@ export class GTNToolbar extends LitElement {
     return html`
       <div class="toolbar-wrapper" role="toolbar" aria-label="Workspace Controls">
         <div class="group" aria-hidden="true" data-tooltip="${t('app.subtitle')}">
-          <img src="/src/assets/icons/icon-128.png" alt="GéoTortue Logo" class="toolbar-icon" />
+          <img src="${logoUrl}" alt="GéoTortue Logo" class="toolbar-icon" />
           <span class="title">${t('app.title')}</span>
         </div>
 
