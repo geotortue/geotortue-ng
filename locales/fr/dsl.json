@@ -2,10 +2,10 @@
   "commands": {
     "GT_FORWARD": ["av", "avance"],
     "GT_BACKWARD": ["re", "recule"],
-    "GT_RIGHT": ["td", "tournedroite", "droite"],
-    "GT_LEFT": ["tg", "tournegauche", "gauche"],
-    "GT_VG": ["vg", "efface"],
-    "GT_RZ": ["rz", "nettoie"],
+    "GT_TURN_RIGHT": ["td", "tournedroite", "droite"],
+    "GT_TURN_LEFT": ["tg", "tournegauche", "gauche"],
+    "GT_CLEAR_GRAPHICS": ["vg", "efface"],
+    "GT_RESET": ["rz", "raze", "nettoie"],
     "GT_HIDE_TURTLE": "ct",
     "GT_SHOW_TURTLE": "mt",
     "GT_PEN_UP": "lc",
@@ -13,12 +13,14 @@
     "GT_PEN_COLOR": "crayon",
     "GT_FILL": "remplis",
     "GT_WRITE": ["ecris", "écris"],
-    "GT_REP": ["rep", "repete", "répète"],
+    "GT_REPEAT": ["rep", "repete", "répète"],
     "GT_IF": "si",
-    "GT_WHILE": "tant_que",
-    "GT_FOR_EACH": "pour_chaque"
+    "GT_WHILE": ["tantque", "tant_que"],
+    "GT_FOR_EACH": ["boucle", "pour_chaque"]
   },
   "keywords": {
+    "GT_PROCEDURE_START": "pour",
+    "GT_PROCEDURE_END": "fin",
     "GT_THEN": "alors",
     "GT_ELSE": "sinon",
     "GT_FROM": "de",
@@ -34,7 +36,7 @@
     "GT_WHITE": "blanc",
     "GT_ORANGE": "orange",
     "GT_PINK": "rose",
-    "GT_GREY": "grey",
+    "GT_GREY": "gris",
     "GT_CYAN": "cyan",
     "GT_MAGENTA": "magenta"
   }
