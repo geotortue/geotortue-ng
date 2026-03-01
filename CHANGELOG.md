@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/geotortue/geotortue-ng/compare/v1.3.0...v1.3.1) (2026-03-01)
+
+### Bug Fixes
+
+- **chore:** desk mode didn't work in production ([4320884](https://github.com/geotortue/geotortue-ng/commit/43208848bc0791dd71fe62389ef5677b196f17ab))
+- **ui:** wrong position toolbar logo tooltip ([2079d9b](https://github.com/geotortue/geotortue-ng/commit/2079d9b115be106a661ddfe308f717906db8434d))
+- wrong typo ([d6186ec](https://github.com/geotortue/geotortue-ng/commit/d6186ecd79ef01e2435dceab297d775346a55d1c))
+
 # [1.3.0](https://github.com/geotortue/geotortue-ng/compare/v1.2.16...v1.3.0) (2026-03-01)
 
 ### Features
