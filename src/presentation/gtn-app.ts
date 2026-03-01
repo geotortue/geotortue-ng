@@ -29,10 +29,11 @@ import { GTNProceduresPanel } from './components/workbench/gtn-procedures-panel'
 
 // Import the Type from toolbar
 import type { ViewMode } from './components/gtn-toolbar';
+import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
 
 const isDev = import.meta.env.DEV;
 
-const EXAMPLES: Record<string, string> = {
+const SCRIPT_EXAMPLES: Record<string, string> = {
   fr: `
 crayon rouge;
 pas := 36;
@@ -41,6 +42,8 @@ rep 36 [
   av rot;
   td rot;
 ]
+crayon "vert"
+petitcarre
 `,
   en: `
 color red;
@@ -50,7 +53,14 @@ repeat 36 [
   fd rot;
   rt rot;
 ]
+color green
+littlesquare
 `
+};
+
+const PROCEDURE_EXAMPLES: Record<string, string> = {
+  fr: `pour petitcarre\n  rep 4 [\n    av 50\n    td 90\n  ]\nfin`,
+  en: `def littlesquare\n  repeat 4 [\n    fw 50\n    rt 90\n  ]\nend`
 };
 
 @customElement('gtn-app')
@@ -74,6 +84,9 @@ export class GTNApp extends LitElement {
   @state()
   private accessor viewMode: ViewMode = 'SANDBOX';
 
+  @state()
+  private accessor userProcedures: string[] = [];
+
   private readonly interpreter: IGTNInterpreter;
   private readonly langService: IGTNLanguageService;
   private readonly turtleRepo: IGTNTurtleRepository;
@@ -84,6 +97,7 @@ export class GTNApp extends LitElement {
   constructor() {
     super();
     // Prevent tree shaking issues
+    /* eslint-disable @typescript-eslint/S905 */
     [
       DevResetButton,
       GTNCanvas,
@@ -103,11 +117,10 @@ export class GTNApp extends LitElement {
     this.syntaxService = container.resolve<GTNSyntaxService>(GTN_TYPES.SyntaxService);
 
     const detectedLang = this.langService.getDslLanguage();
-    const initialCode = EXAMPLES[detectedLang] || '';
-    this.code = initialCode;
-
-    // Default procedure example TODO localize this
-    this.proceduresCode = `pour carre\n  rep 4 [\n    av 50\n    td 90\n  ]\nfin`;
+    const initialScriptCode = SCRIPT_EXAMPLES[detectedLang] || '';
+    const initialProcedure = PROCEDURE_EXAMPLES[detectedLang] || '';
+    this.code = initialScriptCode;
+    this.proceduresCode = initialProcedure;
   }
 
   override connectedCallback() {
@@ -124,6 +137,25 @@ export class GTNApp extends LitElement {
     }
   }
 
+  override firstUpdated() {
+    super.firstUpdated(new Map());
+    this.initializeLanguageAndProcedures();
+  }
+
+  // Move the async logic here to please Sonar with async/await
+  private async initializeLanguageAndProcedures() {
+    try {
+      await this.langService.initialize();
+
+      this.userProcedures = this.syntaxService.extractProcedures(this.proceduresCode);
+      this.validateCombinedCode();
+
+      this.requestUpdate();
+    } catch (error) {
+      console.error('Failed to initialize DSL resources:', error);
+    }
+  }
+
   // --- Handlers ---
 
   private handleLanguageChange(lang: UiLanguage) {
@@ -137,6 +169,7 @@ export class GTNApp extends LitElement {
 
   private handleProceduresChange(event: CustomEvent) {
     this.proceduresCode = event.detail.code;
+    this.userProcedures = this.syntaxService.extractProcedures(this.proceduresCode);
     this.validateCombinedCode();
   }
 
@@ -160,7 +193,7 @@ export class GTNApp extends LitElement {
     try {
       await this.interpreter.execute(this.code, this.proceduresCode);
     } catch (error) {
-      console.error('Execution error:', error);
+      console.error('[GéoTortue NG] Execution error:', error);
       alert('Error executing GéoTortue commands');
     }
   }
@@ -171,6 +204,8 @@ export class GTNApp extends LitElement {
     const geoService = container.resolve<GTNGeometryService>(GTN_TYPES.GeometryService);
     const repository = container.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
     const turtleId = (repository as GTNInMemoryTurtleRepository).getNextId();
+    const registry = container.resolve<IGTNProcedureRegistry>(GTN_TYPES.ProcedureRegistry);
+    registry.clear();
     const t1 = new GTNTurtle(turtleId, geoService);
     this.turtleRepo.save(t1);
   }
@@ -179,8 +214,9 @@ export class GTNApp extends LitElement {
 
   private async handleSaveProject() {
     try {
-      // FUTURE: YUpdate saveProject to accept proceduresCode too?
-      await this.projectService.saveProject(this.code);
+      // FUTURE: Update saveProject to accept "true" proceduresCode,i.e. GTNProcedureDTO[]
+      // ATM, all the procedures as a single string are put in the first item of an list
+      await this.projectService.saveProject({ code: this.code, procedures: [this.proceduresCode] });
       alert('Project saved!');
     } catch (e) {
       console.error(e);
@@ -190,9 +226,10 @@ export class GTNApp extends LitElement {
 
   private async handleOpenProject() {
     try {
-      const code = await this.projectService.loadProject();
+      const { code, procedures } = await this.projectService.loadProject();
       if (code) {
         this.code = code;
+        this.proceduresCode = procedures?.[0] ?? '';
       }
       alert('Project loaded!');
     } catch (e) {
@@ -203,13 +240,13 @@ export class GTNApp extends LitElement {
   private async handleDslChange(e: CustomEvent) {
     const { oldLang, newLang } = e.detail;
     try {
-      const translatedCode = await this.langService.translateScript(this.code, newLang, oldLang);
+      const translatedCode = await this.langService.translateScript(this.code, oldLang, newLang);
       this.code = translatedCode;
 
       const translatedProcedures = await this.langService.translateScript(
         this.proceduresCode,
-        newLang,
-        oldLang
+        oldLang,
+        newLang
       );
       this.proceduresCode = translatedProcedures;
     } catch (err) {
@@ -222,7 +259,7 @@ export class GTNApp extends LitElement {
 
     return html`
       <header class="header">
-        <h1 class="sr-only">${t('app.title')}Main Editor</h1>
+        <h1 class="sr-only">${t('app.title')}</h1>
         <gtn-toolbar
           .currentView=${this.viewMode}
           @view-change=${this.handleViewChange}

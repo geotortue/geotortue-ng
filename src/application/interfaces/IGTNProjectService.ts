@@ -12,6 +12,6 @@ export const GTN_PROJECT_ACCEPTED_TYPES: IGTNFileType = {
 } as const;
 
 export interface IGTNProjectService {
-  saveProject(code: string): Promise<void>;
-  loadProject(): Promise<string>;
+  saveProject(project: { code: string; procedures: string[] }): Promise<void>;
+  loadProject(): Promise<{ code?: string; procedures?: string[] }>;
 }

@@ -22,6 +22,7 @@ import { GTNColorPanel } from './sandbox/gtn-color-panel';
 import { GTNControlsPanel } from './sandbox/gtn-controls-panel';
 import { DpadCode } from './utils/gtn-keyboard';
 
+import { srOnlyStyles } from '@ui/styles/shared-styles';
 import styles from './gtn-sandbox.scss?inline';
 
 const cmdSep = getLiteralName(GTNToken.GT_STATEMENT_SEPARATOR);
@@ -34,9 +35,12 @@ const ARROW_NAV_KEYS: DpadCode[] = [
 
 @customElement('gtn-sandbox')
 export class GtnSandbox extends LitElement {
-  static override readonly styles = css`
-    ${unsafeCSS(styles)}
-  `;
+  static override readonly styles = [
+    srOnlyStyles,
+    css`
+      ${unsafeCSS(styles)}
+    `
+  ];
 
   private readonly interpreter: IGTNInterpreter;
   private readonly langService: IGTNLanguageService;
@@ -54,6 +58,7 @@ export class GtnSandbox extends LitElement {
   constructor() {
     super();
     // does nothing but preventing tree shaking issues
+    /* eslint-disable @typescript-eslint/S905 */
     [
       GTNColorPanel,
       GTNCommandsPanel,
@@ -97,7 +102,7 @@ export class GtnSandbox extends LitElement {
       const targetLang = toDslLanguage(this.langService.getUiLanguage());
       const localizedCommand = await this.langService.localizeScript(command, targetLang);
       this.consoleLogs = [[timestamp, command, localizedCommand], ...this.consoleLogs];
-      await this.interpreter.doExecute(command);
+      await this.interpreter.canonicalExecute(command);
     } catch (e) {
       console.error(e);
     }
@@ -107,7 +112,7 @@ export class GtnSandbox extends LitElement {
     await this.retranslateLogs();
   };
 
-  private retranslateLogs = async () => {
+  private readonly retranslateLogs = async () => {
     if (this.consoleLogs.length === 0) return;
 
     const targetLang = toDslLanguage(this.langService.getUiLanguage());
@@ -250,6 +255,7 @@ export class GtnSandbox extends LitElement {
 
     return html`
       <div class="sandbox-container">
+        <h2 class="sr-only">${t('mode.sandbox')}</h2>
         <aside class="side-panel left-panel">
           <div class="panel-section">
             <h3>${t('sandbox.compass.title')}</h3>

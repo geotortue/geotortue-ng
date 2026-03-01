@@ -1,16 +1,85 @@
 import { CharStream, CommonTokenStream } from 'antlr4ng';
 
-import { GrammarReflector } from '@infrastructure/antlr/GrammarReflector';
 import { GeoTortueParser } from '@infrastructure/antlr/generated/GeoTortueParser';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+
+import { GrammarReflector } from '@infrastructure/antlr/GrammarReflector';
 import { GTNErrorListener, type GTNError } from '@infrastructure/antlr/GTNErrorListener';
+import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
+import { GTNContainer } from '@infrastructure/di/GTNContainer';
+import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+import { GTNProcedureExtractorVisitor } from './GTNProcedureExtractorVisitor';
+import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 
 export class GTNSyntaxService {
+  private readonly langService: IGTNLanguageService;
+  private readonly procedureRegistry: IGTNProcedureRegistry;
   private readonly reflector: GrammarReflector;
   private cachedStyleMap: Map<number, string> | null = null;
 
   constructor() {
+    const container = GTNContainer.getInstance();
+    this.langService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
+    this.procedureRegistry = container.resolve<IGTNProcedureRegistry>(GTN_TYPES.ProcedureRegistry);
     this.reflector = new GrammarReflector(GeoTortueParser);
+  }
+
+  /**
+   * Instantiates the ANTLR Lexer and Parser for a given script.
+   * Handles the conversion from localized DSL to Canonical tokens.
+   */
+  private createParser(rawCode: string): { lexer: GeoTortueLexer; parser: GeoTortueParser } {
+    // Convert localized keywords (pour/fin, to/end) into canonical tokens (GT_PROCEDURE_START)
+    const canonicalCode = this.langService.canonicalizeScriptSync(rawCode);
+    const charStream = CharStream.fromString(canonicalCode);
+    const lexer = new GeoTortueLexer(charStream);
+    lexer.removeErrorListeners();
+    const tokenStream = new CommonTokenStream(lexer);
+    const parser = new GeoTortueParser(tokenStream);
+    parser.removeErrorListeners();
+
+    const errorListener = new GTNErrorListener();
+    parser.addErrorListener(errorListener);
+
+    return { lexer, parser };
+  }
+
+  /**
+   * Parses the procedures code purely to extract definitions.
+   * Returns an array of procedure names for the editor to use.
+   */
+  public extractProcedures(proceduresCode: string): string[] {
+    // 1. Clear the old memory
+    // this.procedureRegistry.clear();
+    if (!proceduresCode?.trim()) {
+      return [];
+    }
+
+    try {
+      // 2. Run the Lexer and Parser
+      // If you don't have a helper, instantiate your GeoTortueLexer and GeoTortueParser here
+      const { parser } = this.createParser(proceduresCode);
+
+      // 3. Generate the AST for the procedures script
+      const tree = parser.program();
+
+      // 4. Run the fast extractor visitor
+      const extractor = new GTNProcedureExtractorVisitor(this.procedureRegistry);
+      extractor.visit(tree);
+    } catch (e) {
+      // If still loading, ignore extraction failures
+      return [];
+    }
+
+    // 5. Return the clean list of names
+    return this.procedureRegistry.getAllNames();
+  }
+
+  /**
+   * Returns the list of currently valid user procedure names.
+   */
+  public getExtractedProcedures(): string[] {
+    return this.procedureRegistry.getAllNames();
   }
 
   /**
@@ -18,7 +87,9 @@ export class GTNSyntaxService {
    * Returns an empty array if the code is valid.
    */
   public validate(code: string): GTNError[] {
-    const chars = CharStream.fromString(code);
+    const canonicalCode = this.langService.canonicalizeScriptSync(code);
+
+    const chars = CharStream.fromString(canonicalCode);
     const lexer = new GeoTortueLexer(chars);
     const tokens = new CommonTokenStream(lexer);
     const parser = new GeoTortueParser(tokens);

@@ -1,9 +1,38 @@
-import { describe, it, expect } from 'vitest';
+import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTNSyntaxService } from './GTNSyntaxService';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
+import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 
 describe('GTNSyntaxService Integration', () => {
-  const service = new GTNSyntaxService();
+  let service: GTNSyntaxService;
+
+  beforeAll(() => {
+    const container = GTNContainer.getInstance();
+
+    // 1. Mock the dependencies required by the constructor
+    // We cast to 'any' because we only need to satisfy the constructor,
+    // these methods aren't actually called during the getTokenStyleMap tests.
+    container.registerSingleton(
+      GTN_TYPES.LanguageService,
+      () =>
+        ({
+          canonicalizeSync: (code: string) => code,
+          localizeScriptSync: (code: string) => code
+        }) as any
+    );
+
+    container.registerSingleton(
+      GTN_TYPES.ProcedureRegistry,
+      () =>
+        ({
+          getAllNames: () => [],
+          clear: () => {}
+        }) as any
+    );
+
+    // 2. Instantiate the service AFTER the container is configured
+    service = new GTNSyntaxService();
+  });
 
   it('should generate a token style map from real grammar', () => {
     const map = service.getTokenStyleMap();

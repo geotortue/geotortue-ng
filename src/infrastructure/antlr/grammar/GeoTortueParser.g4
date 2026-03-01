@@ -144,7 +144,7 @@ functionDef
     ;
 
 procedureCallStatement
-    : GT_IDENTIFIER commandArgument+
+    : GT_IDENTIFIER commandArgument*
     ;
 
 commandArgument

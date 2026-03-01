@@ -33,6 +33,12 @@ describe('GTNInterpreter Integration', () => {
     };
     container.registerInstance(GTN_TYPES.Logger, mockLogger);
 
+    const mockProcedureRegistry = {
+      // getAllNames: () => [],
+      // clear: () => {}
+    };
+    container.registerSingleton(GTN_TYPES.ProcedureRegistry, () => mockProcedureRegistry as any);
+
     // 1-2. Mock the MathEvaluator (Required by GTNExecutionVisitor)
     const mockMathEvaluator = {
       evaluate: vi.fn((expr: string) => {
@@ -47,8 +53,9 @@ describe('GTNInterpreter Integration', () => {
 
     // 1-3. Mock the Language Service (Simulating Localization)
     mockLangService = {
-      // Used by TokenRefiner / Interpreter.canonicalize
-      getInternalKeyword: vi.fn((word: string) => {
+      canonicalizeSync: vi.fn((script: string) => {
+        // Simple mock canonicalization for tests: replace specific French words with GT_ tokens
+        let processed = script.toUpperCase();
         const map: Record<string, string> = {
           AVANCE: 'GT_FORWARD',
           AV: 'GT_FORWARD',
@@ -57,7 +64,16 @@ describe('GTNInterpreter Integration', () => {
           REP: 'GT_REPEAT',
           CRAYON: 'GT_PEN_COLOR'
         };
-        return map[word.toUpperCase()];
+
+        // Naive replacement just for the test environment
+        for (const [fr, gt] of Object.entries(map)) {
+          const regex = new RegExp(`\\b${fr}\\b`, 'g');
+          processed = processed.replace(regex, gt);
+        }
+        return processed;
+      }),
+      canonicalizeScript: vi.fn(async function (this: any, script: string) {
+        return this.canonicalizeSync(script);
       }),
       // Used by Visitor.visitSetColor
       getCssColor: vi.fn((color) => {
@@ -66,7 +82,8 @@ describe('GTNInterpreter Integration', () => {
         return colors[color.toUpperCase()];
       }),
       // Used by TokenRefiner if present
-      getCanonicalId: vi.fn()
+      getCanonicalId: vi.fn(),
+      getInternalKeyword: vi.fn()
     } as unknown as IGTNLanguageService;
 
     container.registerSingleton(GTN_TYPES.LanguageService, () => mockLangService);

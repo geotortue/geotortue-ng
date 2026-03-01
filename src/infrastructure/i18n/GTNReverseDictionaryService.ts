@@ -8,17 +8,6 @@ import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 
-export const CANONICAL_LANGUAGE = '--';
-export type CanonicalLanguage = '--';
-
-/** * Type Guard to check if it is the canonical language
- */
-export const isCanonicalLanguage = (lang: unknown): lang is CanonicalLanguage => {
-  return typeof lang === 'string' && CANONICAL_LANGUAGE === lang;
-};
-
-const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
-
 type ReplacementType = { start: number; stop: number; newText: string };
 
 // Types representing the JSON structure
@@ -46,6 +35,16 @@ type LangCache = {
   colorForwardCss: Map<string, NamedCssColorType>;
 };
 
+export const CANONICAL_LANGUAGE = '--' as DslLanguage;
+export type CanonicalLanguage = '--';
+
+/** * Type Guard to check if it is the canonical language
+ */
+export const isCanonicalLanguage = (lang: unknown): lang is CanonicalLanguage => {
+  return typeof lang === 'string' && CANONICAL_LANGUAGE === lang;
+};
+
+const GEOTORTUE_GRAMMAR_PREFIX = 'GT_';
 export class GTNReverseDictionaryService {
   private readonly cache: Map<string, LangCache> = new Map();
   private readonly loaders: Map<string, Promise<LangCache>> = new Map();
@@ -64,15 +63,19 @@ export class GTNReverseDictionaryService {
    * @param lang
    * @returns
    */
-  public getCssColor(localizedColorName: string, lang: DslLanguage): NamedCssColorType | undefined {
-    const cache = this.cache.get(lang);
+  public getCssColor(
+    localizedColorName: string,
+    fromLang: DslLanguage
+  ): NamedCssColorType | undefined {
+    const cache = this.cache.get(fromLang);
     if (!cache) {
       return undefined;
     }
 
-    const search = localizedColorName.toLowerCase();
+    const canonicalKeyword = isCanonicalLanguage(fromLang)
+      ? localizedColorName
+      : cache.colorReverse.get(localizedColorName.toLowerCase());
 
-    const canonicalKeyword = cache.colorReverse.get(search);
     if (!canonicalKeyword) {
       return undefined;
     }
@@ -87,9 +90,9 @@ export class GTNReverseDictionaryService {
    * Used by the Syntax Highlighter.
    * Returns undefined if the dictionary is not yet loaded or the word is unknown.
    */
-  public getInternalKey(word: string, lang: DslLanguage): string | undefined {
+  public getCanonicalKey(word: string, fromLang: DslLanguage): string | undefined {
     // Check if the dictionary for this language is currently in memory
-    const cache = this.cache.get(lang);
+    const cache = this.cache.get(fromLang);
     if (!cache) {
       // NOTE: Highlighters are synchronous, so we cannot await here.
       // The dictionary must be pre-loaded via 'loadDictionary' during app startup.
@@ -100,11 +103,21 @@ export class GTNReverseDictionaryService {
 
     // Look up in all the reverse maps
     // Order matters if there are overlaps, but usually keys are distinct.
-    return (
+    // Special case of colors: we don't want a key as defined in section "colors" of a dsl.json file
+    // but directly a valid css color as defined in enum NamedCssColor
+    // FUTURE sharing code with {@link GTNReverseDictionaryService.doCanonicalize}
+    const key =
       cache.commandReverse.get(search) ||
       cache.keywordReverse.get(search) ||
-      cache.colorReverse.get(search)
-    );
+      (() => {
+        const canonicalKey = cache.colorReverse.get(search);
+        if (!canonicalKey) {
+          return word;
+        }
+        const cssColor = cache.colorForwardCss.get(canonicalKey);
+        return cssColor ?? word;
+      })();
+    return key;
   }
 
   /**
@@ -114,20 +127,105 @@ export class GTNReverseDictionaryService {
     await this.getOrLoadDictionary(lang);
   }
 
+  public canonicalizeScriptSync(script: string, fromLang: DslLanguage): string {
+    if (!script.trim()) {
+      return script;
+    }
+    const sourceDict = this.cache.get(fromLang);
+    if (!sourceDict) {
+      this.logger.warn(`[ReverseDictionary] Sync localization failed: ${fromLang} not loaded`);
+      return script;
+    }
+
+    const chars = CharStream.fromString(script);
+    const lexer = new GeoTortueLexer(chars);
+    const tokens = lexer.getAllTokens();
+
+    const replacements: ReplacementType[] = [];
+
+    for (const token of tokens) {
+      if (token.text == null) {
+        continue;
+      }
+
+      const canonicalizedText = this.doCanonicalize(token, sourceDict);
+
+      if (canonicalizedText === undefined || canonicalizedText === token.text) {
+        continue;
+      }
+
+      replacements.push({
+        start: token.start,
+        stop: token.stop,
+        newText: canonicalizedText
+      });
+    }
+    const canonicalizedCode = replacements.toReversed().reduce((acc, rep) => {
+      const before = acc.substring(0, rep.start);
+      const after = acc.substring(rep.stop + 1);
+      const result = before + rep.newText + after;
+      return result;
+    }, script);
+    return canonicalizedCode;
+  }
+
+  public async canonicalizeScript(script: string, fromLang: DslLanguage): Promise<string> {
+    if (!script.trim()) {
+      return script;
+    }
+
+    // Ensure dictionary is loaded asynchronously
+    // as it will be used below in `canonicalizeScriptSync`
+    await this.getOrLoadDictionary(fromLang);
+
+    // Delegate to the synchronous core logic
+    return this.canonicalizeScriptSync(script, fromLang);
+  }
+
+  private doCanonicalize(token: Token, sourceDict: LangCache): string | undefined {
+    const originalText = token.text!;
+    const lowerText = originalText.toLowerCase();
+
+    // Strategy: Just perform the Reverse Lookup!
+    // This IS the canonical key.
+    // Look up in all the reverse maps
+    // Order matters if there are overlaps, but usually keys are distinct.
+    // Special case of colors: we don't want a key as defined in section "colors" of a dsl.json file
+    // but directly a valid css color as defined in enum NamedCssColor
+    // FUTURE sharing code with {@link GTNReverseDictionaryService.getCanonicalKey}
+    const key =
+      sourceDict.commandReverse.get(lowerText) ||
+      sourceDict.keywordReverse.get(lowerText) ||
+      (() => {
+        const canonicalKey = sourceDict.colorReverse.get(lowerText);
+        if (!canonicalKey) {
+          return originalText;
+        }
+        const cssColor = sourceDict.colorForwardCss.get(canonicalKey);
+        return cssColor ?? originalText;
+      })();
+    return key;
+  }
+
   /**
    * Localizes a script from canonical tokens to destination language
    *
+   * REQUIRED for CodeMirror syntax highlighting and ANTLR parsing in the UI thread.
+   * Assumes the dictionary has been pre-loaded via loadDictionary().
    */
-  public async localizeScript(script: string, targetLang: DslLanguage) {
-    if (!script.trim()) {
-      return '';
+  public localizeScriptSync(canonicalScript: string, targetLang: DslLanguage): string {
+    if (!canonicalScript.trim()) {
+      return canonicalScript;
     }
 
-    // 1. Ensure dictionary is loaded
-    const targetDict = await this.getOrLoadDictionary(targetLang);
+    const targetDict = this.cache.get(targetLang);
+    if (!targetDict) {
+      this.logger.warn(`[ReverseDictionary] Sync localization failed: ${targetLang} not loaded.`);
+      return canonicalScript; // Fallback to raw script if not loaded
+    }
 
-    // 2. Tokenize script
-    const chars = CharStream.fromString(script);
+    // Tokenize script
+    const chars = CharStream.fromString(canonicalScript);
     const lexer = new GeoTortueLexer(chars);
 
     // Get all tokens (including those on hidden channels if any, though getAllTokens usually fetches channel 0.
@@ -137,7 +235,8 @@ export class GTNReverseDictionaryService {
 
     const replacements: ReplacementType[] = [];
 
-    // 3. Iterate on tokens
+    // Iterate on tokens
+    // Identify tokens that need translation
     for (const token of tokens) {
       if (token.text == null) {
         continue;
@@ -149,18 +248,39 @@ export class GTNReverseDictionaryService {
         continue;
       }
 
-      replacements.push({ start: token.start, stop: token.stop, newText: translatedText! });
+      replacements.push({
+        start: token.start,
+        stop: token.stop,
+        newText: translatedText!
+      });
     }
 
-    // Apply replacements in reverse order, i.e. from end to start
+    // Apply replacements in reverse order, i.e. from end to start, to maintain index integrity
     const localizedCode = replacements.toReversed().reduce((acc, rep) => {
       const before = acc.substring(0, rep.start);
       const after = acc.substring(rep.stop + 1);
       const result = before + rep.newText + after;
       return result;
-    }, script);
-
+    }, canonicalScript);
     return localizedCode;
+  }
+
+  /**
+   * Localizes a script from canonical tokens to destination language
+   *
+   * Asynchronous wrapper of localizeScriptSynch
+   *
+   */
+  public async localizeScript(canonicalScript: string, targetLang: DslLanguage) {
+    if (!canonicalScript.trim()) {
+      return canonicalScript;
+    }
+    // Ensure dictionary is loaded asynchronously
+    // as it will be used below in `localizeScriptSync`
+    await this.getOrLoadDictionary(targetLang);
+
+    // Delegate to the synchronous core logic
+    return this.localizeScriptSync(canonicalScript, targetLang);
   }
 
   private doLocalize(
@@ -222,22 +342,31 @@ export class GTNReverseDictionaryService {
   /**
    * Translates a script from one language to another using ANTLR tokens.
    *
+   * Use ATN and ANTLR canonical tokens to links both sides
+   *
+   * Assumes the dictionary has been pre-loaded via loadDictionary().
    */
-  public async translateScript(
+  public translateScriptSync(
     script: string,
     fromLang: DslLanguage,
     targetLang: DslLanguage
-  ): Promise<string> {
+  ): string {
     if (!script.trim()) {
-      return '';
+      return script;
     }
-    // 1. Ensure dictionaries are loaded
-    const [sourceDict, targetDict] = await Promise.all([
-      this.getOrLoadDictionary(fromLang),
-      this.getOrLoadDictionary(targetLang)
-    ]);
 
-    // 2. Tokenize script
+    const sourceDict = this.cache.get(fromLang);
+    const targetDict = this.cache.get(targetLang);
+    if (!sourceDict || !targetDict) {
+      this.logger.warn(`[ReverseDictionary] Sync localization failed:
+        ${!sourceDict ? fromLang : ''}
+        ${!sourceDict && !targetDict ? '&' : ''}
+        ${!targetDict ? targetLang : ''}
+        not loaded.`);
+      return script; // Fallback to raw script if not loaded
+    }
+
+    // Tokenize script
     const chars = CharStream.fromString(script);
     const lexer = new GeoTortueLexer(chars);
 
@@ -248,7 +377,7 @@ export class GTNReverseDictionaryService {
 
     const replacements: ReplacementType[] = [];
 
-    // 3. Iterate on tokens
+    // Iterate on tokens
     for (const token of tokens) {
       if (token.text == null) {
         continue;
@@ -272,6 +401,28 @@ export class GTNReverseDictionaryService {
     }, script);
 
     return translatedCode;
+  }
+
+  /**
+   * Translates a script from one natural language to another one
+   *
+   * Asynchronous version of translateScriptSync.
+   *
+   */
+  public async translateScript(
+    script: string,
+    fromLang: DslLanguage,
+    targetLang: DslLanguage
+  ): Promise<string> {
+    if (!script.trim()) {
+      return script;
+    }
+
+    // Ensure dictionaries are loaded
+    await Promise.all([this.getOrLoadDictionary(fromLang), this.getOrLoadDictionary(targetLang)]);
+
+    // Delegate to the synchronous core logic
+    return this.translateScriptSync(script, fromLang, targetLang);
   }
 
   private doTranslate(
@@ -355,7 +506,7 @@ export class GTNReverseDictionaryService {
       const { forward: keywordForward, reverse: keywordReverse } = createMapping(json.keywords);
       const { forward: colorForward, reverse: colorReverse } = createMapping(json.colors);
 
-      const cache: LangCache = {
+      const langCache: LangCache = {
         commandReverse,
         keywordReverse,
         colorReverse,
@@ -365,8 +516,8 @@ export class GTNReverseDictionaryService {
         colorForwardCss: createColorMap()
       };
 
-      this.cache.set(lang, cache);
-      return cache;
+      this.cache.set(lang, langCache);
+      return langCache;
     } catch (e) {
       this.logger.error(`[ReverseDictionary] Error loading ${lang}`, e);
       // Return empty structures to prevent crash

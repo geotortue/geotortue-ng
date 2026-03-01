@@ -1,5 +1,5 @@
 import type { DslLanguage, UiLanguage } from '@domain/types';
-import type { NamedCssColor, NamedCssColorType } from '@domain/value-objects';
+import type { NamedCssColorType } from '@domain/value-objects';
 
 export interface IGTNLanguageService {
   initialize(): Promise<void>;
@@ -37,7 +37,7 @@ export interface IGTNLanguageService {
    * Finds the internal canonical keyword corresponding to a localized keyword (e.g. in french, 'av' or 'avancer' ---> 'GT_FORWARD')
    * Uses the DSL Language.
    */
-  getInternalKeyword(localizedKeyword: string): string | undefined;
+  getCanonicalKeyword(localizedKeyword: string): string | undefined;
 
   /**
    * Get all valid localized keywords for the current DSL (for Editor)
@@ -49,27 +49,73 @@ export interface IGTNLanguageService {
    * Translates a localized color name (e.g. "rouge" in french) to a CSS-valid name ("red").
    * Returns undefined if unknown.
    */
-  getCssColor(localizedName: string): NamedCssColorType | undefined;
+  getCssColor(localizedName: string, dslLang?: DslLanguage): NamedCssColorType | undefined;
 
   /**
-   * Localize a full script from canonical tokens to a DSL language.
+   * Localize a full script from canonical tokens to a natural language.
+   * Used in explicit Events/Actions, not through Listeners/Observables.
+   * Synch as only called when sure that has been done the fetching of the DSL definitions for the language
+   * @param script The code to localize.
+   * @param targetLang The target language code (e.g. 'fr').
+   */
+  localizeScriptSync(script: string, targetLang?: DslLanguage): string;
+
+  /**
+   * Localize a full script from canonical tokens to a natural language.
    * Used in explicit Events/Actions, not through Listeners/Observables.
    * Async because it may need to fetch the DSL definitions for the language.
-   * @param script The code to translate.
-   * @param fromLang The source language code (e.g. 'en').
-   * @param toLang The target language code (e.g. 'fr').
+   * @param script The code to localize.
+   * @param targetLang The target language code (e.g. 'fr').
    */
-  localizeScript(script: string, toLang?: DslLanguage): Promise<string>;
+  localizeScript(script: string, targetLang?: DslLanguage): Promise<string>;
 
   /**
-   * Translates a full script from one DSL language to another.
+   * Translates a full script from one natural language to another.
+   * Used in explicit Events/Actions, not through Listeners/Observables.
+   * Synch as only called when sure that has been done the fetching of the DSL definitions for the language
+   * @param script The code to translate.
+   * @param sourceLang The source language code (e.g. 'en').
+   * @param targetLang The target language code (e.g. 'fr').
+   */
+  translateScriptSync(script: string, sourceLang: DslLanguage, targetLang: DslLanguage): string;
+
+  /**
+   * Translates a full script from one natural language to another.
    * Used in explicit Events/Actions, not through Listeners/Observables.
    * Async because it may need to fetch the DSL definitions for the languages.
    * @param script The code to translate.
-   * @param fromLang The source language code (e.g. 'en').
-   * @param toLang The target language code (e.g. 'fr').
+   * @param sourceLang The source language code (e.g. 'en').
+   * @param targetLang The target language code (e.g. 'fr').
    */
-  translateScript(script: string, fromLang: DslLanguage, toLang: DslLanguage): Promise<string>;
+  translateScript(
+    script: string,
+    sourceLang: DslLanguage,
+    targetLang: DslLanguage
+  ): Promise<string>;
+
+  /**
+   * Transforms a full script from a natural language to the canonical format.
+   * Used in explicit Events/Actions, not through Listeners/Observables.
+   * Synch as only called when sure that has been done the fetching of the DSL definitions for the language
+   * @param script The code to canonicalize.
+   * @param sourceLang The source language code (e.g. 'en').
+   */
+  canonicalizeScriptSync(script: string, sourceLang?: DslLanguage): string;
+
+  /**
+   * Transforms a full script from a natural language to the canonical format.
+   * Used in explicit Events/Actions, not through Listeners/Observables.
+   * Async because it may need to fetch the DSL definitions for the languages.
+   * @param script The code to canonicalize.
+   * @param sourceLang The source language code (e.g. 'en').
+   */
+  canonicalizeScript(script: string, sourceLang?: DslLanguage): Promise<string>;
+
+  /**
+   * Notify listeners when a change occurs on **DSL language**.
+   * @param callback
+   */
+  subscribeDslListeners(callback: (lang: DslLanguage) => void): () => void;
 
   // UI -------------------------------------------------------------------------------------
 
@@ -89,12 +135,6 @@ export interface IGTNLanguageService {
    * @param callback
    */
   subscribeUiListeners(callback: (lang: UiLanguage) => void): () => void;
-
-  /**
-   * Notify listeners when a change occurs on **DSL language**.
-   * @param callback
-   */
-  subscribeDslListeners(callback: (lang: DslLanguage) => void): () => void;
 
   /**
    * Translates a UI key (e.g. "toolbar.run" -> "Exécuter")

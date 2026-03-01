@@ -23,6 +23,10 @@ export function createAntlrHighlighter(
   const tokenStyleMap = syntaxService.getTokenStyleMap();
   const tokenRefiner = new TokenRefiner(languageService);
 
+  // Define a specific decoration for user procedures
+  // We will map this to a color in your theme file next!
+  const userProcDecoration = Decoration.mark({ class: 'cm-gt-user-procedure' });
+
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
@@ -41,6 +45,12 @@ export function createAntlrHighlighter(
         const builder = new RangeSetBuilder<Decoration>();
         const text = view.state.doc.toString();
 
+        // Fetch the currently known procedures from the registry
+        // Use a Set and lowercase everything for lightning-fast, case-insensitive lookups
+        const userProcs = new Set(
+          syntaxService.getExtractedProcedures().map((p) => p.toLowerCase())
+        );
+
         // Lex the document content
         const chars = CharStream.fromString(text);
         const lexer = new GeoTortueLexer(chars);
@@ -51,7 +61,16 @@ export function createAntlrHighlighter(
         const tokens = tokenRefiner.getRefinedTokens(() => lexer.getAllTokens());
 
         for (const token of tokens) {
-          // Look up the style from our reflected map
+          // GéoTortue/Logo is usually case-insensitive
+          const tokenText = token.text?.toLowerCase() || '';
+
+          // 2. Intercept: Is this token one of our custom procedures?
+          if (tokenText && userProcs.has(tokenText)) {
+            builder.add(token.start, token.stop + 1, userProcDecoration);
+            continue; // Skip the standard ANTLR style lookup
+          }
+
+          // 3. Standard ANTLR token styling
           const styleName = tokenStyleMap.get(token.type);
           if (!styleName) {
             continue;
