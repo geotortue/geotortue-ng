@@ -14,6 +14,8 @@ import { GTNSimpleExecutionContext } from '@infrastructure/context/GTNSimpleExec
 import { GTNBrowserFileSystem } from '@infrastructure/fs/GTNBrowserFileSystem';
 
 import { GTNMathJsEvaluator } from '@infrastructure/math/GTNMathJsEvaluator';
+import { GTNMathJsExpressionValidator } from '@infrastructure/math/GTNMathJsExpressionValidator';
+import { GTNExpressionAdapter } from '@infrastructure/math/GTNExpressionAdapter';
 import { GTNThreeMathProvider } from '@infrastructure/math/GTNThreeMathProvider';
 import { GTNInMemoryTurtleRepository } from '@infrastructure/store/GTNInMemoryTurtleRepository';
 import { GTNRenderer2D } from '@ui/renderers/GTNRenderer2D';
@@ -80,6 +82,11 @@ export function configureDependencyInjection(): void {
   container.registerSingleton(GTN_TYPES.SyntaxService, () => new GTNSyntaxService());
 
   // Mathematic expression inside GéoTortue DSL
+  container.registerSingleton(GTN_TYPES.ExpressionAdapter, () => new GTNExpressionAdapter());
+  container.registerSingleton(
+    GTN_TYPES.MathExpressionValidator,
+    () => new GTNMathJsExpressionValidator()
+  );
   container.registerSingleton(GTN_TYPES.MathEvaluator, () => new GTNMathJsEvaluator());
 
   /* Application Layer */

@@ -6,6 +6,8 @@
 export const GTN_TYPES = {
   // --- Domain & Core (Business Logic) ---
   MathEvaluator: Symbol.for('MathEvaluator'), // To deal with mathematic expression inside GéoTortue commands (e.g. with mathjs)
+  MathExpressionValidator: Symbol.for('MathExpressionValidator'),
+  ExpressionAdapter: Symbol.for('ExpressionAdapter'),
   MathProvider: Symbol.for('MathProvider'), // Adapter for math (ThreeJS or other)
   GeometryService: Symbol.for('GeometryService'), // Service for movement calculus
   TurtleRepository: Symbol.for('TurtleRepository'),

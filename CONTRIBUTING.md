@@ -39,6 +39,8 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 - QA: more tests, versionning, SonarQube, ...
 - replace license-checker-rseidelsohn?
 - replace step delay by distance delay
+- autocompletion with procedure names
+- decorate in reverse video the color names, matching reverse video color with the corresponding color name
 
 ## GéoTortue NG DSL _versus_ GéoTortue Legacy DSL _versus_ mainstream Logo(s)
 

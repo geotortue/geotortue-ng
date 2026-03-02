@@ -1,4 +1,4 @@
-import { CharStream, CommonTokenStream } from 'antlr4ng';
+import { CharStream, CommonTokenStream, type ParserRuleContext, type ParseTree } from 'antlr4ng';
 
 import { GeoTortueParser } from '@infrastructure/antlr/generated/GeoTortueParser';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
@@ -9,12 +9,16 @@ import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegi
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GTNProcedureExtractorVisitor } from './GTNProcedureExtractorVisitor';
+import { GTNExpressionAdapter } from '@infrastructure/math/GTNExpressionAdapter';
+import type { IGTNMathExpressionValidator } from '@domain/interfaces/IGTNMathExpressionValidator';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 
 export class GTNSyntaxService {
   private readonly langService: IGTNLanguageService;
   private readonly procedureRegistry: IGTNProcedureRegistry;
   private readonly reflector: GrammarReflector;
+  private readonly expressionAdapter: GTNExpressionAdapter;
+  private readonly mathExpressionValidator: IGTNMathExpressionValidator;
   private cachedStyleMap: Map<number, string> | null = null;
 
   constructor() {
@@ -22,6 +26,10 @@ export class GTNSyntaxService {
     this.langService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
     this.procedureRegistry = container.resolve<IGTNProcedureRegistry>(GTN_TYPES.ProcedureRegistry);
     this.reflector = new GrammarReflector(GeoTortueParser);
+    this.expressionAdapter = container.resolve<GTNExpressionAdapter>(GTN_TYPES.ExpressionAdapter);
+    this.mathExpressionValidator = container.resolve<IGTNMathExpressionValidator>(
+      GTN_TYPES.MathExpressionValidator
+    );
   }
 
   /**
@@ -104,9 +112,13 @@ export class GTNSyntaxService {
     parser.addErrorListener(errorListener); // Catch "Unexpected token" errors
 
     // 3. Parse (Walks the tree to find errors)
-    parser.program();
+    const tree = parser.program();
 
-    return errorListener.errors;
+    if (errorListener.errors.length > 0) {
+      return errorListener.errors;
+    }
+
+    return [...errorListener.errors, ...this.validateMathExpressions(tree)];
   }
 
   /**
@@ -123,9 +135,6 @@ export class GTNSyntaxService {
     const entries: [number, string][] = [];
 
     // Extract from Structure (The ATN Traversal)
-    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_primitive, 'command'));
-    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_structure, 'keyword'));
-    // entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_expr, 'operator'));
     entries.push(
       ...this.mapRuleToStyle(GeoTortueParser.RULE_fixedArityZeroCommandStatement, 'command')
     );
@@ -150,9 +159,6 @@ export class GTNSyntaxService {
     entries.push(...this.mapRuleToStyle(GeoTortueParser.RULE_functionDef, 'keyword')); // GT_FUNCTION_DEF
 
     // Extract from Lexical Definition (Manual mapping)
-    // entries.push(this.addManualToken(GeoTortueLexer.GT_NUMBER, 'number'));
-    // entries.push(this.addManualToken(GeoTortueLexer.GT_STRING, 'string'));
-    // entries.push(this.addManualToken(GeoTortueLexer.GT_ID, 'variable'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_INTEGER_LITERAL, 'number'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_FLOATING_POINT_LITERAL, 'number'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_STRING_LITERAL, 'string'));
@@ -160,7 +166,6 @@ export class GTNSyntaxService {
     entries.push(this.addManualToken(GeoTortueLexer.GT_IDENTIFIER, 'variable'));
 
     // Comments are special: usually hidden from parser channel, so we map them manually
-    // entries.push(this.addManualToken(GeoTortueLexer.GT_COMMENT, 'comment'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_LINE_COMMENT_HASH, 'comment'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_LINE_COMMENT_SLASH, 'comment'));
     entries.push(this.addManualToken(GeoTortueLexer.GT_BLOCK_COMMENT, 'comment'));
@@ -169,6 +174,62 @@ export class GTNSyntaxService {
 
     this.cachedStyleMap = map;
     return map;
+  }
+
+  private validateMathExpressions(tree: ParseTree): GTNError[] {
+    const errors: GTNError[] = [];
+
+    for (const ctx of this.collectTopLevelRightExpressions(tree)) {
+      const rawExpr = ctx.getText();
+      const normalizedExpr = this.expressionAdapter.normalize(rawExpr);
+
+      try {
+        this.mathExpressionValidator.validate(normalizedExpr);
+      } catch (e) {
+        errors.push({
+          line: ctx.start?.line ?? 0,
+          column: ctx.start?.column ?? 0,
+          message: this.langService.translate('syntax.unexpected_token', { tokenText: rawExpr }),
+          technicalDetails: e instanceof Error ? e.message : String(e)
+        });
+      }
+    }
+
+    return errors;
+  }
+
+  private collectTopLevelRightExpressions(tree: ParseTree): ParserRuleContext[] {
+    const result: ParserRuleContext[] = [];
+
+    const asContext = (node: ParseTree | null): ParserRuleContext | null => {
+      if (typeof node === 'object' && node !== null && 'ruleIndex' in node) {
+        return node as ParserRuleContext;
+      }
+      return null;
+    };
+
+    const walk = (node: ParseTree) => {
+      const context = asContext(node);
+
+      if (
+        context &&
+        context.ruleIndex === GeoTortueParser.RULE_rightExpression &&
+        asContext(context.parent)?.ruleIndex !== GeoTortueParser.RULE_rightExpression
+      ) {
+        result.push(context);
+      }
+
+      const childCount = node.getChildCount?.() ?? 0;
+      for (let i = 0; i < childCount; i++) {
+        const child = node.getChild(i);
+        if (child) {
+          walk(child);
+        }
+      }
+    };
+
+    walk(tree);
+    return result;
   }
 
   private mapRuleToStyle(ruleIndex: number, style: string): [number, string][] {

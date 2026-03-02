@@ -1,9 +1,11 @@
 import { create, all, type MathJsInstance } from 'mathjs';
 
 import { type IGTNMathEvaluator, MathEvaluatorMode } from '@domain/interfaces/IGTNMathEvaluator';
+import { GTNExpressionAdapter } from './GTNExpressionAdapter';
 
 export class GTNMathJsEvaluator implements IGTNMathEvaluator {
   private readonly math: MathJsInstance;
+  private readonly expressionAdapter: GTNExpressionAdapter;
 
   constructor() {
     // Initialization of mathjs with all the functions
@@ -15,6 +17,7 @@ export class GTNMathJsEvaluator implements IGTNMathEvaluator {
     // GeoTortue-specific configuration (optional)
     // For example, if we wanted sin/cos to take degrees instead of the default radians
     // This would be configured here via custom function imports.
+    this.expressionAdapter = new GTNExpressionAdapter();
   }
 
   public evaluate(
@@ -25,7 +28,7 @@ export class GTNMathJsEvaluator implements IGTNMathEvaluator {
     try {
       // 1. Pré-traitement : Conversion Syntaxe Logo -> MathJS
       // ":variable" becomes "variable"
-      const cleanExpr = this.convertLogoToMathJs(expression);
+      const cleanExpr = this.expressionAdapter.normalize(expression);
 
       // 2. Secure execution
       return this.math.evaluate(cleanExpr, scope);
@@ -44,16 +47,5 @@ export class GTNMathJsEvaluator implements IGTNMathEvaluator {
     // Heuristique simple : contient des opérateurs mathématiques ou commence par une variable
     // return /[\+\-\*\/\^=<>!]|^\s*:[a-zA-Z]/.test(text);
     return /[+\-*/^=<>!]|^\s*:[a-zA-Z]/.test(text);
-  }
-
-  /**
-   * Transform Logo syntax in standard JS syntax.
-   * Ex.: "50 + :taille" -> "50 + taille"
-   * Allow for the management of certain ambiguities such as `color red` with red as a variable or a color literal.
-   *
-   */
-  private convertLogoToMathJs(expr: string): string {
-    // Regex: remplace prefix ':' followed by alphanumeric characters with name alone
-    return expr.replace(/:([a-zA-Z0-9_\u00C0-\u00FF]+)/g, '$1');
   }
 }

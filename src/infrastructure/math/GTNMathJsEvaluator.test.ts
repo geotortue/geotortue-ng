@@ -3,48 +3,6 @@ import { MathEvaluatorMode } from '@domain/interfaces/IGTNMathEvaluator';
 import { GTNMathJsEvaluator } from './GTNMathJsEvaluator';
 
 describe('GTNMathJsEvaluator', () => {
-  describe('Logo normalization', () => {
-    it('normalizes a simple Logo variable :x into x', () => {
-      const evaluator = new GTNMathJsEvaluator();
-
-      const normalized = (evaluator as any).convertLogoToMathJs(':x');
-
-      expect(normalized).toBe('x');
-    });
-
-    it('normalizes accented identifiers', () => {
-      const evaluator = new GTNMathJsEvaluator();
-
-      const normalized = (evaluator as any).convertLogoToMathJs(':tâille + :élève2');
-
-      expect(normalized).toBe('tâille + élève2');
-    });
-
-    it('normalizes identifiers used with array access syntax', () => {
-      const evaluator = new GTNMathJsEvaluator();
-
-      const normalized = (evaluator as any).convertLogoToMathJs(':arr[2] + :x');
-
-      expect(normalized).toBe('arr[2] + x');
-    });
-
-    it('keeps non-variable colon usages unchanged', () => {
-      const evaluator = new GTNMathJsEvaluator();
-
-      const normalized = (evaluator as any).convertLogoToMathJs('a := 1; : + 2');
-
-      expect(normalized).toBe('a := 1; : + 2');
-    });
-
-    it('handles edge cases with adjacent colons', () => {
-      const evaluator = new GTNMathJsEvaluator();
-
-      const normalized = (evaluator as any).convertLogoToMathJs('::x + :y');
-
-      expect(normalized).toBe(':x + y');
-    });
-  });
-
   describe('evaluate', () => {
     it('evaluates plain arithmetic expressions', () => {
       const evaluator = new GTNMathJsEvaluator();
@@ -68,6 +26,12 @@ describe('GTNMathJsEvaluator', () => {
       const evaluator = new GTNMathJsEvaluator();
 
       expect(evaluator.evaluate(':x + :y + :z', { x: 1, y: 2, z: 3 })).toBe(6);
+    });
+
+    it('evaluates expressions using array-like access after normalization', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      expect(evaluator.evaluate(':arr[2] + :x', { arr: [10, 20, 30], x: 1 })).toBe(21);
     });
 
     it('supports accented variable names in the Logo style', () => {

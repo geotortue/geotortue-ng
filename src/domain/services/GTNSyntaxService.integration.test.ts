@@ -2,6 +2,7 @@ import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTNSyntaxService } from './GTNSyntaxService';
 import { GeoTortueLexer } from '@infrastructure/antlr/generated/GeoTortueLexer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
+import { GTNExpressionAdapter } from '@infrastructure/math/GTNExpressionAdapter';
 
 describe('GTNSyntaxService Integration', () => {
   let service: GTNSyntaxService;
@@ -29,6 +30,11 @@ describe('GTNSyntaxService Integration', () => {
           clear: () => {}
         }) as any
     );
+
+    container.registerSingleton(GTN_TYPES.ExpressionAdapter, () => new GTNExpressionAdapter());
+    container.registerSingleton(GTN_TYPES.MathExpressionValidator, () => ({
+      validate: (_expression: string) => {}
+    }));
 
     // 2. Instantiate the service AFTER the container is configured
     service = new GTNSyntaxService();
