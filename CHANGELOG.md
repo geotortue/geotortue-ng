@@ -1,3 +1,9 @@
+## [1.3.2](https://github.com/geotortue/geotortue-ng/compare/v1.3.1...v1.3.2) (2026-03-02)
+
+### Bug Fixes
+
+- **grammar:** wrong var syntax analysys ([ce252e8](https://github.com/geotortue/geotortue-ng/commit/ce252e834597112cd48ed333210947c3d15a0221))
+
 ## [1.3.1](https://github.com/geotortue/geotortue-ng/compare/v1.3.0...v1.3.1) (2026-03-01)
 
 ### Bug Fixes
