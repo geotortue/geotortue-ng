@@ -231,7 +231,7 @@ arrayAccess
     ;
 
 variable
-    : GT_IDENTIFIER
+    : GT_COLON? GT_IDENTIFIER
     ;
 
 functionCall

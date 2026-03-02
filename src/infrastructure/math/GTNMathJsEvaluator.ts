@@ -53,7 +53,7 @@ export class GTNMathJsEvaluator implements IGTNMathEvaluator {
    *
    */
   private convertLogoToMathJs(expr: string): string {
-    // Regex : remplace les ':' suivis de caractères alphanumériques par le nom seul
+    // Regex: remplace prefix ':' followed by alphanumeric characters with name alone
     return expr.replace(/:([a-zA-Z0-9_\u00C0-\u00FF]+)/g, '$1');
   }
 }

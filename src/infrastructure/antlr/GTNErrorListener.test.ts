@@ -50,6 +50,22 @@ function getErrors(code: string) {
   return listener.errors;
 }
 
+function getExpressionErrors(expression: string) {
+  const chars = CharStream.fromString(expression);
+  const lexer = new GeoTortueLexer(chars);
+  const tokens = new CommonTokenStream(lexer);
+  const parser = new GeoTortueParser(tokens);
+
+  lexer.removeErrorListeners();
+  parser.removeErrorListeners();
+
+  const listener = new GTNErrorListener();
+  parser.addErrorListener(listener);
+
+  parser.expression();
+  return listener.errors;
+}
+
 describe('GTNErrorListener - Friendly Messages', () => {
   // --- Setup DI Container ---
   beforeEach(() => {
@@ -68,11 +84,31 @@ describe('GTNErrorListener - Friendly Messages', () => {
     container.registerInstance(GTN_TYPES.LanguageService, mockLanguageService);
   });
 
+  it('accepts both variable syntaxes x and :x in expressions', () => {
+    const errorsWithPlainVariable = getErrors('GT_FORWARD x;');
+    const errorsWithColonVariable = getErrors('GT_FORWARD :x;');
+
+    expect(errorsWithPlainVariable.length).toBe(0);
+    expect(errorsWithColonVariable.length).toBe(0);
+  });
+
+  it('accepts both variable syntaxes x and :x on assignment l-values', () => {
+    const errorsWithPlainVariable = getErrors('x := 10;');
+    const errorsWithColonVariable = getErrors(':x := 10;');
+
+    expect(errorsWithPlainVariable.length).toBe(0);
+    expect(errorsWithColonVariable.length).toBe(0);
+  });
+
+  it('accepts a colon variable in a full command statement', () => {
+    const errors = getErrors('GT_FORWARD :x;');
+
+    expect(errors.length).toBe(0);
+  });
+
   it(`shouldn't hint at missing semicolons`, () => {
     const errors = getErrors('GT_FORWARD 100 GT_TURN_RIGHT 90;');
 
-    // expect(errors.length).toBeGreaterThan(0);
-    // expect(errors[0]!.message).toContain('forgotten a semicolon');
     expect(errors.length).toBe(0);
   });
 

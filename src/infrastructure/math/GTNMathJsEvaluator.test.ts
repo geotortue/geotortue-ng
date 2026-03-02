@@ -3,6 +3,48 @@ import { MathEvaluatorMode } from '@domain/interfaces/IGTNMathEvaluator';
 import { GTNMathJsEvaluator } from './GTNMathJsEvaluator';
 
 describe('GTNMathJsEvaluator', () => {
+  describe('Logo normalization', () => {
+    it('normalizes a simple Logo variable :x into x', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      const normalized = (evaluator as any).convertLogoToMathJs(':x');
+
+      expect(normalized).toBe('x');
+    });
+
+    it('normalizes accented identifiers', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      const normalized = (evaluator as any).convertLogoToMathJs(':tâille + :élève2');
+
+      expect(normalized).toBe('tâille + élève2');
+    });
+
+    it('normalizes identifiers used with array access syntax', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      const normalized = (evaluator as any).convertLogoToMathJs(':arr[2] + :x');
+
+      expect(normalized).toBe('arr[2] + x');
+    });
+
+    it('keeps non-variable colon usages unchanged', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      const normalized = (evaluator as any).convertLogoToMathJs('a := 1; : + 2');
+
+      expect(normalized).toBe('a := 1; : + 2');
+    });
+
+    it('handles edge cases with adjacent colons', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      const normalized = (evaluator as any).convertLogoToMathJs('::x + :y');
+
+      expect(normalized).toBe(':x + y');
+    });
+  });
+
   describe('evaluate', () => {
     it('evaluates plain arithmetic expressions', () => {
       const evaluator = new GTNMathJsEvaluator();
@@ -16,19 +58,19 @@ describe('GTNMathJsEvaluator', () => {
       expect(evaluator.evaluate('taille + 8', { taille: 12 })).toBe(20);
     });
 
-    it('converts Logo variables prefixed by colon before evaluation', () => {
+    it('converts variable names prefixed by colon (in Logo style) before evaluation', () => {
       const evaluator = new GTNMathJsEvaluator();
 
       expect(evaluator.evaluate('50 + :taille', { taille: 2 })).toBe(52);
     });
 
-    it('converts multiple Logo variables in one expression', () => {
+    it('converts multiple variable names "in the Logo style" in one expression', () => {
       const evaluator = new GTNMathJsEvaluator();
 
       expect(evaluator.evaluate(':x + :y + :z', { x: 1, y: 2, z: 3 })).toBe(6);
     });
 
-    it('supports accented variable names in Logo syntax', () => {
+    it('supports accented variable names in the Logo style', () => {
       const evaluator = new GTNMathJsEvaluator();
 
       expect(evaluator.evaluate(':tâille + 1', { tâille: 41 })).toBe(42);
@@ -69,7 +111,7 @@ describe('GTNMathJsEvaluator', () => {
       expect(evaluator.isExpression('1^2')).toBe(true);
     });
 
-    it('returns true for strings starting with a Logo variable', () => {
+    it('returns true for strings starting with variable name "in the Logo style"', () => {
       const evaluator = new GTNMathJsEvaluator();
 
       expect(evaluator.isExpression(':x')).toBe(true);
