@@ -52,7 +52,7 @@ It's a Single-page application ([SPA](https://developer.mozilla.org/en-US/docs/G
 - **Procedure Console**: Create, save, and reuse custom procedures (macros).
 - **Non-Euclidien Geometries**: Spherical geometry, the Poincaré disk and half-plane model.
 
-The two last features have not been implemented yet.
+The last feature has not been implemented yet.
 
 ### Technical Stack
 
