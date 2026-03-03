@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/geotortue/geotortue-ng/compare/v1.3.2...v1.4.0) (2026-03-03)
+
+### Features
+
+- **grammar:** add prefix syntax ([12ee712](https://github.com/geotortue/geotortue-ng/commit/12ee712f10938626a3434919d2d8bd7222f4264f))
+
 ## [1.3.2](https://github.com/geotortue/geotortue-ng/compare/v1.3.1...v1.3.2) (2026-03-02)
 
 ### Bug Fixes
