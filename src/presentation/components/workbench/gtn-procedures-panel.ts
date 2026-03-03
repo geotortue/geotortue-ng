@@ -15,6 +15,7 @@ import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { geoTortueSyntaxTheme } from '@ui/editor/themes/geoTortueSyntaxTheme';
 import { createAntlrHighlighter } from '@ui/editor/syntax/createAntlrHighlighter';
 import type { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
+import { UiLanguageController } from '@ui/controllers/UiLanguageController';
 
 @customElement('gtn-procedures-panel')
 export class GTNProceduresPanel extends LitElement {
@@ -66,6 +67,9 @@ export class GTNProceduresPanel extends LitElement {
   private editorView?: EditorView;
 
   private readonly langService: IGTNLanguageService;
+  // Controller to listen for UI language changes and trigger re-render
+  // unused but kept for reactivity
+  private readonly langController = new UiLanguageController(this);
   // Compartment to allow dynamic reconfiguration of language features
   private readonly languageCompartment = new Compartment();
   private readonly syntaxService: GTNSyntaxService;

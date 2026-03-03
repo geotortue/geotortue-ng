@@ -60,6 +60,7 @@ export class GTNToolbar extends LitElement {
   private readonly langService: IGTNLanguageService;
   private readonly appState: GTNApplicationState;
 
+  // Controller to listen for UI language changes and trigger re-render
   // unused controller kept for reactivity
   private readonly langController = new UiLanguageController(this);
 
