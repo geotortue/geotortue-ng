@@ -15,6 +15,7 @@ type DSLDefinition = {
   commands: Record<string, string | string[]>;
   keywords: Record<string, string | string[]>;
   colors: Record<string, string>;
+  math?: Record<string, string | string[]>;
 };
 
 // Internal cache structure
@@ -22,12 +23,14 @@ type LangCache = {
   // Reverse Maps: "av" in french ---> "GT_FORWARD"
   commandReverse: Map<string, string>;
   keywordReverse: Map<string, string>;
+  mathReverse: Map<string, string>;
   // "rouge" in french ---> "GT_RED"
   colorReverse: Map<string, string>;
 
   // Forward Maps: "GT_FORWARD" ---> "forward" (primary alias)
   commandForward: Map<string, string>;
   keywordForward: Map<string, string>;
+  mathForward: Map<string, string>;
   // "GT_RED" ---> "rouge" in french
   colorForward: Map<string, string>;
 
@@ -109,6 +112,13 @@ export class GTNReverseDictionaryService {
     const key =
       cache.commandReverse.get(search) ||
       cache.keywordReverse.get(search) ||
+      (() => {
+        const mathKey = cache.mathReverse.get(search);
+        if (mathKey) {
+          return toCanonicalMathFunction(mathKey);
+        }
+        return undefined;
+      })() ||
       (() => {
         const canonicalKey = cache.colorReverse.get(search);
         if (!canonicalKey) {
@@ -196,6 +206,13 @@ export class GTNReverseDictionaryService {
     const key =
       sourceDict.commandReverse.get(lowerText) ||
       sourceDict.keywordReverse.get(lowerText) ||
+      (() => {
+        const mathKey = sourceDict.mathReverse.get(lowerText);
+        if (mathKey) {
+          return toCanonicalMathFunction(mathKey);
+        }
+        return undefined;
+      })() ||
       (() => {
         const canonicalKey = sourceDict.colorReverse.get(lowerText);
         if (!canonicalKey) {
@@ -326,7 +343,13 @@ export class GTNReverseDictionaryService {
       return targetDict.keywordForward.get(key) || originalText;
     }
 
-    // 3. Check Colors (e.g. "red")
+    // 3. Check Math functions
+    const canonicalMathKey = `GT_${key}`;
+    if (targetDict.mathForward.has(canonicalMathKey)) {
+      return targetDict.mathForward.get(canonicalMathKey) || originalText;
+    }
+
+    // 4. Check Colors (e.g. "red")
     const stripped = key.replace(/^'(.*)'$/, '$1').replace(/^"(.*)"$/, '$1');
     const canonicalColor = GEOTORTUE_GRAMMAR_PREFIX + stripped.toUpperCase();
     if (targetDict.colorForward.has(canonicalColor)) {
@@ -335,7 +358,7 @@ export class GTNReverseDictionaryService {
       return color || originalText;
     }
 
-    // 4. No translation found, return the original
+    // 5. No translation found, return the original
     return originalText;
   }
 
@@ -465,19 +488,25 @@ export class GTNReverseDictionaryService {
       return targetDict.commandForward.get(key) || originalText;
     }
 
-    // 2. Check Keywords (e.g. "repete") -> THIS WAS MISSING
+    // 2. Check Keywords (e.g. "repete")
     if (sourceDict.keywordReverse.has(lowerText)) {
       const key = sourceDict.keywordReverse.get(lowerText)!;
       return targetDict.keywordForward.get(key) || originalText;
     }
 
-    // 3. Check Colors (e.g. "rouge")
+    // 3. Check Math functions
+    if (sourceDict.mathReverse.has(lowerText)) {
+      const key = sourceDict.mathReverse.get(lowerText)!;
+      return targetDict.mathForward.get(key) || originalText;
+    }
+
+    // 4. Check Colors (e.g. "rouge")
     if (sourceDict.colorReverse.has(lowerText)) {
       const key = sourceDict.colorReverse.get(lowerText)!;
       return targetDict.colorForward.get(key) || originalText;
     }
 
-    // 4. No translation found, return the original
+    // 5. No translation found, return the original
     return originalText;
   }
 
@@ -505,13 +534,16 @@ export class GTNReverseDictionaryService {
       const { forward: commandForward, reverse: commandReverse } = createMapping(json.commands);
       const { forward: keywordForward, reverse: keywordReverse } = createMapping(json.keywords);
       const { forward: colorForward, reverse: colorReverse } = createMapping(json.colors);
+      const { forward: mathForward, reverse: mathReverse } = createMapping(json.math ?? {});
 
       const langCache: LangCache = {
         commandReverse,
         keywordReverse,
         colorReverse,
+        mathReverse,
         commandForward,
         keywordForward,
+        mathForward,
         colorForward,
         colorForwardCss: createColorMap()
       };
@@ -525,13 +557,19 @@ export class GTNReverseDictionaryService {
         commandReverse: new Map(),
         keywordReverse: new Map(),
         colorReverse: new Map(),
+        mathReverse: new Map(),
         commandForward: new Map(),
         keywordForward: new Map(),
+        mathForward: new Map(),
         colorForward: new Map(),
         colorForwardCss: new Map()
       };
     }
   }
+}
+
+function toCanonicalMathFunction(key: string): string {
+  return key.startsWith('GT_') ? key.slice(3).toLowerCase() : key.toLowerCase();
 }
 
 /* Provide a map between canonical color keyword and css color known of GéoTortue.

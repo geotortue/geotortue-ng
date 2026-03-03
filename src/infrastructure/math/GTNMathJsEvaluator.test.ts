@@ -10,6 +10,29 @@ describe('GTNMathJsEvaluator', () => {
       expect(evaluator.evaluate('2 + 3 * 4', {})).toBe(14);
     });
 
+    it('supports math.js functional prefix syntax', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      expect(evaluator.evaluate('add(2, 3)', {})).toBe(5);
+    });
+
+    it('supports advanced math.js functions (trigo/arithmetic/probability/complex)', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      expect(evaluator.evaluate('asin(0.5)', {})).toBeCloseTo(Math.PI / 6, 6);
+      expect(evaluator.evaluate('factorial(5)', {})).toBe(120);
+      expect(evaluator.evaluate('gcd(12, 18)', {})).toBe(6);
+      expect(evaluator.evaluate('randomInt(1, 2)', {})).toBe(1);
+      expect(evaluator.evaluate('re(complex(2, 3))', {})).toBe(2);
+    });
+
+    it('supports prefix syntax (S-expression style)', () => {
+      const evaluator = new GTNMathJsEvaluator();
+
+      expect(evaluator.evaluate('(+ 1 2 3)', {})).toBe(6);
+      expect(evaluator.evaluate('(* :x (+ :y 2))', { x: 3, y: 4 })).toBe(18);
+    });
+
     it('evaluates expressions using scope variables', () => {
       const evaluator = new GTNMathJsEvaluator();
 

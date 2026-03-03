@@ -57,10 +57,10 @@
   "author": "",
   "license": "GPL-3.0-only",
   "type": "module",
-  "packageManager": "npm@11.6.2",
+  "packageManager": "npm@11.6.1",
   "engines": {
     "node": ">=24.12.0",
-    "npm": ">=11.0.0"
+    "npm": ">=11.6.1"
   },
   "repository": {
     "type": "git",
@@ -107,9 +107,8 @@
   "overrides": {
     "tar": "^7.5.8",
     "glob": "^11.0.1",
-    "minimatch": "^10.0.1",
-    "minimist": "^1.2.8",
-    "lodash.set": "^4.3.2"
+    "minimatch": "^10.2.1",
+    "minimist": "^1.2.8"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

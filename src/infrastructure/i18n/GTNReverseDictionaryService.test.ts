@@ -18,6 +18,12 @@ const MOCK_FR_JSON = {
   },
   colors: {
     GT_RED: 'rouge'
+  },
+  math: {
+    GT_ADD: ['ajoute', 'plus'],
+    GT_ASIN: ['arcsin', 'asin'],
+    GT_FACTORIAL: ['factorielle', 'factorial'],
+    GT_COMPLEX: ['complexe', 'complex']
   }
 };
 
@@ -31,6 +37,12 @@ const MOCK_EN_JSON = {
   },
   colors: {
     GT_RED: 'red'
+  },
+  math: {
+    GT_ADD: ['add', 'plus'],
+    GT_ASIN: 'asin',
+    GT_FACTORIAL: 'factorial',
+    GT_COMPLEX: 'complex'
   }
 };
 
@@ -123,6 +135,19 @@ describe('GTNReverseDictionaryService', () => {
     });
   });
 
+  it('should resolve localized math function names', async () => {
+    await service.loadDictionary(FR);
+    expect(service.getCanonicalKey('ajoute', FR)).toBe('add');
+    expect(service.getCanonicalKey('plus', FR)).toBe('add');
+  });
+
+  it('should resolve advanced math function aliases', async () => {
+    await service.loadDictionary(FR);
+    expect(service.getCanonicalKey('arcsin', FR)).toBe('asin');
+    expect(service.getCanonicalKey('factorielle', FR)).toBe('factorial');
+    expect(service.getCanonicalKey('complexe', FR)).toBe('complex');
+  });
+
   describe('Color Resolution (getCssColor)', () => {
     it('should resolve localized color to CSS name', async () => {
       await service.loadDictionary(FR);
@@ -145,6 +170,22 @@ describe('GTNReverseDictionaryService', () => {
       const translated = await service.translateScript(script, FR, EN);
 
       expect(translated).toBe('forward 100; right 90;');
+    });
+
+    it('should translate math function names from French to English', async () => {
+      const script = 'ajoute(1, 2)';
+
+      const translated = await service.translateScript(script, FR, EN);
+
+      expect(translated).toBe('add(1, 2)');
+    });
+
+    it('should translate advanced math function names from French to English', async () => {
+      const script = 'factorielle(5) + arcsin(0.5)';
+
+      const translated = await service.translateScript(script, FR, EN);
+
+      expect(translated).toBe('factorial(5) + asin(0.5)');
     });
 
     it('should preserve whitespace and formatting', async () => {

@@ -99,6 +99,8 @@ cd geoturtle-ng-frontend
 npm install
 ```
 
+> You can safely ignore the warning about `high severity vulnerabilities`.
+
 ### Run
 
 ```bash

@@ -214,7 +214,31 @@ unaryExpressionWithoutSign
     | functionCall
     | variable
     | GT_LEFT_PARENTHESIS expression GT_RIGHT_PARENTHESIS
+    | sExpression
     | listLiteral
+    ;
+
+sExpression
+    : GT_LEFT_PARENTHESIS sExpressionOperator expression+ GT_RIGHT_PARENTHESIS
+    ;
+
+sExpressionOperator
+    : GT_PLUS
+    | GT_MINUS
+    | GT_MULTIPLY
+    | GT_DIVIDE
+    | GT_MODULO
+    | GT_POWER
+    | GT_EQUAL
+    | GT_NOT_EQUAL
+    | GT_LESS_THAN
+    | GT_LESS_OR_EQUAL
+    | GT_GREATER_THAN
+    | GT_GREATER_OR_EQUAL
+    | GT_LOGICAL_AND
+    | GT_LOGICAL_OR
+    | GT_LOGICAL_NOT
+    | GT_IDENTIFIER
     ;
 
 listLiteral

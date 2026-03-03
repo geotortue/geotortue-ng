@@ -106,6 +106,12 @@ describe('GTNErrorListener - Friendly Messages', () => {
     expect(errors.length).toBe(0);
   });
 
+  it('accepts S-expression style math syntax in command arguments', () => {
+    const errors = getErrors('GT_FORWARD (+ 1 2);');
+
+    expect(errors.length).toBe(0);
+  });
+
   it(`shouldn't hint at missing semicolons`, () => {
     const errors = getErrors('GT_FORWARD 100 GT_TURN_RIGHT 90;');
 
