@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/geotortue/geotortue-ng/compare/v1.4.0...v1.4.1) (2026-03-03)
+
+### Bug Fixes
+
+- **ui:** updating label when ui lang changing ([751d9ce](https://github.com/geotortue/geotortue-ng/commit/751d9cec3cc4b411ae1fdb96e2806641ed1fac98))
+
 # [1.4.0](https://github.com/geotortue/geotortue-ng/compare/v1.3.2...v1.4.0) (2026-03-03)
 
 ### Features
