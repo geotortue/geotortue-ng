@@ -1,3 +1,9 @@
+## [1.4.2](https://github.com/geotortue/geotortue-ng/compare/v1.4.1...v1.4.2) (2026-03-04)
+
+### Bug Fixes
+
+- **test:** remove node calls from test ([cb116a1](https://github.com/geotortue/geotortue-ng/commit/cb116a1c6e436579e743bbe26ec44817b10211f9))
+
 ## [1.4.1](https://github.com/geotortue/geotortue-ng/compare/v1.4.0...v1.4.1) (2026-03-03)
 
 ### Bug Fixes
