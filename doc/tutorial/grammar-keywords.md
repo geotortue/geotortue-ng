@@ -32,5 +32,5 @@ Source: [GéoTortue Legacy - Index des commandes](http://geotortue.free.fr/index
 | **in**                   | _dans_                      | Used to specify a list to iterate through.                   | `foreach :x in :mylist`           |
 | **tlp**                  | _tlp_                       | Instantly teleports the turtle to coordinates (x, y).        | `tlp 100 100`                     |
 | **aim**                  | _vise_                      | Faces the turtle toward a specific point or turtle.          | `vise "Achille"`                  |
-| **[to come]**            | _pvb / pvh_                 | Pitch Down / Pitch Up (3D movements).                        | `pvb 30`                          |
-| **[to come]**            | _pvd / pvg_                 | Roll Right / Roll Left (3D movements).                       | `pvd 45`                          |
+| **rod / rou**            | _pvb / pvh_                 | Rotate Down / Rotate Up (3D movements).                      | `pvb 30`                          |
+| **ror / rol**            | _pvd / pvg_                 | Rotate Right / Rotate Left (3D movements).                   | `pvd 45`                          |

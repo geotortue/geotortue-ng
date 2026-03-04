@@ -743,17 +743,17 @@ export class GTNExecutionVisitor
     await this.tick();
   }
 
-  public async visitRollUp(ctx: GTNParser.RollUpContext) {
-    await this.warn3D('ROLL_UP');
+  public async visitRotateUp(ctx: GTNParser.RotateUpContext) {
+    await this.warn3D('ROTATE_UP');
   }
-  public async visitRollDown(ctx: GTNParser.RollDownContext) {
-    await this.warn3D('ROLL_DOWN');
+  public async visitRotateDown(ctx: GTNParser.RotateDownContext) {
+    await this.warn3D('ROTATE_DOWN');
   }
-  public async visitRollLeft(ctx: GTNParser.RollLeftContext) {
-    await this.warn3D('ROLL_LEFT');
+  public async visitRotateLeft(ctx: GTNParser.RotateLeftContext) {
+    await this.warn3D('ROTATE_LEFT');
   }
-  public async visitRollRight(ctx: GTNParser.RollRightContext) {
-    await this.warn3D('ROLL_RIGHT');
+  public async visitRotateRight(ctx: GTNParser.RotateRightContext) {
+    await this.warn3D('ROTATE_RIGHT');
   }
   public async visitAim(ctx: GTNParser.AimContext) {
     await this.warn3D('AIM');

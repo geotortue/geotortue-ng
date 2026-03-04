@@ -81,10 +81,10 @@ fixedArityOneCommandStatement
     | GT_AIM commandArgument                          # Aim
     | GT_MIMIC commandArgument                        # Mimic
     | GT_PAUSE commandArgument                        # Pause
-    | GT_ROLL_UP commandArgument                      # RollUp
-    | GT_ROLL_DOWN commandArgument                    # RollDown
-    | GT_ROLL_RIGHT commandArgument                   # RollRight
-    | GT_ROLL_LEFT commandArgument                    # RollLeft
+    | GT_ROTATE_UP commandArgument                    # RotateUp
+    | GT_ROTATE_DOWN commandArgument                  # RotateDown
+    | GT_ROTATE_RIGHT commandArgument                 # RotateRight
+    | GT_ROTATE_LEFT commandArgument                  # RotateLeft
     | GT_ROTATE_XY commandArgument                    # RotateXY
     | GT_ROTATE_XZ commandArgument                    # RotateXZ
     | GT_ROTATE_YZ commandArgument                    # RotateYZ
