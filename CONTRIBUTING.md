@@ -21,18 +21,16 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ## Road Map
 
-- script to check consistency between dsl.json files on one side and lexer, parser, GTNToken & C° in other side
 - deal with turtle moving outside the canvas
 - enhance the look & feel
 - find a replacement for icons of Tango Desktop Project.
   other than Material+Symbols, FontAwesome or those currently in src/presentation/components/utils/registered-icons.ts
   see OpenMoji, Microsoft Fluent Emoji, Phosphor Icons, others?
-- WIP: complete the grammar
-- WIP: add prefixed operators and predicates as a layer on top of infixed ones (see math.js),
-  in the style of functional programming
 - retrieve existing help from Geoturtle Legacy
 - provide some pieces of tutorial
-- more features from legacy GéoTortue: Settings, Geometries, Audio, Video, ...
+- more features from legacy GéoTortue: Settings
+- more features from legacy GéoTortue: Geometries
+- more features from legacy GéoTortue: Audio, Video, ...
 - tool to retrieve hard coded text and deal with them in i18n
 - typography enhancers
 - translator of old GéoTortue scripts
