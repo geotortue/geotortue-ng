@@ -6,6 +6,7 @@ import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import { NamedCssColor, type NamedCssColorType } from '@domain/value-objects';
 
+// named colors displayed on sandbox
 const CSS_COLORS = [
   NamedCssColor.BLACK,
   NamedCssColor.RED,
