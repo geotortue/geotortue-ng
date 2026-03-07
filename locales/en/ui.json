@@ -59,6 +59,12 @@
     "sandbox": "Sandbox",
     "sandbox.description": "Interactive Mode"
   },
+  "boundary.mode": "Boundary",
+  "boundary": {
+    "wrap": "Wrap",
+    "window": "Window",
+    "fence": "Fence"
+  },
   "sandbox": {
     "settings.title": "Settings",
     "compass.title": "Direction",

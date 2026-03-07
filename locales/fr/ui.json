@@ -59,6 +59,12 @@
     "sandbox": "Bac à sable",
     "sandbox.description": "Mode interactif"
   },
+  "boundary.mode": "Bordure",
+  "boundary": {
+    "wrap": "Boucle",
+    "window": "Fenêtre",
+    "fence": "Clôture"
+  },
   "sandbox": {
     "settings.title": "Paramètres",
     "compass.title": "Direction",
