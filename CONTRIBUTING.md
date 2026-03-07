@@ -4,6 +4,8 @@
 
 :tada::+1: First, thank you for considering contributing to `GéoTortue`! :tada::+1:
 
+_[🇫🇷 Lire ce document en français (via Google Traduction)](https://translate.google.com/translate?sl=en&tl=fr&u=https://github.com/geotortue/geotortue-ng/blob/main/CONTRIBUTING.md)_
+
 ## Guidelines
 
 We would like to highlight the following points:
@@ -21,12 +23,11 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ## Road Map
 
-- deal with turtle moving outside the canvas
 - enhance the look & feel
 - find a replacement for icons of Tango Desktop Project.
   other than Material+Symbols, FontAwesome or those currently in src/presentation/components/utils/registered-icons.ts
   see OpenMoji, Microsoft Fluent Emoji, Phosphor Icons, others?
-- retrieve existing help from Geoturtle Legacy
+- retrieve existing help from GéoTortue Legacy
 - provide some pieces of tutorial
 - more features from legacy GéoTortue: Settings
 - more features from legacy GéoTortue: Geometries

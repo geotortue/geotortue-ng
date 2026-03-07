@@ -1,5 +1,5 @@
 import type { GTNTurtle } from '@domain/entities/GTNTurtle';
-import type { GTNTurtleId } from '@domain/types';
+import type { GTNTurtleBoundaryMode, GTNTurtleId } from '@domain/types';
 
 export interface IGTNTurtleRepository {
   /**
@@ -44,6 +44,26 @@ export interface IGTNTurtleRepository {
    * Note. The screen should then be cleared by the renderer.
    */
   clearAllLines(): void;
+
+  /**
+   * Sets turtle behavior when crossing viewport boundaries.
+   */
+  setBoundaryMode(mode: GTNTurtleBoundaryMode): void;
+
+  /**
+   * Returns current boundary mode.
+   */
+  getBoundaryMode(): GTNTurtleBoundaryMode;
+
+  /**
+   * Updates viewport size in pixels so movement policies can be applied.
+   */
+  setViewportSize(width: number, height: number): void;
+
+  /**
+   * Current viewport dimensions in pixels.
+   */
+  getViewportSize(): { width: number; height: number };
 
   /**
    * Soft reset: keep the turtles but reinitialize them (position, direction and trails)

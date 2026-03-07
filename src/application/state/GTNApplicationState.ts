@@ -1,3 +1,8 @@
+import {
+  DEFAULT_TURTLE_BOUNDARY_MODE,
+  type GTNTurtleBoundaryMode
+} from '@domain/types/GTNTurtleBoundaryMode';
+
 export type AppMode = '2D' | '3D';
 export type CameraType = 'PERSPECTIVE' | 'ORTHOGRAPHIC';
 
@@ -5,16 +10,21 @@ export const DEFAULT_MODE: AppMode = '2D';
 export const DEFAULT_CAMERA_TYPE: CameraType = 'PERSPECTIVE';
 
 export class GTNApplicationState {
-  private readonly listeners: Set<(mode: AppMode) => void> = new Set();
+  private readonly listeners: Set<() => void> = new Set();
 
   private currentMode: AppMode = DEFAULT_MODE;
   private currentCameraType: CameraType = DEFAULT_CAMERA_TYPE;
+  private currentBoundaryMode: GTNTurtleBoundaryMode = DEFAULT_TURTLE_BOUNDARY_MODE;
   get mode(): AppMode {
     return this.currentMode;
   }
 
   get cameraType(): CameraType {
     return this.currentCameraType;
+  }
+
+  get boundaryMode(): GTNTurtleBoundaryMode {
+    return this.currentBoundaryMode;
   }
 
   public setMode(mode: AppMode) {
@@ -44,6 +54,15 @@ export class GTNApplicationState {
     this.setCameraType(this.currentCameraType === 'PERSPECTIVE' ? 'ORTHOGRAPHIC' : 'PERSPECTIVE');
   }
 
+  public setBoundaryMode(mode: GTNTurtleBoundaryMode) {
+    if (this.currentBoundaryMode === mode) {
+      return;
+    }
+
+    this.currentBoundaryMode = mode;
+    this.notify();
+  }
+
   public subscribe(callback: () => void): () => void {
     this.listeners.add(callback);
     // Immediately invoke callback with current state to sync UI
@@ -52,6 +71,6 @@ export class GTNApplicationState {
   }
 
   private notify() {
-    this.listeners.forEach((callback) => callback(this.currentMode));
+    this.listeners.forEach((callback) => callback());
   }
 }

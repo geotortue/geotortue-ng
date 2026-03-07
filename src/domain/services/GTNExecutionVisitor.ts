@@ -15,11 +15,14 @@ import {
   isCssHexColor,
   toCssColor
 } from '@domain/value-objects';
-import { toDegree, toMs } from '@domain/types';
+import { toDegree, toMs, type GTNTurtleBoundaryMode } from '@domain/types';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
+import { GTNApplicationState } from '@app/state/GTNApplicationState';
 import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
+import { GTNTurtleMovementService } from '@domain/services/GTNTurtleMovementService';
+import { GTNGeometryService } from '@domain/services/GTNGeometryService';
 
 const DEFAULT_STEP_DELAY = toMs(50); // 50ms per step = 20 steps per second
 
@@ -33,6 +36,8 @@ export class GTNExecutionVisitor
   private readonly mathEvaluator: IGTNMathEvaluator;
   private readonly languageService: IGTNLanguageService;
   private readonly logger: IGTNLogger;
+  private readonly appState: GTNApplicationState;
+  private readonly turtleMovementService: GTNTurtleMovementService;
 
   private returnSignal: { value: unknown } | null = null;
   private readonly userFunctions: Map<string, GTNParser.FunctionDefContext> = new Map();
@@ -47,6 +52,9 @@ export class GTNExecutionVisitor
     this.languageService = container.resolve<IGTNLanguageService>(GTN_TYPES.LanguageService);
     this.procedureRegistry = container.resolve<IGTNProcedureRegistry>(GTN_TYPES.ProcedureRegistry);
     this.logger = container.resolve<IGTNLogger>(GTN_TYPES.Logger);
+    this.appState = container.resolve<GTNApplicationState>(GTN_TYPES.ApplicationState);
+    const geometryService = container.resolve<GTNGeometryService>(GTN_TYPES.GeometryService);
+    this.turtleMovementService = new GTNTurtleMovementService(geometryService);
   }
 
   protected defaultResult(): Promise<any> {
@@ -380,7 +388,17 @@ export class GTNExecutionVisitor
    */
   public async visitMoveForward(ctx: GTNParser.MoveForwardContext): Promise<void> {
     const distance = this.extractOneArgAsNumber(ctx);
-    this.turtleRepo.getAll().forEach((t) => t.forward(distance));
+    const mode = this.appState.boundaryMode;
+    const viewport = this.turtleRepo.getViewportSize();
+
+    this.turtleRepo.getAll().forEach((t) => {
+      if (t.state?.position && Array.isArray(t.lines)) {
+        this.turtleMovementService.moveForward(t, distance, mode, viewport);
+        return;
+      }
+
+      t.forward(distance);
+    });
     await this.tick();
   }
 
@@ -389,7 +407,16 @@ export class GTNExecutionVisitor
    */
   public async visitMoveBackward(ctx: GTNParser.MoveBackwardContext): Promise<void> {
     const distance = this.extractOneArgAsNumber(ctx);
-    this.turtleRepo.getAll().forEach((t) => t.backward(distance));
+    const mode = this.appState.boundaryMode;
+    const viewport = this.turtleRepo.getViewportSize();
+    this.turtleRepo.getAll().forEach((t) => {
+      if (t.state?.position && Array.isArray(t.lines)) {
+        this.turtleMovementService.moveForward(t, -distance, mode, viewport);
+        return;
+      }
+
+      t.backward(distance);
+    });
     await this.tick();
   }
 
@@ -567,6 +594,24 @@ export class GTNExecutionVisitor
     await this.tick();
   }
 
+  public async visitWrapMode(_ctx: GTNParser.WrapModeContext): Promise<void> {
+    return this.setBoundaryMode('WRAP');
+  }
+
+  public async visitWindowMode(_ctx: GTNParser.WindowModeContext): Promise<void> {
+    return this.setBoundaryMode('WINDOW');
+  }
+
+  public async visitFenceMode(_ctx: GTNParser.FenceModeContext): Promise<void> {
+    return this.setBoundaryMode('FENCE');
+  }
+
+  private async setBoundaryMode(mode: GTNTurtleBoundaryMode): Promise<void> {
+    this.appState.setBoundaryMode(mode);
+    this.turtleRepo.setBoundaryMode(mode);
+    await this.tick();
+  }
+
   // --- Assignments & Variables ---
 
   public async visitVarAssignment(ctx: GTNParser.VarAssignmentContext): Promise<void> {
@@ -576,31 +621,6 @@ export class GTNExecutionVisitor
     this.currentScope[name] = value;
     await this.tick();
   }
-
-  // --- Expressions (Math & Logic) ---
-
-  //  / / Expressions remain SYNCHRONOUS. They return values, not Promises.
-  //   public visitAtomExpr = (ctx: GTNParser.AtomExprContext) => this.evaluate(ctx);
-  //   public visitParenExpr = (ctx: GTNParser.ParenExprContext) => this.evaluate(ctx);
-  //   public visitUnaryMinusExpr = (ctx: GTNParser.UnaryMinusExprContext) => this.evaluate(ctx);
-  //   public visitPowerExpr = (ctx: GTNParser.PowerExprContext) => this.evaluate(ctx);
-  //   public visitMultDivModExpr = (ctx: GTNParser.MultDivModExprContext) => this.evaluate(ctx);
-  //   public visitAddSubExpr = (ctx: GTNParser.AddSubExprContext) => this.evaluate(ctx);
-  //   public visitRelationalExpr = (ctx: GTNParser.RelationalExprContext) => this.evaluate(ctx);
-  //   public visitEqualityExpr = (ctx: GTNParser.EqualityExprContext) => this.evaluate(ctx);
-  //   public visitBinomExpr = (ctx: GTNParser.BinomExprContext) => this.evaluate(ctx);
-  //   public visitRandomExpr = (ctx: GTNParser.RandomExprContext) => this.evaluate(ctx);
-  //
-  //   public visitAtom(ctx: GTNParser.AtomContext): any {
-  //     if (ctx.GT_NUMBER()) return parseFloat(ctx.getText());
-  //     if (ctx.GT_STRING()) return ctx.getText().replace(/(^['"])|(['"]$)/g, '');
-  //     if (ctx.identifier()) {
-  //       // return this.memory.get(ctx.getText()) ?? 0;
-  //       const name = ctx.getText();
-  //       return this.currentScope[name];
-  //     }
-  //     return 0;
-  //   }
 
   // --- Misc Commands ---
 

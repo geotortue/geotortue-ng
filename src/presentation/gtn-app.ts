@@ -2,6 +2,7 @@ import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import type { GTNProjectService } from '@app/services/GTNProjectService';
+import { GTNApplicationState } from '@app/state/GTNApplicationState';
 import type { IGTNInterpreter } from '@domain/interfaces/IGTNInterpreter';
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
@@ -12,7 +13,7 @@ import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import type { GTNInMemoryTurtleRepository } from '@infrastructure/store/GTNInMemoryTurtleRepository';
 import type { GTNError } from '@infrastructure/antlr/GTNErrorListener';
-import type { UiLanguage } from '@domain/types';
+import { type GTNTurtleBoundaryMode, type UiLanguage } from '@domain/types';
 
 import { srOnlyStyles } from '@ui/styles/shared-styles';
 import styles from './gtn-app.scss?inline';
@@ -87,12 +88,17 @@ export class GTNApp extends LitElement {
   @state()
   private accessor userProcedures: string[] = [];
 
+  @state()
+  private accessor currentBoundaryMode: GTNTurtleBoundaryMode = 'WRAP';
+
   private readonly interpreter: IGTNInterpreter;
   private readonly langService: IGTNLanguageService;
   private readonly turtleRepo: IGTNTurtleRepository;
   private readonly projectService: GTNProjectService;
   private readonly syntaxService: GTNSyntaxService;
+  private readonly appState: GTNApplicationState;
   private uiUnsubscribe?: () => void;
+  private appStateUnsubscribe?: () => void;
 
   constructor() {
     super();
@@ -115,6 +121,9 @@ export class GTNApp extends LitElement {
     this.turtleRepo = container.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
     this.projectService = container.resolve<GTNProjectService>(GTN_TYPES.ProjectService);
     this.syntaxService = container.resolve<GTNSyntaxService>(GTN_TYPES.SyntaxService);
+    this.appState = container.resolve<GTNApplicationState>(GTN_TYPES.ApplicationState);
+    this.currentBoundaryMode = this.appState.boundaryMode;
+    this.turtleRepo.setBoundaryMode(this.currentBoundaryMode);
 
     const detectedLang = this.langService.getDslLanguage();
     const initialScriptCode = SCRIPT_EXAMPLES[detectedLang] || '';
@@ -128,12 +137,20 @@ export class GTNApp extends LitElement {
     this.uiUnsubscribe = this.langService.subscribeUiListeners(
       this.handleLanguageChange.bind(this)
     );
+    this.appStateUnsubscribe = this.appState.subscribe(() => {
+      const mode = this.appState.boundaryMode;
+      this.currentBoundaryMode = mode;
+      this.turtleRepo.setBoundaryMode(mode);
+    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.uiUnsubscribe) {
       this.uiUnsubscribe();
+    }
+    if (this.appStateUnsubscribe) {
+      this.appStateUnsubscribe();
     }
   }
 
@@ -180,6 +197,15 @@ export class GTNApp extends LitElement {
 
   private handleViewChange(event: CustomEvent) {
     this.viewMode = event.detail.view;
+  }
+
+  private handleBoundaryModeChange(event: CustomEvent<{ mode: GTNTurtleBoundaryMode }>) {
+    // const { mode } = event.detail;
+    // this.currentBoundaryMode = mode;
+    // this.turtleRepo.setBoundaryMode(mode);
+
+    const { mode } = event.detail;
+    this.appState.setBoundaryMode(mode);
   }
 
   private async handleRun() {
@@ -262,12 +288,14 @@ export class GTNApp extends LitElement {
         <h1 class="sr-only">${t('app.title')}</h1>
         <gtn-toolbar
           .currentView=${this.viewMode}
+          .currentBoundaryMode=${this.currentBoundaryMode}
           @view-change=${this.handleViewChange}
           @run=${this.handleRun}
           @clear=${this.handleClear}
           @save-project=${this.handleSaveProject}
           @open-project=${this.handleOpenProject}
           @dsl-lang-change=${this.handleDslChange}
+          @boundary-mode-change=${this.handleBoundaryModeChange}
         ></gtn-toolbar>
       </header>
 

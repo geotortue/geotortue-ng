@@ -50,7 +50,10 @@
     "GT_REPEAT": ["rep", "repeat"],
     "GT_IF": "if",
     "GT_WHILE": "while",
-    "GT_FOR_EACH": ["foreach", "for_each", "loop"]
+    "GT_FOR_EACH": ["foreach", "for_each", "loop"],
+    "GT_WRAP": "wrap",
+    "GT_WINDOW": "window",
+    "GT_FENCE": "fence"
   },
   "keywords": {
     "GT_PROCEDURE_START": ["def", "define"],

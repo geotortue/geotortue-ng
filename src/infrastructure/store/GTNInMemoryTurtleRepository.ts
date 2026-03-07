@@ -1,7 +1,12 @@
 import { GTNTurtle } from '@domain/entities/GTNTurtle';
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import type { GTNGeometryService } from '@domain/services/GTNGeometryService';
-import { generateGTNTurtleId, type GTNTurtleId } from '@domain/types';
+import {
+  DEFAULT_TURTLE_BOUNDARY_MODE,
+  type GTNTurtleBoundaryMode,
+  generateGTNTurtleId,
+  type GTNTurtleId
+} from '@domain/types';
 
 export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
   // The actual storage: a Map of ID -> Turtle Object
@@ -9,6 +14,10 @@ export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
 
   // Track the ID of the active turtle
   private activeTurtleId: GTNTurtleId | null = null;
+
+  private boundaryMode: GTNTurtleBoundaryMode = DEFAULT_TURTLE_BOUNDARY_MODE;
+  private viewportWidth = Number.POSITIVE_INFINITY;
+  private viewportHeight = Number.POSITIVE_INFINITY;
 
   constructor(private readonly geometryService: GTNGeometryService) {
     // 1. Called immediately upon app startup
@@ -54,6 +63,23 @@ export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
 
   public exists(id: GTNTurtleId): boolean {
     return this.turtles.has(id);
+  }
+
+  public setBoundaryMode(mode: GTNTurtleBoundaryMode): void {
+    this.boundaryMode = mode;
+  }
+
+  public getBoundaryMode(): GTNTurtleBoundaryMode {
+    return this.boundaryMode;
+  }
+
+  public setViewportSize(width: number, height: number): void {
+    this.viewportWidth = width;
+    this.viewportHeight = height;
+  }
+
+  public getViewportSize(): { width: number; height: number } {
+    return { width: this.viewportWidth, height: this.viewportHeight };
   }
 
   public clear(): void {

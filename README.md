@@ -2,19 +2,21 @@
 
 ## 🚀 [Try _GéoTortue NG_ Online](https://demo.geotortue.org/) 🚀
 
+_[🇫🇷 Lire ce document en français (via Google Traduction)](https://translate.google.com/translate?sl=en&tl=fr&u=https://github.com/geotortue/geotortue-ng/blob/main/README.md)_
+
 ## 💡 Rational
 
 This project is a [MVP](https://en.wikipedia.org/wiki/Minimum_viable_product) for a "new generation" of **[GéoTortue](http://geotortue.free.fr/)**, i.e. a **modern web successor** to the historic desktop Java application [**GéoTortue**](http://geotortue.free.fr/). It takes the same principles of learning geometry via the Logo language.
 
 This project main goals are:
 
-- select the technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
+- select a technical stack for [WEB development](https://en.wikipedia.org/wiki/Web_development);
 - validate an architecture based on [DDD](https://en.wikipedia.org/wiki/Domain-driven_design);
-- validate a multi-language [DSL](https://en.wikipedia.org/wiki/Domain-specific_language), i.e. in french, english, ...
+- validate a multi-language [DSL](https://en.wikipedia.org/wiki/Domain-specific_language), i.e. available in french, english, ...
 - use [AI](https://en.wikipedia.org/wiki/Artificial_intelligence), e.g. [Google Gemini](https://gemini.google.com) or [ChatGPT Codex](https://chatgpt.com/codex),
-  to do reverse engineering of legacy code and coding the `New Generation` application.
+  to do reverse engineering of legacy code and coding the "New Generation" application.
 
-Then "GéoTortue NG", with "NG" for "Nouvelle Génération", i.e. _GeoTurtle - New Generation_.
+Hence "GéoTortue NG", with "NG" for "Nouvelle Génération", i.e. _GeoTurtle - New Generation_.
 
 ## ✨ Presentation
 
@@ -27,19 +29,21 @@ The GéoTortue software stands out on two points:
 
 It allows users to draw geometric figures using a turtle moving on the screen. The turtle is controlled via a simple and intuitive language (e.g., `fw` to advance, `tr` to turn right). By moving, the turtle draws a path, enabling the construction of complex geometric figures.
 
-Recalling Seymour Papert’s principle of a low floor and a high ceiling, GéoTortue NG aims:
+Recalling Seymour Papert’s principle of "a low floor and a high ceiling", GéoTortue NG aims:
 
 - to lower the “floor” (Easy to begin) with a d-pad and mouse sandbox but also by removing the barrier of linguistic background: any label is in the human language of your choice
   and furthermore the code itself can be written, read, and executed in any human language.
 
 - to raise the “ceiling” (Room to grow) not only with 3D visualization and non Euclidien geometries, but also audio, video, ...
 
-TODO Add a few words about Resnick's Wide Walls and the fact that GéoTortue doesn't try to approach it.
+TODO Add a few words about Resnick's "Wide Walls" and the fact that GéoTortue doesn't try to approach it.
 
-> (°) The language used by GéoTortue is a Logo-like but it's not a Logo language. It doesn't have the functional richness of a [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html).
-> And it doesn't follow some well-established logo syntax conventions. See [Contributing Guide](./CONTRIBUTING.md#géotortue-legacy-dsl-versus-logo).
+> (°) The language used by GéoTortue is a Logo-like but:
+>
+> - It doesn't have the functional richness of e.g. a [Berkeley Logo (UCBLogo)](https://people.eecs.berkeley.edu/~bh/logo.html);
+> - It doesn't follow some well-established logo syntax conventions, see [Contributing Guide](./CONTRIBUTING.md#géotortue-legacy-dsl-versus-logo).
 
-## 🏗️ A bit of technical
+## 🏗️ A little bit of technical
 
 It's a Single-page application ([SPA](https://developer.mozilla.org/en-US/docs/Glossary/SPA)).
 
@@ -76,7 +80,7 @@ The main tools:
 - [GIT](https://git-scm.com/) as [VCS](https://en.wikipedia.org/wiki/Version_control)
 - [Vite](https://vite.dev/) as build tool
 - [Vitest](https://vitest.dev/) for testing
-- mainly [Google Gemini Pro](https://gemini.google.com/) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
+- mainly [Google Gemini Pro](https://gemini.google.com/) and [ChatGPT Codex](https://chatgpt.com/codex) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
 
 ## 🏁 Quick Start
 

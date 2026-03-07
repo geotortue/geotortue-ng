@@ -16,7 +16,15 @@ import {
 import { materialIconsStyle } from '@ui/styles/shared-styles';
 
 import { UiLanguageController } from '@ui/controllers/UiLanguageController';
-import { toDslLanguage, toUiLanguage, type DslLanguage, type UiLanguage } from '@domain/types';
+import {
+  DEFAULT_TURTLE_BOUNDARY_MODE,
+  GTN_TURTLE_BOUNDARY_MODES,
+  toDslLanguage,
+  toUiLanguage,
+  type DslLanguage,
+  type GTNTurtleBoundaryMode,
+  type UiLanguage
+} from '@domain/types';
 
 import logoUrl from '../../assets/icons/icon-128.png';
 import styles from './gtn-toolbar.scss?inline';
@@ -79,6 +87,9 @@ export class GTNToolbar extends LitElement {
   // New Property for View Mode
   @property({ type: String })
   accessor currentView: ViewMode = DEFAULT_VIEW_MODE;
+
+  @property({ type: String })
+  accessor currentBoundaryMode: GTNTurtleBoundaryMode = DEFAULT_TURTLE_BOUNDARY_MODE;
 
   constructor() {
     super();
@@ -150,6 +161,19 @@ export class GTNToolbar extends LitElement {
     this.dispatchEvent(
       new CustomEvent('view-change', {
         detail: { view },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+
+  private handleBoundaryModeChange(e: Event) {
+    const target = e.target as HTMLSelectElement;
+    const mode = target.value as GTNTurtleBoundaryMode;
+    this.currentBoundaryMode = mode;
+    this.dispatchEvent(
+      new CustomEvent('boundary-mode-change', {
+        detail: { mode },
         bubbles: true,
         composed: true
       })
@@ -277,6 +301,21 @@ export class GTNToolbar extends LitElement {
                 </div>
               `
             : ''}
+          <div class="separator"></div>
+
+          <div class="selector-wrapper">
+            <label for="select-boundary" class="label">${t('boundary.mode')}</label>
+            <select
+              id="select-boundary"
+              @change=${this.handleBoundaryModeChange}
+              .value=${this.currentBoundaryMode}
+            >
+              ${GTN_TURTLE_BOUNDARY_MODES.map(
+                (mode) =>
+                  html`<option value=${mode}>${t(`boundary.${mode.toLowerCase()}`)}</option>`
+              )}
+            </select>
+          </div>
         </div>
       </div>
     `;

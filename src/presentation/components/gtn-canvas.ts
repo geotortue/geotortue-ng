@@ -41,14 +41,14 @@ export class GTNCanvas extends LitElement {
 
   constructor() {
     super();
-    const container = GTNContainer.getInstance();
-    this.turtleRepo = container.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
-    this.appState = container.resolve<GTNApplicationState>(GTN_TYPES.ApplicationState);
-    this.renderLoop = container.resolve<IGTNRenderLoop>(GTN_TYPES.RenderLoop);
+    const diContainer = GTNContainer.getInstance();
+    this.turtleRepo = diContainer.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
+    this.appState = diContainer.resolve<GTNApplicationState>(GTN_TYPES.ApplicationState);
+    this.renderLoop = diContainer.resolve<IGTNRenderLoop>(GTN_TYPES.RenderLoop);
 
     // Inject Renderers
-    this.renderer2D = container.resolve<IGTNRenderer>(GTN_TYPES.Renderer2D);
-    this.renderer3D = container.resolve<IGTNRenderer>(GTN_TYPES.Renderer3D);
+    this.renderer2D = diContainer.resolve<IGTNRenderer>(GTN_TYPES.Renderer2D);
+    this.renderer3D = diContainer.resolve<IGTNRenderer>(GTN_TYPES.Renderer3D);
   }
 
   protected firstUpdated(): void {
@@ -122,6 +122,8 @@ export class GTNCanvas extends LitElement {
 
       if (this.container) {
         this.currentRenderer.attach(this.container);
+        const rect = this.container.getBoundingClientRect();
+        this.turtleRepo.setViewportSize(rect.width, rect.height);
       }
     }
 
@@ -135,6 +137,7 @@ export class GTNCanvas extends LitElement {
     if (!this.currentRenderer || !this.container) return;
     const rect = this.container.getBoundingClientRect();
     this.currentRenderer.resize(rect.width, rect.height);
+    this.turtleRepo.setViewportSize(rect.width, rect.height);
   }
   //
   //   private loop() {

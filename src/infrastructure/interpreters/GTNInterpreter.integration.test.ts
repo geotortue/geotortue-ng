@@ -7,6 +7,7 @@ import type { GTNTurtle } from '@domain/entities/GTNTurtle';
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
 import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
+import { GTNApplicationState } from '@app/state/GTNApplicationState';
 
 describe('GTNInterpreter Integration', () => {
   let interpreter: GTNInterpreter;
@@ -50,6 +51,20 @@ describe('GTNInterpreter Integration', () => {
     };
 
     container.registerSingleton(GTN_TYPES.MathEvaluator, () => mockMathEvaluator);
+
+    container.registerSingleton(GTN_TYPES.ApplicationState, () => new GTNApplicationState());
+    container.registerSingleton(
+      GTN_TYPES.GeometryService,
+      () =>
+        ({
+          calculateNewPosition: vi.fn((pos: any, _rot: any, distance: number) => ({
+            x: (pos?.x ?? 0) + distance,
+            y: pos?.y ?? 0,
+            z: pos?.z ?? 0
+          })),
+          rotateZ: vi.fn()
+        }) as any
+    );
 
     // 1-3. Mock the Language Service (Simulating Localization)
     mockLangService = {
@@ -112,7 +127,11 @@ describe('GTNInterpreter Integration', () => {
       addTurtle: vi.fn(),
       clear: vi.fn(),
       reset: vi.fn(), // Required by visitProgram
-      clearAllLines: vi.fn() // Required by visitClearGraphics
+      clearAllLines: vi.fn(), // Required by visitClearGraphics
+      setBoundaryMode: vi.fn(),
+      getBoundaryMode: vi.fn().mockReturnValue('WRAP'),
+      setViewportSize: vi.fn(),
+      getViewportSize: vi.fn().mockReturnValue({ width: 100, height: 100 })
     } as unknown as IGTNTurtleRepository;
 
     // 4. Register the factory
@@ -146,7 +165,6 @@ describe('GTNInterpreter Integration', () => {
   });
 
   it('should execute a loop structure (REP -> GT_REPEAT)', async () => {
-    // const script = `REP 2 [ AV 50 ]`;
     const script = `
       REP 2 [
         AV 50;

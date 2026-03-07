@@ -34,3 +34,16 @@ Source: [GéoTortue Legacy - Index des commandes](http://geotortue.free.fr/index
 | **aim**                  | _vise_                      | Faces the turtle toward a specific point or turtle.          | `vise "Achille"`                  |
 | **rod / rou**            | _pvb / pvh_                 | Rotate Down / Rotate Up (3D movements).                      | `pvb 30`                          |
 | **ror / rol**            | _pvd / pvg_                 | Rotate Right / Rotate Left (3D movements).                   | `pvd 45`                          |
+
+## Turtle screen boundary modes
+
+Three modes dictate what happens when the turtle moves outside the visible screen:
+
+- **WRAP (the default):** The screen acts like a continuous loop (a torus). If the turtle moves past the right edge of the screen, it instantly reappears on the left edge at the same trajectory. If it goes off the top, it wraps around to the bottom.
+- **WINDOW:** The screen acts as a restricted viewing window into an infinite digital canvas. If the turtle goes past the edge, it simply continues moving off-screen. You will no longer be able to see it, but the program continues to track its exact mathematical coordinates. If you command it to turn around and walk back, it will eventually re-enter the visible window.
+- **FENCE:** The screen edges act as impenetrable walls. If you command the turtle to move past the edge, it will stop exactly at the boundary and refuse to go further.
+
+You can switch between these behaviors at any time by either:
+
+- selecting the mode from the toolbar;
+- or simply typing `WRAP`, `WINDOW`, or `FENCE` into the command prompt.

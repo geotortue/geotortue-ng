@@ -11,6 +11,7 @@ import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleReposito
 import type { IGTNMathEvaluator } from '@domain/interfaces/IGTNMathEvaluator';
 import type { IGTNLanguageService } from '@domain/interfaces/IGTNLanguageService';
 import type { IGTNLogger } from '@app/interfaces/IGTNLogger';
+import { GTNApplicationState } from '@app/state/GTNApplicationState';
 
 import { GTNExecutionVisitor } from './GTNExecutionVisitor';
 import type { GTNTurtle } from '@domain/entities/GTNTurtle';
@@ -86,6 +87,15 @@ describe('GTNExecutionVisitor', () => {
       clear: vi.fn(() => fakeRegistryStore.clear())
     } as unknown as IGTNProcedureRegistry;
     container.registerSingleton(GTN_TYPES.ProcedureRegistry, () => mockRegistry);
+    container.registerSingleton(GTN_TYPES.ApplicationState, () => new GTNApplicationState());
+    container.registerSingleton(
+      GTN_TYPES.GeometryService,
+      () =>
+        ({
+          calculateNewPosition: vi.fn(),
+          rotateZ: vi.fn()
+        }) as any
+    );
 
     // 5. Mock Turtle & Repository
     mockTurtle = {
@@ -108,7 +118,11 @@ describe('GTNExecutionVisitor', () => {
       getAll: vi.fn().mockReturnValue([mockTurtle]),
       reset: vi.fn(),
       clearAllLines: vi.fn(),
-      clear: vi.fn()
+      clear: vi.fn(),
+      setBoundaryMode: vi.fn(),
+      getBoundaryMode: vi.fn().mockReturnValue('WRAP'),
+      setViewportSize: vi.fn(),
+      getViewportSize: vi.fn().mockReturnValue({ width: 100, height: 100 })
     } as unknown as IGTNTurtleRepository;
 
     // 3. Setup Mock Math Evaluator
@@ -192,6 +206,15 @@ describe('GTNExecutionVisitor', () => {
     await (visitor.visitProgram(tree) as Promise<any>);
 
     expect(mockTurtle.backward).toHaveBeenCalledWith(50);
+  });
+
+  it('should switch boundary mode with GT_WRAP/GT_WINDOW/GT_FENCE', async () => {
+    const tree = parse('GT_WRAP; GT_WINDOW; GT_FENCE', 'program');
+    await (visitor.visitProgram(tree) as Promise<any>);
+
+    expect(mockRepo.setBoundaryMode).toHaveBeenNthCalledWith(1, 'WRAP');
+    expect(mockRepo.setBoundaryMode).toHaveBeenNthCalledWith(2, 'WINDOW');
+    expect(mockRepo.setBoundaryMode).toHaveBeenNthCalledWith(3, 'FENCE');
   });
 
   it('should execute turn tight (GT_TURN_RIGHT)', async () => {

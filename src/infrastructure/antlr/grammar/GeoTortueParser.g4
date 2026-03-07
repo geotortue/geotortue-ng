@@ -69,6 +69,9 @@ fixedArityZeroCommandStatement
     | GT_UNDO_DRAWING                                 # UndoDrawing
     | GT_DRAW_POINT                                   # DrawPoint
     | GT_MIRROR                                       # Mirror
+    | GT_WRAP                                         # WrapMode
+    | GT_WINDOW                                       # WindowMode
+    | GT_FENCE                                        # FenceMode
     ;
 
 fixedArityOneCommandStatement

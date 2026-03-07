@@ -50,7 +50,10 @@
     "GT_REPEAT": ["rep", "repete", "répète"],
     "GT_IF": "si",
     "GT_WHILE": ["tantque", "tant_que"],
-    "GT_FOR_EACH": ["boucle", "pour_chaque"]
+    "GT_FOR_EACH": ["boucle", "pour_chaque"],
+    "GT_WRAP": "boucler",
+    "GT_WINDOW": "fenêtrer",
+    "GT_FENCE": "clotûrer"
   },
   "keywords": {
     "GT_PROCEDURE_START": "pour",

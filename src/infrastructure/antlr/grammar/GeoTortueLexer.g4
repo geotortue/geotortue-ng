@@ -59,6 +59,9 @@ GT_EXECUTE                  : 'GT_EXECUTE'                  ; // original: EXECU
 GT_DELETE                   : 'GT_DELETE'                   ; // original: eff (supprimer des variables ou fonctions)
 GT_GLOBAL                   : 'GT_GLOBAL'                   ; // original: global (déclare une varible global)
 GT_DISPLAY                  : 'GT_DISPLAY'                  ; // original: aff (afficher une valeur)
+GT_WRAP                     : 'GT_WRAP'                     ; // screen boundary mode: wrap on edges
+GT_WINDOW                   : 'GT_WINDOW'                   ; // screen boundary mode: infinite canvas through window
+GT_FENCE                    : 'GT_FENCE'                    ; // screen boundary mode: block at edges
 
 // ==========================================
 // KEYWORDS & STRUCTURE (Canonical English Forms)
