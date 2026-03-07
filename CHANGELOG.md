@@ -1,3 +1,9 @@
+# [1.5.0](https://github.com/geotortue/geotortue-ng/compare/v1.4.2...v1.5.0) (2026-03-07)
+
+### Features
+
+- add managment boundary ([7bd3e73](https://github.com/geotortue/geotortue-ng/commit/7bd3e7363ec1858b59cb127ba96d8b59971d1915))
+
 ## [1.4.2](https://github.com/geotortue/geotortue-ng/compare/v1.4.1...v1.4.2) (2026-03-04)
 
 ### Bug Fixes
