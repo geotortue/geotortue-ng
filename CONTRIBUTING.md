@@ -21,6 +21,7 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ## Road Map
 
+- script to check consistency between dsl.json files on one side and lexer, parser, GTNToken & C° in other side
 - enhance the look & feel
 - deal with turtle moving outside the canvas
 - find a replacement for icons of Tango Desktop Project.
@@ -142,15 +143,15 @@ GéoTortue Legacy uses `DejaVue Sans` as default font. GéoTortue NG uses `Nunit
 
 Numito is particularly well-suited for an educational application targeting a wide audience, even very young children, potentially under 10 years old.
 
-1. High Legibility (X-Height)
+1. High Legibility (X-Height)
 
 Nunito has a generous "x-height" (the height of lowercase letters like `a`, `c`, `e`). This makes the text easier to read at smaller sizes on buttons or tooltips, which is critical for young readers whose eyes are still developing tracking skills.
 
-2. "Single-Story" Letters
+2. "Single-Story" Letters
 
 While Nunito uses a standard double-story 'a', its overall structure is very open. If you want to go even more pedagogical, you could look at **Nunito's cousin, "Quicksand,"** or **"Andika"** (which uses the handwriting-style single-story `ɑ` that children learn to write in school), but Nunito is generally the better-balanced choice for a modern UI.
 
-3. It's a Google Font (Zero Cost, 100% Consistency)
+3. It's a Google Font (Zero Cost, 100% Consistency)
 
 As for having the "exact same look everywhere," Nunito is hosted by Google Fonts. It will look identical on an iPad, a Windows PC, or a cheap Android tablet.
 
@@ -160,7 +161,7 @@ As for having the "exact same look everywhere," Nunito is hosted by Google Fonts
 
 The french legacy DSL raises some lexical difficulties. To keep the grammar and its processing simple with regard to a multi-user language DSL, the new French DSL deviates from it on a very limited number of points.
 
-1. **french lexeme "à"**
+1. **french lexeme "à"**
 
 The french legacy DSL uses the same lexeme `à` in two contexts:
 
@@ -177,7 +178,7 @@ Let's try with ... `avec`. Any best idea would be welcome.
 
 > The use of multiple turtles and the turtle selector is already at an advanced level. It doesn't hinder the discovery of Geoturtle or even the beginning of a deeper exploration. This change therefore seems acceptable to us.
 
-2. **french lexeme "de"**
+2. **french lexeme "de"**
 
 The french legacy DSL uses the same lexeme `de` in two contexts:
 
