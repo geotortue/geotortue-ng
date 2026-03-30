@@ -23,6 +23,7 @@ By contributing to **GéoTortue**, you agree that your contributions will be lic
 
 ## Road Map
 
+- script to check consistency between dsl.json files on one side and lexer, parser, GTNToken & C° in other side
 - enhance the look & feel
 - find a replacement for icons of Tango Desktop Project.
   other than Material+Symbols, FontAwesome or those currently in src/presentation/components/utils/registered-icons.ts

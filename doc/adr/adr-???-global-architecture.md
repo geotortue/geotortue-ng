@@ -14,7 +14,7 @@ Soit :
 - Solid Architecture: DDD + DI
 - Visuals: 3D Viewport, Code Editor, Toolbar
 - Persistence: Save/Open Projects (JSON)
-- Polish: i18n, Splash Screen, Material Icons
+- Polish: i18n, Splash Screen, Icons
 
 Nous utiliserons Three.js encapsulé dans un adaptateur pour ne pas polluer le reste du code :
 
