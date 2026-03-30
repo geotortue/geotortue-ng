@@ -1,3 +1,9 @@
+## [1.5.1](https://github.com/geotortue/geotortue-ng/compare/v1.5.0...v1.5.1) (2026-03-30)
+
+### Bug Fixes
+
+- **docs:** clean grammar keywords ([ef92d9b](https://github.com/geotortue/geotortue-ng/commit/ef92d9b161c8d1675da378f996a10f7cb02cb09b))
+
 # [1.5.0](https://github.com/geotortue/geotortue-ng/compare/v1.4.2...v1.5.0) (2026-03-07)
 
 ### Features
