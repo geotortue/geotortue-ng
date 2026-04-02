@@ -14,33 +14,55 @@ export class GTNControlsPanel extends LitElement {
       :host {
         display: block;
         margin-top: auto;
-        padding-top: 1rem; /* border-top: 1px solid #eee;*/
+        padding-top: 1rem;
       }
 
       .actions {
         display: flex;
         flex-direction: row;
-        gap: 8px;
+        gap: 12px; /* Increased gap for better touch targets */
       }
 
       button {
-        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
         cursor: pointer;
         width: 100%;
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        font-weight: 600;
+        border-radius: 8px; /* Softer, more child-friendly corners */
+        transition: all 0.1s ease;
+        border: none;
       }
 
-      button:hover {
-        background-color: #f8f9fa;
-      }
+      /* High-Contrast Danger Style (Optimized for Vibrant Icons) */
       .danger {
-        color: #d32f2f;
-        border-color: #d32f2f;
+        background-color: #b71c1c; /* Deep Red for WCAG AA background contrast */
+        color: #ffffff; /* White text for 11.4:1 contrast ratio */
+        border-bottom: 4px solid #7f0000; /* Skeuomorphic 3D depth */
       }
+
       .danger:hover {
-        background-color: #ffebee;
+        background-color: #c62828;
+        transform: translateY(-1px);
+        border-bottom-width: 5px;
+      }
+
+      .danger:active {
+        background-color: #8e0000;
+        transform: translateY(3px);
+        border-bottom-width: 1px;
+        margin-bottom: 3px; /* Prevents layout shift during the 3D press */
+      }
+
+      /* Ensure icons inside buttons scale appropriately */
+      gtn-icon {
+        display: flex;
+        align-items: center;
+        width: 20px;
+        height: 20px;
       }
     `
   ];
@@ -74,16 +96,20 @@ export class GTNControlsPanel extends LitElement {
 
     return html`
       <div class="actions">
-        <button class="danger" @click=${() => this.dispatchEvent(new CustomEvent('home'))}>
-          <span class="material-icons" style="font-size:16px; vertical-align:text-bottom"
-            >home</span
-          >
+        <button
+          class="danger"
+          @click=${() => this.dispatchEvent(new CustomEvent('home'))}
+          aria-label="${t('sandbox.btn.reset')}"
+        >
+          <gtn-icon icon="edit-clear-all-vibrant"></gtn-icon>
           ${t('sandbox.btn.reset')}
         </button>
-        <button class="danger" @click=${() => this.dispatchEvent(new CustomEvent('clear'))}>
-          <span class="material-icons" style="font-size:16px; vertical-align:text-bottom"
-            >delete</span
-          >
+        <button
+          class="danger"
+          @click=${() => this.dispatchEvent(new CustomEvent('clear'))}
+          aria-label="${t('sandbox.btn.clear_graph')}"
+        >
+          <gtn-icon icon="edit-undo-eraser-vibrant"></gtn-icon>
           ${t('sandbox.btn.clear_graph')}
         </button>
       </div>

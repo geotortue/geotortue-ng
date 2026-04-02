@@ -1,4 +1,4 @@
-# ADR [Number]: [Decision Summary - e.g., Adopt OAuth 2.0 for User Authentication]
+# ADR [Number]: Icon library choice
 
 ## 1. Status
 
@@ -8,15 +8,17 @@ Date: 2026-03-28
 
 ## 2. Context
 
+GéoTortue is an educational application, designed for all, whether in class (from elementary school to high school), home, with friends, ...
+But especially children, even under 10 year old.
+
 Currently, GéoTortue NG incorporates icons from several sources:
 
 - Fortawesome,
 - Google Material,
-- The Polymer Project,
 - Dazzle UI,
-- Jackhenry Design,
 
 resulting in somewhat heterogeneous styles.
+And yet they don't provide the look & feel expected, i.e. an illustrative vibe, colorful and slightly skeuomorphic aesthetic style.
 
 GéoTortue Legacy uses the Tango icon project library.
 The library is no longer maintained since 2009.
@@ -25,7 +27,7 @@ A presentation page is provided by [Wikimedia Commons - Tango icons](https://com
 
 It therefore seems wise to replace all of this with icons:
 
-- whose rendering remains in the same spirit,
+- whose rendering remains in the same skeuomorphic aesthetic spirit,
 - whose maintenance is active,
 - from a limited number of sources in order to ensure greater stylistic consistency,
 - with a license compatible with the GPL3 licence.
@@ -39,12 +41,18 @@ Young kids need "safe" buttons, i.e. that look like an actual object they can pr
 
 For children, emojis are the modern equivalent of Tango's skeuomorphic icons. They are universally understood, colorful, and fun.
 
+Although it may seem paradoxical for an educational tool based on drawing, the icons will conform to accessibility standards ([WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)).
+
 ## 3. Decision
+
+SVG icons will be preferred.
 
 GéoTortue NG will primarily use the `Elementary OS Icon Set`, which will eventually be supplemented with icons from:
 
 - Microsoft Fluent Emoji
 - 3dicons.co
+
+and some custom icons.
 
 ### Elementary OS Icon Set
 

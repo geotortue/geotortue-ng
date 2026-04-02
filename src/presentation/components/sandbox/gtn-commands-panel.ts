@@ -154,18 +154,18 @@ export class GTNCommandsPanel extends LitElement {
 
       <div class="tools-grid">
         <button @click=${() => this.emit(GTNToken.GT_PEN_DOWN)}>
-          <span class="icon"><gtn-icon icon="draw"></gtn-icon></span>${t('sandbox.btn.pendown')}
+          <span class="icon"><gtn-icon icon="penDown"></gtn-icon></span>${t('sandbox.btn.pendown')}
         </button>
         <button @click=${() => this.emit(GTNToken.GT_PEN_UP)}>
-          <span class="icon"><gtn-icon icon="editOff"></gtn-icon></span>${t('sandbox.btn.penup')}
+          <span class="icon"><gtn-icon icon="penUp"></gtn-icon></span>${t('sandbox.btn.penup')}
         </button>
         <button @click=${() => this.emit(GTNToken.GT_SHOW_TURTLE)}>
-          <span class="icon"><gtn-icon icon="visibility"></gtn-icon></span>${t(
+          <span class="icon"><gtn-icon icon="view-reveal-symbolic"></gtn-icon></span>${t(
             'sandbox.btn.showturtle'
           )}
         </button>
         <button @click=${() => this.emit(GTNToken.GT_HIDE_TURTLE)}>
-          <span class="icon"><gtn-icon icon="visibilityOff"></gtn-icon></span>${t(
+          <span class="icon"><gtn-icon icon="view-conceal-symbolic"></gtn-icon></span>${t(
             'sandbox.btn.hideturtle'
           )}
         </button>

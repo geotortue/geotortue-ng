@@ -32,12 +32,14 @@ export class GTNSettingsPanel extends LitElement {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      align-items: center;
       width: 100%;
+      height: auto;
       font-size: 0.9rem;
       color: #555;
 
       .label-icon {
-        font-size: 24px;
+        vertical-align: bottom;
       }
     }
     /* Container for the whole switch + text */
@@ -166,7 +168,9 @@ export class GTNSettingsPanel extends LitElement {
       </div>
       <label class="toggle-switch">
         <div>
-          <span class="label-icon">⌨️</span>
+          <span class="label-icon">
+            <gtn-icon icon="input-keyboard-vibrant"></gtn-icon>
+          </span>
           <span class="label-text">
             ${this.keyboardActive ? t('sandbox.keyboard_on') : t('sandbox.keyboard_off')}
           </span>

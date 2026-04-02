@@ -1,6 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js'; // Import classMap
+import { classMap } from 'lit/directives/class-map.js';
 
 import { GTNContainer } from '@infrastructure/di/GTNContainer';
 import { GTN_TYPES } from '@infrastructure/di/GTNTypes';
@@ -61,6 +61,22 @@ export class GTNToolbar extends LitElement {
         border-color: #0f171e;
         box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6);
         transform: translateY(1px);
+      }
+
+      .language {
+        gap: 2px;
+      }
+
+      .icon {
+        // margin-right: 8px;
+        // width: 20px;
+        // width: 18px;
+        text-align: center;
+        display: inline-block;
+
+        gtn-icon {
+          // font-size: 16px;
+        }
       }
     `
   ];
@@ -184,6 +200,9 @@ export class GTNToolbar extends LitElement {
     // Helper for brevity
     const t = (k: string) => this.langService.translate(k);
 
+    const isEditor = this.currentView === 'EDITOR';
+    const isSandbox = this.currentView === 'SANDBOX';
+
     // Ensure properties are in sync with service if changed externally
     this.currentUiLang = this.langService.getUiLanguage();
     this.currentDslLang = this.langService.getDslLanguage();
@@ -202,24 +221,26 @@ export class GTNToolbar extends LitElement {
           style="margin-left: 1rem; border-right: 1px solid #ccc; padding-right: 1rem;"
         >
           <button
-            aria-pressed=${this.currentView === 'EDITOR'}
+            class=${classMap({ active: isEditor })}
+            aria-pressed=${isEditor}
             @click=${() => this.handleViewChange('EDITOR')}
             title="${t('mode.editor')}"
           >
-            <span class="material-icons">code</span>
+            <gtn-icon icon="coding-wand-vibrant"></gtn-icon>
             ${t('mode.editor')}
           </button>
           <button
-            aria-pressed=${this.currentView === 'SANDBOX'}
+            class=${classMap({ active: isSandbox })}
+            aria-pressed=${isSandbox}
             @click=${() => this.handleViewChange('SANDBOX')}
             title="${t('mode.sandbox')}"
           >
-            <span class="material-icons">touch_app</span>
+            <gtn-icon icon="sandbox-beach-ball-vibrant"></gtn-icon>
             ${t('mode.sandbox')}
           </button>
         </div>
 
-        ${this.currentView === 'EDITOR'
+        ${isEditor
           ? html`
               <div class="group">
                 <button @click=${this.handleOpen} title="${t('toolbar.open_project')}">
@@ -232,10 +253,10 @@ export class GTNToolbar extends LitElement {
                 <div class="separator"></div>
 
                 <button class="primary" @click=${this.handleRun} title="Ctrl+Enter">
-                  <span class="material-icons">play_arrow</span> ${t('toolbar.run')}
+                  <gtn-icon icon="media-playback-run-vibrant"></gtn-icon> ${t('toolbar.run')}
                 </button>
                 <button class="danger" @click=${this.handleClear}>
-                  <span class="material-icons">delete</span> ${t('toolbar.clear')}
+                  <gtn-icon icon="edit-clear-all-vibrant"></gtn-icon> ${t('toolbar.clear')}
                 </button>
                 <span style="font-size: 0.8rem; color: #666; font-style:italic;"
                   >${t('mode.editor.description')}</span
@@ -275,9 +296,12 @@ export class GTNToolbar extends LitElement {
 
           <div class="separator"></div>
 
-          <span class="material-icons">translate</span>
-
-          <span class="label">${t('toolbar.language')}</span>
+          <span class="language">
+            <span class="icon"
+              ><gtn-icon icon="preferences-workbench-locale-vibrant"></gtn-icon
+            ></span>
+            <span class="label">${t('toolbar.language')}</span>
+          </span>
 
           <div class="selector-wrapper">
             <label for="select-ui" class="label">${t('toolbar.selector.ui')}</label>
@@ -286,7 +310,7 @@ export class GTNToolbar extends LitElement {
               <option value="en">${t('languages.en')}</option>
             </select>
           </div>
-          ${this.currentView === 'EDITOR'
+          ${isEditor
             ? html`
                 <div class="selector-wrapper">
                   <label for="select-dsl" class="label">${t('toolbar.selector.dsl')}</label>

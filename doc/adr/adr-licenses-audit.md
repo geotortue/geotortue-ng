@@ -32,7 +32,7 @@ Even with `license-checker-rseidelsohn` is still complex but at least it's OK wi
 },
 ```
 
-In fact a simpler overrrides is enough:
+In fact a simpler `overrides` is enough:
 
 ```json
   "overrides": {
@@ -120,7 +120,9 @@ git commit -m 'refactor: mainly sandbox'
  create mode 100644 src/presentation/components/utils/gtn-keyboard.ts
  create mode 100644 src/presentation/components/utils/keyboard.test.ts
  create mode 100644 src/presentation/components/utils/keyboard.ts
- create mode 100644 src/presentation/components/utils/registered-icons.test.ts
+ //create mode 100644 src/presentation/components/utils/registered-icons.test.ts
+ src/presentation/components/utils/icon-tools.test.ts
+ src/presentation/components/utils/icon-tools.ts
  create mode 100644 src/presentation/components/utils/registered-icons.ts
 ```
 

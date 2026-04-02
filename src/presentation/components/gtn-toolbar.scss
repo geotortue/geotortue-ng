@@ -114,26 +114,28 @@ button {
   font-size: 0.9rem;
   transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
-button:hover {
-  background: #46607a;
-}
+// button:hover {
+//   background: #46607a;
+// }
+// button.primary {
+//   background: #27ae60;
+//   border-color: #2ecc71;
+// }
+// button.primary:hover {
+//   background: #2ecc71;
+// }
 button.primary {
-  background: #27ae60;
-  border-color: #2ecc71;
+  background: #1B5E20; /* Deep, high-contrast green */
+  border: 2px solid #2E7D32;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
 }
-button.primary:hover {
-  background: #2ecc71;
-}
-button.danger {
-  background: #c0392b;
-  border-color: #e74c3c;
-}
-
-button:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
-  background: #2c3e50; /* Slightly darker than the default #34495e */
-  border-color: #1a252f;
+button.primary:hover,
+button.primary:active {
+  transform: scale(0.95);
+  background: #144317;
 }
 
 /* The tactile click for the Green "Run" button */
@@ -144,12 +146,36 @@ button.primary:active {
   border-color: #145a32;
 }
 
-/* The tactile click for the Red "Clear" button */
+button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+  background: #2c3e50; /* Slightly darker than the default #34495e */
+  border-color: #1a252f;
+}
+//
+// button.danger {
+//   background: #c0392b;
+//   border-color: #e74c3c;
+// }
+// /* The tactile click for the Red "Clear" button */
+// button.danger:active {
+//   transform: translateY(1px);
+//   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.3);
+//   background: #922b21; /* Darker than the base #c0392b */
+//   border-color: #641e16;
+// }
+button.danger {
+  background: #B71C1C; /* Deeper, cleaner red for better contrast */
+  border: 2px solid #D32F2F;
+  border-radius: 8px;
+  padding: 8px;
+  color: white; /* Fallback */
+}
 button.danger:active {
   transform: translateY(1px);
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.3);
-  background: #922b21; /* Darker than the base #c0392b */
-  border-color: #641e16;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+  background: #7F0000; /* Darker red for the press state */
+  border-color: #560000;
 }
 
 select {

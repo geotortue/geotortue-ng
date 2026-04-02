@@ -6,7 +6,7 @@ import {
   getIconFromName,
   STANDARD_ICON_VIEWBOX,
   GOOGLE_SYMBOLS_VIEWBOX
-} from './registered-icons';
+} from './icon-tools';
 
 describe('registered-icons', () => {
   describe('isIconName()', () => {

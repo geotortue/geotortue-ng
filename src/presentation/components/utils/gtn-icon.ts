@@ -1,11 +1,11 @@
-import { LitElement, html, css, svg } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { getIconFromName } from './registered-icons';
+import { getIconFromName } from './icon-tools';
 
 @customElement('gtn-icon')
 export class GtnIcon extends LitElement {
-  static override styles = css`
+  static override readonly styles = css`
     :host {
       display: inline-flex;
       align-items: center;
@@ -33,7 +33,7 @@ export class GtnIcon extends LitElement {
   `;
 
   /**
-   * The name of the icon to display (must exist in icons.ts)
+   * The name of the icon to display (must exist in registered-icons.ts)
    */
   @property({ type: String })
   accessor icon: string | undefined;

@@ -15,33 +15,44 @@ export class GTNNavigationPanel extends LitElement {
     }
     .d-pad {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      // max-width: 120px;
-      margin: 0 auto;
+      grid-template-columns: repeat(3, 48px); /* Fixed size for circular/square alignment */
+      grid-template-rows: repeat(2, 48px);
+      gap: 8px;
+      margin: 10px auto;
+      justify-content: center;
 
       button {
-        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
         cursor: pointer;
-        background: #e9ecef;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        font-size: 1.2rem;
-        color: #495057;
+        background: #3498db; /* Vibrant Blue */
+        border: none;
+        border-bottom: 4px solid #2980b9; /* 3D "Depth" shadow */
+        border-radius: 12px;
+        transition: all 0.1s ease;
+        padding: 0;
       }
 
       button:hover {
-        background: #dee2e6;
+        background: #5dade2;
+        transform: translateY(-1px);
+        border-bottom-width: 5px;
       }
 
+      /* Tactile "Pressed" state */
       button:active {
-        background: #ced4da;
-        transform: translateY(1px);
+        background: #2980b9;
+        transform: translateY(3px);
+        border-bottom-width: 1px;
+        margin-bottom: 3px;
       }
-    }
 
-    .center {
-      visibility: hidden;
+      .center {
+        visibility: hidden;
+      }
     }
   `;
 
@@ -79,32 +90,36 @@ export class GTNNavigationPanel extends LitElement {
 
     return html`
       <div class="d-pad">
-        <button class="center"></button>
+        <div class="center"></div>
         <button
           @click=${() => this.emit(GTNToken.GT_FORWARD)}
           title="${t('sandbox.tooltip.forward')}"
+          aria-label="${t('sandbox.tooltip.forward')}"
         >
-          ▲
+          <gtn-icon icon="go-up-vibrant"></gtn-icon>
         </button>
-        <button class="center"></button>
+        <div class="center"></div>
 
         <button
           @click=${() => this.emit(GTNToken.GT_TURN_LEFT)}
           title="${t('sandbox.tooltip.left')}"
+          aria-label="${t('sandbox.tooltip.left')}"
         >
-          ◀
+          <gtn-icon icon="go-left-vibrant"></gtn-icon>
         </button>
         <button
           @click=${() => this.emit(GTNToken.GT_BACKWARD)}
           title="${t('sandbox.tooltip.backward')}"
+          aria-label="${t('sandbox.tooltip.backward')}"
         >
-          ▼
+          <gtn-icon icon="go-down-vibrant"></gtn-icon>
         </button>
         <button
           @click=${() => this.emit(GTNToken.GT_TURN_RIGHT)}
           title="${t('sandbox.tooltip.right')}"
+          aria-label="${t('sandbox.tooltip.right')}"
         >
-          ▶
+          <gtn-icon icon="go-right-vibrant"></gtn-icon>
         </button>
       </div>
     `;
