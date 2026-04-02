@@ -1,3 +1,9 @@
+# [1.6.0](https://github.com/geotortue/geotortue-ng/compare/v1.5.1...v1.6.0) (2026-04-02)
+
+### Features
+
+- **ui:** add skeuomorphic icons ([89ce880](https://github.com/geotortue/geotortue-ng/commit/89ce880bbe0280af15837ec15671115fcf893854))
+
 ## [1.5.1](https://github.com/geotortue/geotortue-ng/compare/v1.5.0...v1.5.1) (2026-03-30)
 
 ### Bug Fixes
