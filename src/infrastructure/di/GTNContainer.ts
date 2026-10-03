@@ -51,7 +51,8 @@ export class GTNContainer {
   /**
    * Resolves (retrieves) a service.
    * If the service does not exist yet, it is created via its factory.
-   * * @param key The identification symbol
+   *
+   * @param key The identification symbol
    * @returns The requested service instance
    * @throws Error if no provider is found for the key
    */

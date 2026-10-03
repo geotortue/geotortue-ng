@@ -1,8 +1,8 @@
 import { init } from 'license-checker-rseidelsohn';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { exit } from 'node:process';
+import { argv, cwd, exit } from 'node:process';
 import { parseArgs } from 'node:util';
 
 const DEFAULT_CONFIG_FILE_PATH = 'check-license.config.json';
@@ -50,7 +50,7 @@ interface CheckerResult {
 // --- Helper: Parse Arguments ---
 function getArgs() {
   const { values } = parseArgs({
-    args: process.argv.slice(2),
+    args: argv.slice(2),
     options: {
       config: {
         type: 'string',
@@ -69,7 +69,7 @@ function getArgs() {
 
 // --- HTML Generator Helper ---
 async function generateHtmlReport(packages: CheckerResult, outputPath: string) {
-  console.log(`📝 Generating HTML report at: ${outputPath}`);
+  console.log(`[AUDIT] 📝 Generating HTML report at: ${outputPath}`);
 
   let htmlContent = `
   <!DOCTYPE html>
@@ -108,7 +108,7 @@ async function generateHtmlReport(packages: CheckerResult, outputPath: string) {
     if (data.licenseFile) {
       try {
         licenseText = await readFile(data.licenseFile, 'utf-8');
-      } catch (e) {
+      } catch {
         // failed to read file, keep default message
       }
     }
@@ -147,9 +147,9 @@ async function runAudit() {
   const rootDir = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
   // Resolve config path relative to where the command is run, or default to root
-  const configPath = resolve(process.cwd(), args.config!);
+  const configPath = resolve(cwd(), args.config);
 
-  console.log(`📄 Reading configuration from: ${configPath}`);
+  console.log(`[AUDIT] 📄 Reading configuration from: ${configPath}`);
 
   let config: LicenseConfig;
 
@@ -157,7 +157,7 @@ async function runAudit() {
     const fileContent = await readFile(configPath, 'utf-8');
     config = JSON.parse(fileContent);
   } catch (error) {
-    console.error(`❌ Failed to read configuration file: ${(error as Error).message}`);
+    console.error(`[AUDIT] ❌ Failed to read configuration file: ${(error as Error).message}`);
     exit(1);
   }
 
@@ -166,18 +166,34 @@ async function runAudit() {
   // to get the root path, use '.' or './'
   if (config.files != null) {
     const configFilesPath = config.files.trim() || DEFAUT_LICENSE_FILES_PATH;
-    const filesDirPath = resolve(process.cwd(), configFilesPath);
-    await mkdir(filesDirPath, { recursive: true });
-    console.log(`📂 License files will be copied to: ${filesDirPath}`);
+    const filesDirPath = resolve(cwd(), configFilesPath);
+    const normalizedFilesDirPath = normalize(filesDirPath);
+    const normalizedCwd = normalize(cwd());
+    if (
+      normalizedFilesDirPath.length > normalizedCwd.length &&
+      normalizedFilesDirPath.startsWith(normalizedCwd)
+    ) {
+      await rm(filesDirPath, { recursive: true, force: true });
+      await mkdir(filesDirPath, { recursive: true });
+    }
+    console.log(`[AUDIT] 📂 License files will be copied to: ${filesDirPath}`);
   }
 
   if (config.htmlOut != null) {
     const configHtmlOutPath = config.htmlOut.trim() || DEFAULT_LICENCES_SUB_PATH;
     // Ensure the parent directory for the HTML file exists
     // FUTURE try to extract compilerOptions/outDir from ./tsconfig.json before using DEFAULT_BUILD_PATH
-    const htmlDirPath = resolve(process.cwd(), DEFAULT_BUILD_PATH, configHtmlOutPath, '..');
-    await mkdir(htmlDirPath, { recursive: true });
-    console.log(`📂 WEB License HTML page will be copied to: ${htmlDirPath}`);
+    const htmlDirPath = resolve(cwd(), DEFAULT_BUILD_PATH, configHtmlOutPath, '..');
+    const normalizedHtmlDirPath = normalize(htmlDirPath);
+    const normalizedCwd = normalize(cwd());
+    if (
+      normalizedHtmlDirPath.length > normalizedCwd.length &&
+      normalizedHtmlDirPath.startsWith(normalizedCwd)
+    ) {
+      await rm(htmlDirPath, { recursive: true, force: true });
+      await mkdir(htmlDirPath, { recursive: true });
+    }
+    console.log(`[AUDIT] 📂 WEB License HTML page will be copied to: ${htmlDirPath}`);
   }
 
   // We explicitly set 'summary: false' in options because we want the full raw data
@@ -198,9 +214,9 @@ async function runAudit() {
   };
 
   if (config.out) {
-    console.log(`💾 Output will be written to: ${config.out}`);
+    console.log(`[AUDIT] 💾 Output will be written to: ${config.out}`);
   } else {
-    console.log('🔍 Starting license audit...');
+    console.log('[AUDIT] 🔍 Starting license audit...');
   }
 
   // The library uses a callback pattern, so we wrap it in a Promise to use async/await
@@ -221,15 +237,15 @@ async function runAudit() {
     // 1. Generate HTML if requested
     if (config.htmlOut != null) {
       const configHtmlOutPath = config.htmlOut.trim() || DEFAULT_LICENCES_SUB_PATH;
-      const htmlFilePath = resolve(process.cwd(), DEFAULT_BUILD_PATH, configHtmlOutPath);
-      const htmlPath = resolve(process.cwd(), htmlFilePath);
+      const htmlFilePath = resolve(cwd(), DEFAULT_BUILD_PATH, configHtmlOutPath);
+      const htmlPath = resolve(cwd(), htmlFilePath);
       await generateHtmlReport(packages, htmlPath);
     }
 
     // 2. Console logging detailed list only if not writing to a specific 'out' file
     //    using a format similar to --plainVertical
     if (!config.out) {
-      console.log('\n--- 📦 Full Dependency List ---');
+      console.log('[AUDIT] \n--- 📦 Full Dependency List ---');
       Object.entries(packages).forEach(([pkgName, data]) => {
         console.log(pkgName);
 
@@ -246,7 +262,7 @@ async function runAudit() {
 
     // 3. Conditionally print the summary at the bottom
     if (args.summary) {
-      console.log('\n--- 📊 License Summary ---');
+      console.log('[AUDIT] \n--- 📊 License Summary ---');
       const summaryCount: Record<string, number> = {};
 
       Object.values(packages).forEach((data) => {
@@ -265,10 +281,10 @@ async function runAudit() {
       console.log('--------------------------');
     }
 
-    console.log('\n✅ License Audit Passed: All production dependencies are compliant.');
+    console.log('[AUDIT] \n✅ License Audit Passed: All production dependencies are compliant.');
     exit(0);
   } catch (error) {
-    console.error('\n❌ LICENSE AUDIT FAILED');
+    console.error('[AUDIT] \n❌ LICENSE AUDIT FAILED');
     console.error('The following forbidden licenses were found or an error occurred:');
     console.error((error as Error).message);
     exit(1);

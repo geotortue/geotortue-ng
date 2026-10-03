@@ -15,7 +15,7 @@ export type NameSpaceType = `${NameSpace}`;
 
 const DEFAULT_NS: string = NameSpace.UI; // Only load UI by default for the main bundle
 
-// Initialisation asynchrone
+// Asynchrone Initialization
 export const initI18n = async () => {
   const savedLang = localStorage.getItem('gtn_ui_lang');
   const baseUrl = import.meta.env.BASE_URL;
