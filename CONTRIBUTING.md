@@ -341,9 +341,9 @@ Some files with GéoTortue NG configuration data:
 - [Vite](https://vite.dev/) as build tool
 - [Vitest](https://vitest.dev/) for testing
 - [prettier](https://prettier.io/) & [eslint](https://eslint.org/) for QA
-- [@ysk8hori/typescript-graph](https://github.com/ysk8hori/typescript-graph) for dependency diagram
+- [@ysk8hori/typescript-graph (tsg)](https://github.com/ysk8hori/typescript-graph) with [mermaid](https://mermaid.js.org/) for dependency diagram
 - [rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) & [vite-bundle-visualizer](https://github.com/KusStar/vite-bundle-visualizer) for bundle size management
-- license-checker-rseidelsohn for licenses checking
+- [license-checker-rseidelsohn](https://github.com/RSeidelsohn/license-checker-rseidelsohn) for licenses checking
 - mainly [Google Gemini Pro](https://gemini.google.com/) and [ChatGPT Codex](https://chatgpt.com/codex) as [AI](https://en.wikipedia.org/wiki/Artificial_intelligence).
 
 ## Development Workflow

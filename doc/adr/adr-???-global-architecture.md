@@ -9,7 +9,7 @@ We will separate the application into 4 distinct layers:
 - Infrastructure : Practical implementations (Parser JSON, Renderer Canvas/WebGL, Audio API).
 - Presentation : WebComponents, Menus, Layout.
 
-Soit :
+then:
 
 - Solid Architecture: DDD + DI
 - Visuals: 3D Viewport, Code Editor, Toolbar
