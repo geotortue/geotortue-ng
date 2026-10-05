@@ -109,7 +109,7 @@ describe('GTNExecutionVisitor', () => {
       penDown: vi.fn(),
       state: {
         position: { x: 0, y: 0, z: 0 } //,
-        // rotation: { x: 0, y: 0, z: 0, w: 1 }
+        // orientation: { x: 0, y: 0, z: 0, w: 1 }
       },
       isVisible: true
     } as unknown as GTNTurtle;
@@ -412,7 +412,7 @@ describe('GTNExecutionVisitor', () => {
     expect(mockTurtle.state.position.x).toBe(0);
     expect(mockTurtle.state.position.y).toBe(0);
     expect(mockTurtle.state.position.z).toBe(0);
-    // TODO to be completed with rotation
+    // TODO to be completed with orientation
   });
 
   it('should reset repo on visitProgram', async () => {

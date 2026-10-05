@@ -18,24 +18,23 @@ import { GTNMathJsExpressionValidator } from '@infrastructure/math/GTNMathJsExpr
 import { GTNExpressionAdapter } from '@infrastructure/math/GTNExpressionAdapter';
 import { GTNThreeMathProvider } from '@infrastructure/math/GTNThreeMathProvider';
 import { GTNInMemoryTurtleRepository } from '@infrastructure/store/GTNInMemoryTurtleRepository';
-import { GTNRenderer2D } from '@ui/renderers/GTNRenderer2D';
-import { GTNRenderer3D } from '@ui/renderers/GTNRenderer3D';
 
 import { GTNGeometryService } from '@domain/services/GTNGeometryService';
 import { GTNI18nLanguageService } from '@infrastructure/i18n/GTNI18nLanguageService';
 import type { IGTNFileSystem } from '@domain/interfaces/IGTNFileSystem';
 import { GTNApplicationState } from '@app/state/GTNApplicationState';
-import { GTNBrowserRenderLoop } from '@infrastructure/services/GTNBrowserRenderLoop';
 import { GTNConsoleLogger } from '@infrastructure/services/GTNConsoleLogger';
 import { GTNReverseDictionaryService } from '@infrastructure/i18n/GTNReverseDictionaryService';
 import { GTNSyntaxService } from '@domain/services/GTNSyntaxService';
 import { GTNExecutionVisitor } from '@domain/services/GTNExecutionVisitor';
-import type { IGTNProcedureRegistry } from '@domain/interfaces/IGTNProcedureRegistry';
 import { GTNProcedureRegistry } from '@infrastructure/store/GTNProcedureRegistry';
 
 /**
- * This is the single place where everything is wired together.
- * This file is the only place in the application that knows the concrete implementations (the classes).
+ * Composition Root for the core application.
+ * This wires together the Domain, Application services, and Infrastructure adapters.
+ *
+ * Note: The Presentation layer (UI components, graphical renderers) is excluded from
+ * this container and manages its own concrete implementations and lifecycles.
  */
 export function configureDependencyInjection(): void {
   const container = GTNContainer.getInstance();
@@ -113,12 +112,7 @@ export function configureDependencyInjection(): void {
   container.registerSingleton(GTN_TYPES.ApplicationState, () => new GTNApplicationState());
 
   /* Presentation Layer (Renderers) */
-
-  container.registerSingleton(GTN_TYPES.Renderer2D, () => new GTNRenderer2D());
-  container.registerSingleton(GTN_TYPES.Renderer3D, () => new GTNRenderer3D());
-
-  // Register Loop
-  container.registerSingleton(GTN_TYPES.RenderLoop, () => new GTNBrowserRenderLoop());
+  // The Presentation layer (UI components, graphical renderers) manages its own concrete implementations and lifecycles.
 
   // Logger
   container.registerSingleton(GTN_TYPES.Logger, () => new GTNConsoleLogger());

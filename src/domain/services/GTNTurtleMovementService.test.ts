@@ -8,7 +8,7 @@ vi.mock('@domain/components/GTNTurtleState', () => {
   return {
     GTNTurtleState: class {
       public position = { x: 0, y: 0, z: 0 };
-      public rotation = { x: 0, y: 0, z: 0, w: 1 };
+      public orientation = { x: 0, y: 0, z: 0, w: 1 };
     }
   };
 });
@@ -28,17 +28,17 @@ describe('GTNTurtleMovementService', () => {
     turtle = new GTNTurtle('t1' as GTNTurtleId, mockGeometryService);
   });
 
-  it('wrap should create movement segments separated by teleport', () => {
+  it('wrap should create movement segments without separating teleports', () => {
     (mockGeometryService.calculateNewPosition as any).mockReturnValue({ x: 60, y: 15, z: 0 });
 
     movement.moveForward(turtle, 10, 'WRAP', { width: 100, height: 100 });
 
-    expect(turtle.state.position).toEqual({ x: -40, y: 15, z: 0 });
-    expect(turtle.lines).toHaveLength(2);
+    // the turtle position is outside the workspace bounds
+    expect(turtle.state.position).toEqual({ x: 60, y: 15, z: 0 });
+    // without any teleport segment
+    expect(turtle.lines).toHaveLength(1);
     expect(turtle.lines[0]!.start).toEqual({ x: 0, y: 0, z: 0 });
-    expect(turtle.lines[0]!.end).toEqual({ x: 50, y: 12.5, z: 0 });
-    expect(turtle.lines[1]!.start).toEqual({ x: -50, y: 12.5, z: 0 });
-    expect(turtle.lines[1]!.end).toEqual({ x: -40, y: 15, z: 0 });
+    expect(turtle.lines[0]!.end).toEqual({ x: 60, y: 15, z: 0 });
   });
 
   it('fence should stop at boundary and not consume remaining command distance', () => {

@@ -29,7 +29,7 @@ export class GTNProjectService implements IGTNProjectService {
       color: t.penState.color,
       isVisible: t.isVisible,
       position: t.state.position.toJSON(),
-      rotation: { ...t.state.rotation } // Quaternion
+      orientation: { ...t.state.orientation } // Quaternion
     }));
 
     // 2. Build the Project Object
@@ -81,13 +81,13 @@ export class GTNProjectService implements IGTNProjectService {
         // Restore Position
         turtle.state.position = new GTNVector3(dto.position.x, dto.position.y, dto.position.z);
 
-        // Restore Rotation (Handle legacy JSON without rotation)
-        if (dto.rotation) {
-          turtle.state.rotation = new GTNQuaternion(
-            dto.rotation.x,
-            dto.rotation.y,
-            dto.rotation.z,
-            dto.rotation.w
+        // Restore orientation (Handle legacy JSON without orientation)
+        if (dto.orientation) {
+          turtle.state.orientation = new GTNQuaternion(
+            dto.orientation.x,
+            dto.orientation.y,
+            dto.orientation.z,
+            dto.orientation.w
           );
         }
 

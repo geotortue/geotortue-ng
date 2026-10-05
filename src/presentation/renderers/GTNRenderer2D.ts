@@ -1,7 +1,8 @@
 import type { IGTNRenderer } from './IGTNRenderer';
 import type { IGTNTurtleRepository } from '@domain/interfaces/IGTNTurtleRepository';
 import { GTNTurtle } from '@domain/entities/GTNTurtle';
-import type { GTNColor } from '@domain/value-objects';
+import type { GTNColor, GTNLineSegment } from '@domain/value-objects';
+import { GTNQuotientSpaceProjection, type QuotientSpace } from './GTNQuotientSpaceProjection';
 import { toRadian } from '@domain/types';
 
 export class GTNRenderer2D implements IGTNRenderer {
@@ -55,10 +56,23 @@ export class GTNRenderer2D implements IGTNRenderer {
     this.ctx.translate(cx, cy);
     this.ctx.scale(1, -1); // Standard Cartesian (Y-up)
 
+    const boundaryMode = repo.getBoundaryMode();
+    const isWrap = boundaryMode === 'WRAP';
+
+    // Definition of the topological space based on screen size.
+    // By default, WRAP mode is treated as standard (GluingMode = 1).
+    // To utilize the Möbius strip (-1), the return value of repo.getBoundaryMode() will need to be extended in the future.
+    const space: QuotientSpace = {
+      latticeWidth: w,
+      latticeHeight: h,
+      xGluingMode: isWrap ? 1 : 0,
+      yGluingMode: isWrap ? 1 : 0
+    };
+
     repo.getAll().forEach((turtle) => {
-      this.drawTurtleLines(turtle);
+      this.drawTurtleLines(turtle, boundaryMode, space);
       if (turtle.isVisible) {
-        this.drawTurtleSprite(turtle);
+        this.drawTurtleSprite(turtle, boundaryMode, space);
       }
     });
 
@@ -72,24 +86,46 @@ export class GTNRenderer2D implements IGTNRenderer {
     return color;
   }
 
-  private drawTurtleLines(turtle: GTNTurtle) {
+  private drawTurtleLines(
+    turtle: GTNTurtle,
+    boundaryMode: ReturnType<IGTNTurtleRepository['getBoundaryMode']>,
+    space: QuotientSpace
+  ) {
     turtle.lines.forEach((line) => {
-      this.ctx.beginPath();
-      this.ctx.moveTo(line.start.x, line.start.y);
-      this.ctx.lineTo(line.end.x, line.end.y);
+      const displayedLines: GTNLineSegment[] =
+        boundaryMode === 'WRAP'
+          ? GTNQuotientSpaceProjection.wrapLine(line, space)
+          : [GTNQuotientSpaceProjection.clipLine(line, space)].filter(
+              (candidate): candidate is NonNullable<typeof candidate> => candidate !== null
+            );
 
-      this.ctx.strokeStyle = this.resolveColor(line.color);
-      this.ctx.lineWidth = line.width;
-      this.ctx.globalAlpha = line.opacity;
-      this.ctx.lineCap = 'round';
-      this.ctx.stroke();
+      displayedLines.forEach((displayedLine) => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(displayedLine.start.x, displayedLine.start.y);
+        this.ctx.lineTo(displayedLine.end.x, displayedLine.end.y);
+
+        this.ctx.strokeStyle = this.resolveColor(displayedLine.color);
+        this.ctx.lineWidth = displayedLine.width;
+        this.ctx.globalAlpha = displayedLine.opacity;
+        this.ctx.lineCap = 'round';
+        this.ctx.stroke();
+      });
     });
     this.ctx.globalAlpha = 1.0;
   }
 
-  private drawTurtleSprite(turtle: GTNTurtle) {
-    const { x, y } = turtle.state.position;
-    const q = turtle.state.rotation;
+  private drawTurtleSprite(
+    turtle: GTNTurtle,
+    boundaryMode: ReturnType<IGTNTurtleRepository['getBoundaryMode']>,
+    space: QuotientSpace
+  ) {
+    const position =
+      boundaryMode === 'WRAP'
+        ? GTNQuotientSpaceProjection.projectPosition(turtle.state.position, space)
+        : turtle.state.position;
+
+    const { x, y } = position;
+    const q = turtle.state.orientation;
     const angle = toRadian(2 * Math.atan2(q.z, q.w));
 
     this.ctx.save();

@@ -25,10 +25,8 @@ export const GTN_TYPES = {
 
   ApplicationState: Symbol.for('ApplicationState'),
   FileSystem: Symbol.for('FileSystem'),
-  ProjectService: Symbol.for('ProjectService'),
+  ProjectService: Symbol.for('ProjectService')
 
   // --- Presentation / Rendering ---
-  RenderLoop: Symbol.for('RenderLoop'),
-  Renderer2D: Symbol.for('Renderer2D'),
-  Renderer3D: Symbol.for('Renderer3D')
+  // The Presentation layer (UI components, graphical renderers) manages its own concrete implementations and lifecycles.
 };

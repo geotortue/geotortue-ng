@@ -212,10 +212,10 @@ export class GTNRenderer3D implements IGTNRenderer {
 
     // Convert GTNQuaternion (x,y,z,w) to Quaternion
     meshes.sprite.quaternion.set(
-      turtle.state.rotation.x,
-      turtle.state.rotation.y,
-      turtle.state.rotation.z,
-      turtle.state.rotation.w
+      turtle.state.orientation.x,
+      turtle.state.orientation.y,
+      turtle.state.orientation.z,
+      turtle.state.orientation.w
     );
 
     // Update Sprite Color

@@ -4,7 +4,7 @@ import type { GTNVector3 } from './GTNVector3';
 /**
  * Represents a rotation in 3D space as a quaternion (x, y, z, w).
  * This avoids the "gimbal lock" inherent in Euler angles.
- * Value Object immuable.
+ * Value Object immutable.
  */
 export class GTNQuaternion {
   constructor(

@@ -19,19 +19,31 @@ export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
   private viewportWidth = Number.POSITIVE_INFINITY;
   private viewportHeight = Number.POSITIVE_INFINITY;
 
+  private _structureVersion: number = 0;
+
   constructor(private readonly geometryService: GTNGeometryService) {
-    // 1. Called immediately upon app startup
+    // Called immediately upon app startup
     this.initializeDefaultTurtle();
   }
 
   private initializeDefaultTurtle() {
     this.turtles.clear();
-    // 2. Creates the default turtle (ID === '1') at coordinates (0,0,0)
+    // Creates the default turtle (ID === '1') at coordinates (0,0,0)
     // FUTURE turtleId is a business id => DI for generateGTNTurtleId
     // ATM simple id chrono
     const id = generateGTNTurtleId([]);
     const defaultTurtle = new GTNTurtle(id, this.geometryService);
     this.turtles.set(defaultTurtle.id, defaultTurtle);
+  }
+
+  public get globalVersion(): number {
+    let totalVersion = this._structureVersion;
+
+    for (const turtle of this.turtles.values()) {
+      totalVersion += turtle.version;
+    }
+
+    return totalVersion;
   }
 
   public getById(id: GTNTurtleId): GTNTurtle | undefined {
@@ -51,6 +63,7 @@ export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
     this.turtles.set(turtle.id, turtle);
     // If it's the first turtle, make it active by default
     this.activeTurtleId ??= turtle.id;
+    this._structureVersion++;
   }
 
   public setActiveTurtle(id: GTNTurtleId): void {
@@ -83,6 +96,14 @@ export class GTNInMemoryTurtleRepository implements IGTNTurtleRepository {
   }
 
   public clear(): void {
+    let lostVersions = 0;
+    for (const turtle of this.turtles.values()) {
+      lostVersions += turtle.version;
+    }
+
+    // FUTURE if a delete or remove function is added to the repository,
+    // version transfer (Monotonicity) should be also applied
+    this._structureVersion += lostVersions + 1;
     this.turtles.clear();
     this.activeTurtleId = null;
   }

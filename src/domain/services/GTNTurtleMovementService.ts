@@ -30,12 +30,43 @@ const math = create(all!, {
 
 const { equal, larger, smaller } = math;
 
-type Viewport = { width: number; height: number };
+type WorkspaceBounds = { width: number; height: number };
 
 export type MovementAction =
   | { type: 'draw'; start: GTNVector3; end: GTNVector3 }
   | { type: 'move'; start: GTNVector3; end: GTNVector3 };
 
+/**
+ * @description Domain service responsible for computing and applying the turtle's geometric movements.
+ * It translates logical movement commands (e.g., moving forward) into concrete state mutations,
+ * applying physical collision rules based on the active boundary mode.
+ *
+ * @why Separates the raw mathematical calculation of vectors (handled by `GTNGeometryService`) from
+ * the domain-specific business rules of movement (such as stopping at a wall in `FENCE` mode).
+ * This ensures the turtle's internal geometric state remains pure and independent of screen rendering.
+ *
+ * @how First, it computes a theoretical, unbounded target coordinate using the current position, orientation,
+ * and distance. Then, it evaluates this candidate against the `GTNTurtleBoundaryMode`. If the turtle
+ * is constrained by physical boundaries (`FENCE`), it calculates the exact intersection point with the
+ * `WorkspaceBounds` and halts the turtle there. It finally generates `MovementAction`s and updates the turtle's state.
+ *
+ * @rule In `WRAP` and `WINDOW` modes, this service intentionally allows the turtle's coordinates to exceed
+ * the `WorkspaceBounds` infinitely. The domain considers the space unbounded; visual wrapping or clipping
+ * is strictly delegated to the Presentation layer (e.g., `GTNQuotientSpaceProjection`).
+ *
+ * @warning This service relies on a locally isolated `mathjs` instance with a specific tolerance (`1e-9`).
+ * This is crucial to absorb standard IEEE 754 floating-point inaccuracies during trigonometric calculations
+ * and boundary crossing detections, preventing infinite micro-movements or erratic snapping at the borders.
+ *
+ * @example
+ * const movementService = new GTNTurtleMovementService(new GTNGeometryService());
+ * const bounds: WorkspaceBounds = { width: 800, height: 600 };
+ *
+ * // Instructs the turtle to move forward by 100 units.
+ * // If the boundaryMode is 'FENCE' and the border is only 40 units away,
+ * // the turtle's path will be truncated and it will stop exactly at the border.
+ * movementService.moveForward(myTurtle, 100, 'FENCE', bounds);
+ */
 export class GTNTurtleMovementService {
   constructor(private readonly geometryService: GTNGeometryService) {}
 
@@ -43,12 +74,12 @@ export class GTNTurtleMovementService {
     turtle: GTNTurtle,
     distance: number,
     boundaryMode: GTNTurtleBoundaryMode,
-    viewport: Viewport
+    viewport: WorkspaceBounds
   ): void {
     const start = turtle.state.position;
     const candidate = this.geometryService.calculateNewPosition(
       start,
-      turtle.state.rotation,
+      turtle.state.orientation,
       distance
     );
 
@@ -57,38 +88,41 @@ export class GTNTurtleMovementService {
   }
 
   private applyActions(turtle: GTNTurtle, actions: MovementAction[]): void {
-    // 'move' actions are implicitly handled because the next action
-    // picks up from the new teleported start point, and the final
-    // position update handles the rest.
+    console.log('GTNTurtleMovementService.applyActions, actions: ', actions);
     actions
       .filter((action) => action.type === 'draw')
       .forEach((action) => this.drawSegment(turtle, action.start, action.end));
 
     // Update the turtle's final position to the end of the very last segment
     turtle.state.position = actions[actions.length - 1]!.end;
+    turtle.markModified();
   }
 
   private resolveTarget(
     boundaryMode: GTNTurtleBoundaryMode,
     start: GTNVector3,
     target: GTNVector3,
-    viewport: Viewport
+    viewport: WorkspaceBounds
   ): MovementAction[] {
-    if (boundaryMode === 'WINDOW' || !this.hasFiniteViewport(viewport)) {
-      return this.resolveWindow(start, target);
-    } else if (boundaryMode === 'FENCE') {
-      return this.resolveFence(start, target, viewport);
+    // WINDOW and WRAP both retain the turtle's position in the unbounded
+    // geometric plane. WRAP is a rendering projection, rather than a
+    // teleportation of the domain position.
+    if (boundaryMode === 'WINDOW' || boundaryMode === 'WRAP' || !this.hasFiniteViewport(viewport)) {
+      return this.resolveUnBoundedMovement(start, target);
     } else {
-      // WRAP
-      return this.resolveWrap(start, target, viewport);
+      return this.resolveBoundedMovement(start, target, viewport);
     }
   }
 
-  private resolveWindow(start: GTNVector3, end: GTNVector3): MovementAction[] {
+  private resolveUnBoundedMovement(start: GTNVector3, end: GTNVector3): MovementAction[] {
     return [{ type: 'draw', start, end }];
   }
 
-  private resolveFence(start: GTNVector3, end: GTNVector3, viewport: Viewport): MovementAction[] {
+  private resolveBoundedMovement(
+    start: GTNVector3,
+    end: GTNVector3,
+    viewport: WorkspaceBounds
+  ): MovementAction[] {
     const hit = this.findFirstCrossing(start, end, viewport);
     if (!hit) {
       return [{ type: 'draw', start, end }];
@@ -100,46 +134,6 @@ export class GTNTurtleMovementService {
     }
 
     return [{ type: 'draw', start, end: hit.point }];
-  }
-
-  private resolveWrap(start: GTNVector3, end: GTNVector3, viewport: Viewport): MovementAction[] {
-    const actions: MovementAction[] = [];
-    let current = start;
-    let remainingDx = end.x - start.x;
-    let remainingDy = end.y - start.y;
-
-    // Safety limit of 16 boundary crossings to prevent infinite loops
-    for (let i = 0; i < 16; i++) {
-      const target = new GTNVector3(current.x + remainingDx, current.y + remainingDy, end.z);
-      const hit = this.findFirstCrossing(current, target, viewport);
-
-      if (!hit) {
-        actions.push({ type: 'draw', start: current, end: target });
-        break;
-      }
-
-      if (larger(hit.t, 0)) {
-        actions.push({ type: 'draw', start: current, end: hit.point });
-      } else {
-        // Treat “hit at start” as no movement (hit.t <= EPSILON) for fence mode, avoiding accidental micro-moves
-      }
-
-      const teleported = this.teleportAcrossBoundary(hit.point, hit.axis, viewport);
-
-      // Register the teleportation jump without drawing
-      actions.push({ type: 'move', start: hit.point, end: teleported });
-
-      const remainingRatio = 1 - hit.t;
-      current = teleported;
-      remainingDx *= remainingRatio;
-      remainingDy *= remainingRatio;
-
-      if (equal(remainingDx, 0) && equal(remainingDy, 0)) {
-        break;
-      }
-    }
-
-    return actions;
   }
 
   private drawSegment(turtle: GTNTurtle, start: GTNVector3, end: GTNVector3): void {
@@ -159,7 +153,7 @@ export class GTNTurtleMovementService {
     return !!equal(a.x, b.x) && !!equal(a.y, b.y) && !!equal(a.z, b.z);
   }
 
-  private hasFiniteViewport(viewport: Viewport): boolean {
+  private hasFiniteViewport(viewport: WorkspaceBounds): boolean {
     return (
       Number.isFinite(viewport.width) &&
       Number.isFinite(viewport.height) &&
@@ -168,24 +162,10 @@ export class GTNTurtleMovementService {
     );
   }
 
-  private teleportAcrossBoundary(
-    point: GTNVector3,
-    axis: 'x' | 'y',
-    viewport: Viewport
-  ): GTNVector3 {
-    const halfW = viewport.width / 2;
-    const halfH = viewport.height / 2;
-    if (axis === 'x') {
-      return new GTNVector3(point.x > 0 ? -halfW : halfW, point.y, point.z);
-    }
-
-    return new GTNVector3(point.x, point.y > 0 ? -halfH : halfH, point.z);
-  }
-
   private findFirstCrossing(
     start: GTNVector3,
     end: GTNVector3,
-    viewport: Viewport
+    viewport: WorkspaceBounds
   ): { t: number; axis: 'x' | 'y'; point: GTNVector3 } | null {
     const halfW = viewport.width / 2;
     const halfH = viewport.height / 2;

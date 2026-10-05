@@ -11,6 +11,7 @@ import { GTNRenderer3D } from '@ui/renderers/GTNRenderer3D';
 import type { IGTNRenderLoop } from '@app/interfaces/IGTNRenderLoop';
 
 import styles from './gtn-canvas.scss?inline';
+import { GTNBrowserRenderLoop } from '@infrastructure/services/GTNBrowserRenderLoop';
 
 /**
  * - Coordinate System: HTML Canvas has (0,0) at the Top-Left.
@@ -31,12 +32,14 @@ export class GTNCanvas extends LitElement {
   private readonly appState: GTNApplicationState;
   private readonly renderLoop: IGTNRenderLoop;
 
-  private readonly renderer2D: IGTNRenderer;
-  private readonly renderer3D: IGTNRenderer;
   private currentRenderer: IGTNRenderer | null = null;
+  private lastRenderedVersion: number = -1;
+  // After any environment change: window size, 2D/3D mode, background color, etc.
+  private forceNextRender: boolean = true;
 
   // Store the cleanup function
   private unsubscribeLoop: (() => void) | null = null;
+  private unsubscribeAppState: (() => void) | null = null;
   // private animationId: number = 0;
 
   constructor() {
@@ -44,45 +47,78 @@ export class GTNCanvas extends LitElement {
     const diContainer = GTNContainer.getInstance();
     this.turtleRepo = diContainer.resolve<IGTNTurtleRepository>(GTN_TYPES.TurtleRepository);
     this.appState = diContainer.resolve<GTNApplicationState>(GTN_TYPES.ApplicationState);
-    this.renderLoop = diContainer.resolve<IGTNRenderLoop>(GTN_TYPES.RenderLoop);
 
-    // Inject Renderers
-    this.renderer2D = diContainer.resolve<IGTNRenderer>(GTN_TYPES.Renderer2D);
-    this.renderer3D = diContainer.resolve<IGTNRenderer>(GTN_TYPES.Renderer3D);
+    this.renderLoop = new GTNBrowserRenderLoop();
   }
 
-  protected firstUpdated(): void {
-    // Initial setup
+  protected override firstUpdated(): void {
+    // Initial setup: The DOM has just been created
     this.syncRenderer();
+    this.setupSubscriptions();
+  }
 
-    // Listen for mode changes (2D <-> 3D)
-    this.appState.subscribe(() => {
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    // Upon the very first insertion into the page, the DOM is not yet ready.
+    // We wait for firstUpdated.
+    // However, if the component is unmounted and then remounted (e.g., tab switch),
+    // the DOM is already ready (hasUpdated = true), so we can restart directly.
+    if (!this.hasUpdated) {
+      return;
+    }
+
+    this.syncRenderer();
+    this.setupSubscriptions();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.teardownSubscriptions();
+  }
+
+  private setupSubscriptions(): void {
+    // Re-attach window resize listener
+    window.addEventListener('resize', this.handleResize);
+
+    // Re-subscribe to app state: Listen for mode changes (2D <-> 3D)
+    this.unsubscribeAppState = this.appState.subscribe(() => {
+      this.forceNextRender = true;
       this.syncRenderer();
     });
 
-    // Handle Window Resize
-    window.addEventListener('resize', () => this.handleResize());
-
-    // // Start Loop
-    // this.loop();
-
-    // 1. Subscribe (Multiple listeners now allowed)
-    this.unsubscribeLoop = this.renderLoop.subscribe(() => {
-      if (this.currentRenderer) {
-        this.currentRenderer.render(this.turtleRepo);
-      }
-    });
-
-    // 2. Ensure Loop is running
-    // (If another component already started it, this is safe/idempotent)
+    // Start loop and subscribe
     this.renderLoop.start();
+    this.unsubscribeLoop = this.renderLoop.subscribe(() => {
+      // Ensure that the renderer is properly initialized before drawing.
+      if (!this.currentRenderer || !this.turtleRepo) {
+        return;
+      }
+
+      const currentRepoVersion = this.turtleRepo.globalVersion;
+      if (!this.forceNextRender && currentRepoVersion === this.lastRenderedVersion) {
+        return;
+      }
+
+      this.currentRenderer.render(this.turtleRepo);
+      this.lastRenderedVersion = currentRepoVersion;
+      this.forceNextRender = false;
+    });
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    // cancelAnimationFrame(this.animationId);
+  private teardownSubscriptions(): void {
+    window.removeEventListener('resize', this.handleResize);
+    // Detach the current renderer when the component is removed
+    if (this.currentRenderer) {
+      this.currentRenderer.dispose();
+      this.currentRenderer = null;
+    }
 
-    // 1. Unsubscribe OUR listener
+    if (this.unsubscribeAppState) {
+      this.unsubscribeAppState();
+      this.unsubscribeAppState = null;
+    }
+
     if (this.unsubscribeLoop) {
       this.unsubscribeLoop();
       this.unsubscribeLoop = null;
@@ -92,12 +128,6 @@ export class GTNCanvas extends LitElement {
     // For now, manually stop it to be safe, assuming Canvas is the main driver.
     // In a pure multi-subscriber system, might count subscribers or let it run.
     this.renderLoop.stop();
-
-    window.removeEventListener('resize', () => this.handleResize());
-    // We detach the current renderer when the component is removed
-    if (this.currentRenderer) {
-      this.currentRenderer.dispose();
-    }
   }
 
   private syncRenderer() {
@@ -133,19 +163,17 @@ export class GTNCanvas extends LitElement {
     }
   }
 
-  private handleResize() {
-    if (!this.currentRenderer || !this.container) return;
+  // use arrow function to ensure this is available.
+  private readonly handleResize = () => {
+    if (!this.currentRenderer || !this.container) {
+      return;
+    }
+
     const rect = this.container.getBoundingClientRect();
     this.currentRenderer.resize(rect.width, rect.height);
     this.turtleRepo.setViewportSize(rect.width, rect.height);
-  }
-  //
-  //   private loop() {
-  //     if (this.currentRenderer) {
-  //       this.currentRenderer.render(this.turtleRepo);
-  //     }
-  //     this.animationId = requestAnimationFrame(() => this.loop());
-  //   }
+    this.forceNextRender = true;
+  };
 
   protected render() {
     return html`<div id="render-container"></div>`;

@@ -3,6 +3,12 @@ import type { GTNTurtleBoundaryMode, GTNTurtleId } from '@domain/types';
 
 export interface IGTNTurtleRepository {
   /**
+   * Global version representing the combined state of the repository (additions/deletions)
+   * AND the internal mutations of all the turtles it contains.
+   */
+  readonly globalVersion: number;
+
+  /**
    * Retrieves a turtle by its unique ID.
    */
   getById(id: GTNTurtleId): GTNTurtle | undefined;

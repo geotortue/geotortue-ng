@@ -12,7 +12,7 @@ vi.mock('@domain/components/GTNTurtleState', () => {
   return {
     GTNTurtleState: class {
       public position = { x: 0, y: 0, z: 0 };
-      public rotation = { x: 0, y: 0, z: 0, w: 1 };
+      public orientation = { x: 0, y: 0, z: 0, w: 1 };
     }
   };
 });
@@ -115,20 +115,20 @@ describe('GTNTurtle', () => {
   });
 
   describe('Rotation', () => {
-    it('should turn right (negative rotation)', () => {
+    it('should turn right (negative orientation)', () => {
       turtle.right(toDegree(90));
 
-      // Expect rotateZ to be called with current rotation and NEGATIVE degrees
+      // Expect rotateZ to be called with current orientation and NEGATIVE degrees
       expect(mockGeometryService.rotateZ).toHaveBeenCalledWith(MOCK_ROTATION, -90);
-      expect(turtle.state.rotation).toEqual(MOCK_NEW_ROTATION);
+      expect(turtle.state.orientation).toEqual(MOCK_NEW_ROTATION);
     });
 
-    it('should turn left (positive rotation)', () => {
+    it('should turn left (positive orientation)', () => {
       turtle.left(toDegree(45));
 
-      // Expect rotateZ to be called with current rotation and POSITIVE degrees
+      // Expect rotateZ to be called with current orientation and POSITIVE degrees
       expect(mockGeometryService.rotateZ).toHaveBeenCalledWith(MOCK_ROTATION, 45);
-      expect(turtle.state.rotation).toEqual(MOCK_NEW_ROTATION);
+      expect(turtle.state.orientation).toEqual(MOCK_NEW_ROTATION);
     });
   });
 

@@ -25,8 +25,8 @@ export interface GTNTurtleDTO {
   id: string;
   color: GTNColor;
   position: { x: number; y: number; z: number };
-  // We add rotation to ensure we don't lose the turtle's heading
-  rotation?: { x: number; y: number; z: number; w: number };
+  // We add orientation to ensure we don't lose the turtle's heading
+  orientation?: { x: number; y: number; z: number; w: number };
   isVisible: boolean;
 }
 

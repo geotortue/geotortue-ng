@@ -12,7 +12,7 @@ export class GTNGeometryService {
 
   /**
    * Calculates the new position after moving forward 'distance' units
-   * along the current 'rotation' vector.
+   * along the current 'orientation' vector.
    */
   public calculateNewPosition(
     currentPos: GTNVector3,
@@ -23,7 +23,7 @@ export class GTNGeometryService {
   }
 
   /**
-   * Calculates the new rotation after turning around a local axis.
+   * Calculates the new orientation after turning around a local axis.
    * @param axis 'Z' (Left/Right), 'X' (Up/Down - Pitch), 'Y' (Roll)
    */
   rotateZ(currentRot: GTNQuaternion, angle: Degree): GTNQuaternion {

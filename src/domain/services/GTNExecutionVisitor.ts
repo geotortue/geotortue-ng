@@ -390,7 +390,6 @@ export class GTNExecutionVisitor
     const distance = this.extractOneArgAsNumber(ctx);
     const mode = this.appState.boundaryMode;
     const viewport = this.turtleRepo.getViewportSize();
-
     this.turtleRepo.getAll().forEach((t) => {
       if (t.state?.position && Array.isArray(t.lines)) {
         this.turtleMovementService.moveForward(t, distance, mode, viewport);
@@ -682,7 +681,7 @@ export class GTNExecutionVisitor
     const z = args.length > 2 ? args[2]! : 0;
 
     this.turtleRepo.getAll().forEach((t) => {
-      t.state.position = new GTNVector3(x, y, z);
+      t.teleportTo(new GTNVector3(x, y, z));
     });
     await this.tick();
   }
@@ -729,8 +728,8 @@ export class GTNExecutionVisitor
    */
   public async visitCompass(ctx: GTNParser.CompassContext): Promise<any> {
     this.turtleRepo.getAll().forEach((t) => {
-      t.state.position = new GTNVector3(0, 0, 0);
-      t.state.rotation = new GTNQuaternion(0, 0, 0, 1);
+      t.teleportTo(new GTNVector3(0, 0, 0));
+      t.state.orientation = new GTNQuaternion(0, 0, 0, 1);
     });
     return this.tick();
   }
